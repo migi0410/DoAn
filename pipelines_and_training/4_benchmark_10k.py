@@ -34,17 +34,10 @@ def parse_labels_from_predictions(words, word_predicted_labels):
                 if current_label in extracted_data:
                     extracted_data[current_label].append(" ".join(current_text))
             base = label[2:]
-            if base == "SELLER": base = "STORE_NAME"
-            if base == "TIMESTAMP": base = "DATE"
-            if base == "TOTAL_COST": base = "TOTAL_AMOUNT"
-                
             current_label = base
             current_text = [word]
         elif label.startswith("I-") and current_label:
             base = label[2:]
-            if base == "SELLER": base = "STORE_NAME"
-            if base == "TIMESTAMP": base = "DATE"
-            if base == "TOTAL_COST": base = "TOTAL_AMOUNT"
             if current_label == base:
                 current_text.append(word)
         else:
@@ -317,7 +310,7 @@ def run_benchmark():
     import random
     random.seed(42)
     random.shuffle(items)
-    items = items[:100] # Test on 100 images for speed
+    # items = items[:100] # Use all 2025 val images
     
     results = {
         "PhoBERT_GT": {"TP": 0, "FP": 0, "FN": 0},
@@ -339,13 +332,10 @@ def run_benchmark():
         gt_keys = set(gt.keys())
         pred_keys = set(pred.keys())
         for k in gt_keys.union(pred_keys):
-            if k not in ["STORE_NAME", "ADDRESS", "TIMESTAMP", "TOTAL_AMOUNT"]:
+            if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
                 continue
             gt_val = gt.get(k, "")
             pred_val = pred.get(k, "")
-            
-            if k == "STORE_NAME": k = "SELLER"
-            if k == "TOTAL_AMOUNT": k = "TOTAL_COST"
             
             if gt_val and pred_val:
                 if fuzzy_match(gt_val, pred_val) > 0.8:
