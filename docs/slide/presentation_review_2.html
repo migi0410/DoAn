@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVIR-KIE | Review 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0f1e;
+            --panel: rgba(255,255,255,0.04);
+            --panel-border: rgba(255,255,255,0.1);
+            --accent: #4f8ef7;
+            --accent2: #7c3aed;
+            --accent3: #06b6d4;
+            --green: #10b981;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a78bfa;
+            --text: #f0f4ff;
+            --text-muted: #8899bb;
+
+            /* Speaker colors */
+            --sp1: #4f8ef7;   /* Dung  – blue   */
+            --sp2: #10b981;   /* Dai   – green  */
+            --sp3: #f59e0b;   /* Vuong – orange */
+            --sp4: #a78bfa;   /* Cam   – purple */
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { overflow: hidden; height: 100vh; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); }
+
+        /* ── Slides ── */
+        .slide {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 48px 72px;
+            opacity: 0; pointer-events: none;
+            transition: opacity .45s ease; z-index: 1;
+        }
+        .slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
+
+        /* ── Nav ── */
+        #nav { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--panel-border); cursor: pointer; transition: all .3s; }
+        .dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+        #slide-num { position: fixed; bottom: 28px; right: 40px; font-size: 13px; color: var(--text-muted); z-index: 100; }
+
+        /* ── Speaker badge ── */
+        .speaker-badge {
+            position: absolute; top: 22px; right: 36px; z-index: 20;
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 14px 6px 10px; border-radius: 30px;
+            border: 1px solid; backdrop-filter: blur(8px);
+            font-size: 13px; font-weight: 600;
+        }
+        .speaker-badge i { font-size: 14px; }
+        .sp1 { background: rgba(79,142,247,.15);  border-color: rgba(79,142,247,.4);  color: var(--sp1);  }
+        .sp2 { background: rgba(16,185,129,.15);  border-color: rgba(16,185,129,.4);  color: var(--sp2);  }
+        .sp3 { background: rgba(245,158,11,.15);  border-color: rgba(245,158,11,.4);  color: var(--sp3);  }
+        .sp4 { background: rgba(167,139,250,.15); border-color: rgba(167,139,250,.4); color: var(--sp4);  }
+
+        /* ── BG decorations ── */
+        .bg-grid {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(79,142,247,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,142,247,.06) 1px, transparent 1px);
+            background-size: 60px 60px; pointer-events: none;
+        }
+        .bg-glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; opacity: .35; }
+
+        /* ── Typography ── */
+        .label-top { font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+        h1 { font-size: 72px; font-weight: 900; line-height: 1.05; }
+        h2 { font-size: 42px; font-weight: 800; }
+        h3 { font-size: 22px; font-weight: 700; }
+        p, li { font-size: 17px; line-height: 1.7; color: var(--text-muted); }
+        strong { color: var(--text); font-weight: 600; }
+
+        /* ── Panels ── */
+        .glass { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px; backdrop-filter: blur(12px); }
+        .card { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 14px; padding: 28px; transition: all .3s; }
+        .card:hover { border-color: var(--accent); transform: translateY(-4px); background: rgba(79,142,247,.08); }
+
+        /* ── Grids ── */
+        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; }
+        .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; width: 100%; }
+        .g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; width: 100%; }
+
+        /* ── Section title ── */
+        .sec-title { text-align: center; margin-bottom: 36px; }
+        .sec-title h2 { background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .sec-title .sub { font-size: 18px; color: var(--text-muted); margin-top: 8px; }
+
+        /* ── Tags ── */
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 2px; }
+        .tag-blue   { background: rgba(79,142,247,.2);  color: var(--accent);  border: 1px solid rgba(79,142,247,.4); }
+        .tag-green  { background: rgba(16,185,129,.2);  color: var(--green);   border: 1px solid rgba(16,185,129,.4); }
+        .tag-orange { background: rgba(245,158,11,.2);  color: var(--orange);  border: 1px solid rgba(245,158,11,.4); }
+        .tag-purple { background: rgba(124,58,237,.2);  color: var(--purple);  border: 1px solid rgba(124,58,237,.4); }
+        .tag-cyan   { background: rgba(6,182,212,.2);   color: var(--accent3); border: 1px solid rgba(6,182,212,.4);  }
+        .tag-red    { background: rgba(239,68,68,.2);   color: var(--red);     border: 1px solid rgba(239,68,68,.4);  }
+
+        ul { list-style: none; padding: 0; }
+        ul li { padding-left: 22px; position: relative; margin-bottom: 10px; }
+        ul li::before { content: '›'; position: absolute; left: 0; color: var(--accent); font-weight: 700; font-size: 20px; line-height: 1.3; }
+
+        /* Flow nodes */
+        .flow-row { display: flex; align-items: stretch; gap: 0; width: 100%; }
+        .flow-node { flex: 1; text-align: center; padding: 22px 16px; background: var(--panel); border: 1px solid var(--panel-border); position: relative; transition: all .3s; }
+        .flow-node:hover { background: rgba(79,142,247,.1); border-color: var(--accent); }
+        .flow-node:first-child { border-radius: 14px 0 0 14px; }
+        .flow-node:last-child  { border-radius: 0 14px 14px 0; }
+        .flow-node .arrow { position: absolute; right: -18px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 16px solid transparent; border-bottom: 16px solid transparent; border-left: 18px solid var(--accent); z-index: 5; }
+        .flow-node:last-child .arrow { display: none; }
+        .flow-node .icon { font-size: 30px; margin-bottom: 10px; }
+        .flow-node h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .flow-node p  { font-size: 12px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active">
+    <div class="bg-grid"></div>
+    <div class="bg-glow" style="width:600px;height:600px;background:var(--accent2);top:-200px;right:-100px;"></div>
+    <div class="bg-glow" style="width:400px;height:400px;background:var(--accent);bottom:-150px;left:-100px;"></div>
+    <div class="speaker-badge sp1"><i class="fa-solid fa-microphone"></i> Ha Minh Dung — Leader</div>
+
+    <div style="text-align:center;z-index:1;">
+        <div class="label-top">Project Review 02 — FPT University · Capstone Project</div>
+        <h1 style="background:linear-gradient(135deg,#f0f4ff 0%,var(--accent) 60%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px;">AVIR-KIE</h1>
+        <p style="font-size:22px;color:var(--text);max-width:840px;margin:0 auto 40px;line-height:1.6;">
+            <strong>Deep Learning-based Layout Analysis</strong><br>
+            and Key Information Extraction from Vietnamese Invoices &amp; Receipts
+        </p>
+        <div class="glass" style="display:inline-block;padding:24px 48px;">
+            <p style="color:var(--text);font-size:17px;margin-bottom:6px;"><strong>Supervisor:</strong> Mr. Nguyen Hong Hai</p>
+            <p style="color:var(--text-muted);font-size:16px;">GSU26AI01: Ha Minh Dung &nbsp;·&nbsp; Nguyen Phuoc Dai &nbsp;·&nbsp; Nguyen Thi My Cam &nbsp;·&nbsp; Nguyen Khac Vuong</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 2: Clarification -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp1"><i class="fa-solid fa-microphone"></i> Ha Minh Dung — Leader</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Feedback Response</div>
+            <h2>Addressing Review 1 Concerns</h2>
+            <p class="sub">Clarifying the core nature of our project methodology.</p>
+        </div>
+        <div class="g2" style="align-items:stretch;">
+            <div class="card" style="border-left:4px solid var(--red);">
+                <div style="display:flex;gap:14px;align-items:flex-start;">
+                    <i class="fa-solid fa-ban" style="color:var(--red);font-size:24px;margin-top:2px;flex-shrink:0;"></i>
+                    <div>
+                        <h3 style="margin-bottom:8px;">Misconception: LLM & RAG</h3>
+                        <p>There was a misunderstanding that our project uses <strong>Large Language Models (LLMs)</strong> like ChatGPT, Prompt Engineering, or Vector Databases.</p>
+                        <p style="margin-top:10px;"><strong style="color:var(--red);">Truth: We DO NOT use any LLMs.</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="border-left:4px solid var(--green);">
+                <div style="display:flex;gap:14px;align-items:flex-start;">
+                    <i class="fa-solid fa-microchip" style="color:var(--green);font-size:24px;margin-top:2px;flex-shrink:0;"></i>
+                    <div>
+                        <h3 style="margin-bottom:8px;">Reality: Token Classification</h3>
+                        <p>Our approach is a classic <strong>Token Classification</strong> problem using Transformer Encoders (LayoutLM).</p>
+                        <ul style="margin-top:10px;">
+                            <li><span class="tag tag-green">100% Offline/Local</span> — No API costs.</li>
+                            <li>No text chunking required.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: Research Questions -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp1"><i class="fa-solid fa-microphone"></i> Ha Minh Dung — Leader</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Academic Direction</div>
+            <h2>Research Questions</h2>
+            <p class="sub">Our project is driven by 3 clear Research Questions.</p>
+        </div>
+        <div class="g3">
+            <div class="card">
+                <i class="fa-solid fa-eye" style="font-size:32px;color:var(--accent);margin-bottom:12px;"></i>
+                <h3 style="margin-bottom:12px;font-size:18px;">RQ1: Visual + Layout Impact</h3>
+                <p style="font-size:15px;">How much does combining <strong>spatial layout</strong> and <strong>visual features</strong> improve accuracy over text-only baselines on Vietnamese invoices?</p>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-robot" style="font-size:32px;color:var(--orange);margin-bottom:12px;"></i>
+                <h3 style="margin-bottom:12px;font-size:18px;">RQ2: Synthetic Data Role</h3>
+                <p style="font-size:15px;">Can our automated <strong>Synthetic Data Generation</strong> pipeline effectively solve the extreme shortage of labeled Vietnamese receipt data?</p>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-gears" style="font-size:32px;color:var(--green);margin-bottom:12px;"></i>
+                <h3 style="margin-bottom:12px;font-size:18px;">RQ3: OCR Engine Efficacy</h3>
+                <p style="font-size:15px;">How do different OCR engines (e.g., PaddleOCR vs. CRAFT+VietOCR) influence the final <strong>End-to-End Extraction</strong> performance?</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: Dataset -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp2"><i class="fa-solid fa-microphone"></i> Nguyen Phuoc Dai</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title" style="margin-bottom:24px;">
+            <div class="label-top">Dataset Strategy & Breakdown</div>
+            <h2>The Data Foundation (~13,200 Images)</h2>
+            <p class="sub">Comprehensive coverage across 3 main data sources to maximize model generalization.</p>
+        </div>
+        <div class="g3" style="align-items:stretch;">
+            <div class="card" style="border-top:4px solid var(--accent);padding:20px;">
+                <h3 style="margin-bottom:12px;font-size:18px;text-align:center;">1. MCOCR 2021</h3>
+                <div style="height:210px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                    <img src="mcocr_public_145013fxcgs.jpg" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; background:rgba(0,0,0,0.2);">
+                </div>
+                <ul style="font-size:13.5px; line-height:1.5; color:var(--text-muted); margin-top:8px;">
+                    <li style="margin-bottom:6px;"><strong>Volume:</strong> ~1,200 training images.</li>
+                    <li style="margin-bottom:6px;"><strong>Source:</strong> Public competition dataset.</li>
+                    <li><strong>Characteristics:</strong> Contains legacy layouts, heavy noise, and traditional supermarket formats.</li>
+                </ul>
+            </div>
+            <div class="card" style="border-top:4px solid var(--green);padding:20px;">
+                <h3 style="margin-bottom:12px;font-size:18px;text-align:center;">2. Self-Collected Data</h3>
+                <div style="height:210px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                    <img src="bachhoaxanh_raw.jpg" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; background:rgba(0,0,0,0.2);">
+                </div>
+                <ul style="font-size:13.5px; line-height:1.5; color:var(--text-muted); margin-top:8px;">
+                    <li style="margin-bottom:6px;"><strong>Volume:</strong> ~2,000+ images across 15 brands.</li>
+                    <li style="margin-bottom:6px;"><strong>Cafe:</strong> Starbucks, Highlands, Phúc Long (~600 imgs).</li>
+                    <li style="margin-bottom:6px;"><strong>Retail:</strong> Bách Hóa Xanh, Winmart, Lotte, 7-Eleven, v.v (~1,000 imgs).</li>
+                    <li><strong>F&B/E-Invoice:</strong> KFC, Jollibee, Viettel, VNPT (~400).</li>
+                </ul>
+            </div>
+            <div class="card" style="border-top:4px solid var(--orange);padding:20px;">
+                <h3 style="margin-bottom:12px;font-size:18px;text-align:center;">3. Synthetic Data</h3>
+                <div style="height:210px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                    <img src="test_aug_winmart.png" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; background:rgba(0,0,0,0.2);">
+                </div>
+                <ul style="font-size:13.5px; line-height:1.5; color:var(--text-muted); margin-top:8px;">
+                    <li style="margin-bottom:6px;"><strong>Volume:</strong> 10,000 images.</li>
+                    <li style="margin-bottom:6px;"><strong>Source:</strong> Generated via Python & HTML/CSS templates.</li>
+                    <li><strong>Advantage:</strong> Provides <strong style="color:var(--orange);">100% precise auto-labels</strong> and perfect bounding boxes without manual effort.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: EDA -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp2"><i class="fa-solid fa-microphone"></i> Nguyen Phuoc Dai</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Exploratory Data Analysis</div>
+            <h2>Dataset Distribution Analysis</h2>
+            <p class="sub">Visualizing the 10,000 synthetic invoices.</p>
+        </div>
+        <div class="g2" style="align-items:center;">
+            <div>
+                <img src="eda_labels.png" alt="Label Distribution" style="width:100%; border-radius:12px; border:2px solid var(--panel-border);">
+            </div>
+            <div>
+                <img src="eda_lengths.png" alt="Bbox Count Distribution" style="width:100%; border-radius:12px; border:2px solid var(--panel-border);">
+            </div>
+        </div>
+        <div class="g2" style="margin-top:20px; gap:20px;">
+            <div class="glass" style="padding:16px; border-left:4px solid var(--red);">
+                <strong style="color:var(--red);font-size:16px;">The Challenge: Severe Class Imbalance</strong>
+                <p style="margin-top:8px;font-size:14px;color:var(--text-muted);line-height:1.5;">The background `OTHER` label completely dominates the dataset (>1,000,000 tokens). Crucial labels like `TOTAL_COST` or `SELLER` are extremely rare. If ignored, the model will just predict `OTHER` for everything to get high accuracy.</p>
+            </div>
+            <div class="glass" style="padding:16px; border-left:4px solid var(--green);">
+                <strong style="color:var(--green);font-size:16px;">Our Mitigations (Hướng Giải Quyết)</strong>
+                <ul style="margin-top:8px;font-size:14px;color:var(--text-muted);line-height:1.5;padding-left:20px;">
+                    <li><strong>Weighted Loss Function:</strong> Assigned higher penalty weights to rare classes (e.g., TOTAL_COST) during Cross-Entropy loss calculation.</li>
+                    <li><strong>Evaluation Metric:</strong> Used <strong>Macro-F1</strong> instead of Micro-F1/Accuracy to track performance equally across all classes.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- SLIDE 6: Preprocessing -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp2"><i class="fa-solid fa-microphone"></i> Nguyen Phuoc Dai</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title" style="margin-bottom:24px;">
+            <div class="label-top">Data Preparation</div>
+            <h2>Image Preprocessing & Deskewing</h2>
+            <p class="sub">Standardizing real-world photos before feeding them to the OCR engine.</p>
+        </div>
+        <div class="g2" style="align-items:center;">
+            <div class="card" style="text-align:center;border-top:4px solid var(--red);">
+                <h3 style="margin-bottom:12px;color:var(--red);">Before (Raw Input)</h3>
+                <img src="deskew_test_ui.jpg" style="width:100%; height:230px; object-fit:contain; border-radius:8px; background:rgba(0,0,0,0.2);">
+                <ul style="text-align:left;font-size:13.5px;color:var(--text-muted);margin-top:16px;">
+                    <li>Captured at arbitrary angles.</li>
+                    <li>Complex background clutter.</li>
+                    <li>Perspective distortion (skew).</li>
+                </ul>
+            </div>
+            <div class="card" style="text-align:center;border-top:4px solid var(--green);">
+                <h3 style="margin-bottom:12px;color:var(--green);">After (Deskewed & Enhanced)</h3>
+                <img src="deskewed_test_ui.jpg" style="width:100%; height:230px; object-fit:contain; border-radius:8px; background:rgba(0,0,0,0.2);">
+                <ul style="text-align:left;font-size:13.5px;color:var(--text-muted);margin-top:16px;">
+                    <li><strong>Crop:</strong> Document Localization (Canny Edge + Bounding Box).</li>
+                    <li><strong>Deskew:</strong> Hough Line Transform + Affine Rotation.</li>
+                    <li><strong>Noise Reduction:</strong> Gaussian Blur.</li>
+                    <li><strong>Enhance & Binarize:</strong> CLAHE + Adaptive Thresholding.</li>
+                    <li><strong>Sharpen:</strong> Unsharp Masking filter.</li>
+                </ul>
+            </div>
+        </div>
+        <div style="display:flex; gap:20px; margin-top:20px;">
+            <div class="glass" style="flex:1; padding:12px; border-color:var(--accent);">
+                <p style="margin:0;font-size:13.5px;"><strong style="color:var(--accent);">Why does it look gritty?</strong> The enhancement intentionally over-sharpens and boosts contrast to recover faded thermal ink. While it looks rough to the human eye, it is optimized for the OCR engine to maximize character recognition.</p>
+            </div>
+            <div class="glass" style="flex:1; padding:12px; border-color:var(--blue);">
+                <p style="margin:0;font-size:13.5px;"><strong style="color:var(--blue);">Post-OCR (Text Preprocessing):</strong> The <em>Reading Order Sorting</em> algorithm automatically rearranges OCR bounding boxes (Top-to-Bottom, Left-to-Right) to preserve structural semantic flow for the KIE model.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: E2E Pipeline -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp2"><i class="fa-solid fa-microphone"></i> Nguyen Phuoc Dai</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Architecture</div>
+            <h2>End-to-End Pipeline Workflow</h2>
+            <p class="sub">Clarifying the data flow: strictly sequential, transparent, and completely offline.</p>
+        </div>
+        <div class="flow-row" style="margin-bottom:28px;">
+            <div class="flow-node">
+                <div class="arrow"></div>
+                <div class="icon" style="color:#06b6d4;">🖼️</div>
+                <h4>Input Image</h4>
+                <p>Raw receipt</p>
+                <div style="margin-top:8px;"><span class="tag tag-cyan">JPG/PNG</span></div>
+            </div>
+            <div class="flow-node">
+                <div class="arrow"></div>
+                <div class="icon" style="color:#f59e0b;">⚙️</div>
+                <h4>Preprocess</h4>
+                <p>Deskew & Crop</p>
+                <div style="margin-top:8px;"><span class="tag tag-orange">OpenCV</span></div>
+            </div>
+            <div class="flow-node">
+                <div class="arrow"></div>
+                <div class="icon" style="color:#10b981;">📝</div>
+                <h4>OCR Engine</h4>
+                <p>Extract Text & BBox</p>
+                <div style="margin-top:8px;"><span class="tag tag-green">CRAFT + VietOCR</span></div>
+            </div>
+            <div class="flow-node">
+                <div class="arrow"></div>
+                <div class="icon" style="color:#a78bfa;">🧠</div>
+                <h4>KIE Model</h4>
+                <p>Classify Entities</p>
+                <div style="margin-top:8px;"><span class="tag tag-purple">LayoutLM</span></div>
+            </div>
+            <div class="flow-node">
+                <div class="icon" style="color:#4f8ef7;">✅</div>
+                <h4>Structured Output</h4>
+                <p>Final Data</p>
+                <div style="margin-top:8px;"><span class="tag tag-blue">JSON</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: Baseline Models -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp3"><i class="fa-solid fa-microphone"></i> Nguyen Khac Vuong</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Experiments</div>
+            <h2>Baseline Model Comparison</h2>
+            <p class="sub">Comparing 3 models of equivalent size (110M - 130M parameters).</p>
+        </div>
+        <div class="g3">
+            <div class="card" style="border-top:4px solid var(--text-muted);">
+                <div style="text-align:center;margin-bottom:12px;">
+                    <i class="fa-solid fa-file-word" style="font-size:32px;color:var(--text-muted);"></i>
+                </div>
+                <h3 style="text-align:center;margin-bottom:16px;">PhoBERT-base</h3>
+                <ul>
+                    <li><strong>Inputs:</strong> Text Only</li>
+                    <li><strong>Pros:</strong> Exceptional at Vietnamese language understanding.</li>
+                    <li><strong>Cons:</strong> <span class="tag tag-red">Layout-blind</span>. Cannot understand 2D spatial arrangements.</li>
+                </ul>
+            </div>
+            <div class="card" style="border-top:4px solid var(--accent3);">
+                <div style="text-align:center;margin-bottom:12px;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size:32px;color:var(--accent3);"></i>
+                </div>
+                <h3 style="text-align:center;margin-bottom:16px;">LayoutLMv1</h3>
+                <ul>
+                    <li><strong>Inputs:</strong> Text + 2D Bbox</li>
+                    <li><strong>Pros:</strong> Understands distances and structures on the page.</li>
+                    <li><strong>Cons:</strong> <span class="tag tag-red">Visual-blind</span>. Cannot see logos, font weights, or image noise.</li>
+                </ul>
+            </div>
+            <div class="card" style="background:rgba(167,139,250,.1);border:1px solid var(--purple);transform:scale(1.02);box-shadow:0 0 20px rgba(167,139,250,.2);">
+                <div style="text-align:center;margin-bottom:12px;">
+                    <i class="fa-solid fa-layer-group" style="font-size:32px;color:var(--purple);"></i>
+                </div>
+                <h3 style="text-align:center;margin-bottom:16px;color:var(--purple);">LayoutLMv3</h3>
+                <ul>
+                    <li><strong>Inputs:</strong> Text + Bbox + <strong style="color:var(--purple);">Image Patches</strong></li>
+                    <li><strong>Advantage:</strong> Uses Linear Projection (like ViT) to directly "see" the receipt image (bold ink, logos). Dramatically superior results.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: Benchmark Table -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="bg-glow" style="width:400px;height:400px;background:var(--green);top:100px;left:100px;opacity:.15;"></div>
+    <div class="speaker-badge sp3"><i class="fa-solid fa-microphone"></i> Nguyen Khac Vuong</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Experimental Results</div>
+            <h2>Initial Benchmark Results</h2>
+            <p class="sub">Evaluated on the MCOCR Test Set (Fuzzy F1-Score)</p>
+        </div>
+        
+        <div class="card" style="padding:0;overflow:hidden;border:1px solid var(--panel-border);">
+            <table style="width:100%;border-collapse:collapse;text-align:center;">
+                <thead>
+                    <tr style="background:rgba(255,255,255,0.08);border-bottom:2px solid var(--panel-border);">
+                        <th style="padding:20px;color:var(--text);font-weight:700;">Model</th>
+                        <th style="padding:20px;color:var(--text-muted);">Parameters</th>
+                        <th style="padding:20px;color:var(--text-muted);">Modalities</th>
+                        <th style="padding:20px;color:var(--text);font-weight:700;font-size:18px;">F1-Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:16px;color:var(--text-muted);font-weight:600;">PhoBERT-base (5k)</td>
+                        <td style="padding:16px;color:var(--text-muted);">135M</td>
+                        <td style="padding:16px;"><span class="tag tag-blue">Text Only</span></td>
+                        <td style="padding:16px;color:var(--text-muted);font-weight:700;">39.94%</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:16px;color:var(--accent3);font-weight:600;">LayoutLMv1 (10k)</td>
+                        <td style="padding:16px;color:var(--text-muted);">113M</td>
+                        <td style="padding:16px;"><span class="tag tag-blue">Text</span> + <span class="tag tag-orange">2D Bbox</span></td>
+                        <td style="padding:16px;color:var(--accent3);font-weight:700;">90.43%</td>
+                    </tr>
+                    <tr style="background:rgba(124,58,237,0.15);">
+                        <td style="padding:20px;color:var(--purple);font-weight:800;font-size:18px;">LayoutLMv3 (10k)</td>
+                        <td style="padding:20px;color:var(--text-muted);">125M</td>
+                        <td style="padding:20px;"><span class="tag tag-blue">Text</span> + <span class="tag tag-orange">Bbox</span> + <span class="tag tag-purple">Visual</span></td>
+                        <td style="padding:20px;color:var(--green);font-weight:800;font-size:22px;">61.59%*</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--text-muted);">* Note: LayoutLMv3 requires more training epochs to fully converge compared to LayoutLMv1. Real-world (MCOCR) transfer learning is in progress.</p>
+    </div>
+</div>
+
+<!-- SLIDE 7: Metrics -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp3"><i class="fa-solid fa-microphone"></i> Nguyen Khac Vuong</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title" style="margin-bottom:24px;">
+            <div class="label-top">Evaluation Setup</div>
+            <h2>Evaluation Metrics & Fuzzy Matching</h2>
+            <p class="sub">Advanced metrics to handle OCR errors and severe class imbalance in Document AI.</p>
+        </div>
+        <div class="g3" style="align-items:stretch;">
+            <!-- CARD 1 -->
+            <div class="card" style="border-top:4px solid var(--accent);padding:20px;">
+                <h3 style="margin-bottom:12px;font-size:17px;">1. Entity-Level Metrics</h3>
+                <p style="margin-bottom:12px;font-size:13px;color:var(--text-muted);">Evaluates if the extracted entity strictly matches the ground truth.</p>
+                <ul style="font-size:13px;line-height:1.5;">
+                    <li style="margin-bottom:6px;"><strong>Precision:</strong> <code style="color:var(--accent);">TP / (TP + FP)</code></li>
+                    <li style="margin-bottom:6px;"><strong>Recall:</strong> <code style="color:var(--accent);">TP / (TP + FN)</code></li>
+                    <li style="margin-bottom:6px;"><strong>F1-Score:</strong> Harmonic mean of P & R.</li>
+                </ul>
+                <div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:4px;margin-top:12px;border-left:3px solid var(--accent);">
+                    <strong style="font-size:13px;color:var(--accent);">Macro-F1:</strong>
+                    <p style="font-size:12px;margin-top:4px;color:var(--text-muted);">Averages F1 across all classes equally. Crucial for our dataset because the background <code>"OTHER"</code> class heavily outnumbers key entities.</p>
+                </div>
+            </div>
+            
+            <!-- CARD 2 -->
+            <div class="card" style="border-top:4px solid var(--green);padding:20px;">
+                <h3 style="margin-bottom:12px;font-size:17px;">2. Fuzzy Match (Binary)</h3>
+                <p style="margin-bottom:12px;font-size:13px;color:var(--text-muted);">Fixes the "Exact Match" penalty caused by minor OCR typos.</p>
+                
+                <div style="background:rgba(16,185,129,0.08);border-left:3px solid var(--green);padding:10px;font-size:12px;">
+                    <strong style="color:var(--green);">Levenshtein Distance Threshold:</strong> 
+                    <div style="margin-top:4px;color:var(--text-muted);">If string similarity > 80%, it counts as 1 True Positive (Binary).</div>
+                </div>
+                
+                <div style="margin-top:12px;font-family:monospace;background:rgba(0,0,0,0.3);padding:10px;border-radius:4px;font-size:11.5px;color:var(--text-muted);line-height:1.6;">
+                    <span style="color:#fff;">GT:</span> "Thành tiền"<br>
+                    <span style="color:#fff;">Pred:</span> "Thành tiên" (missing accent)<br>
+                    ---<br>
+                    Exact Match = 0 (False Positive)<br>
+                    <span style="color:var(--green);">Fuzzy Match = 90% > 80% => TP (Score = 1)</span>
+                </div>
+            </div>
+
+            <!-- CARD 3 -->
+            <div class="card" style="border-top:4px solid var(--purple);padding:20px;">
+                <h3 style="margin-bottom:12px;font-size:17px;color:var(--purple);">3. ANLS (Continuous)</h3>
+                <p style="margin-bottom:12px;font-size:13px;color:var(--text-muted);">Average Normalized Levenshtein Similarity. The gold standard metric in DocVQA.</p>
+                
+                <div style="background:rgba(167,139,250,0.08);border-left:3px solid var(--purple);padding:10px;font-size:12px;">
+                    <strong style="color:var(--purple);">Formula:</strong> 
+                    <div style="margin-top:4px;font-family:monospace;">ANLS = 1 - (Distance / Max_Len)</div>
+                    <div style="font-size:11px;color:var(--text-muted);">(Score drops to 0 if ANLS < 0.5)</div>
+                </div>
+                
+                <div style="margin-top:12px;font-family:monospace;background:rgba(0,0,0,0.3);padding:10px;border-radius:4px;font-size:11.5px;color:var(--text-muted);line-height:1.6;">
+                    <strong style="color:var(--purple);">Ex 1 (Minor Typo):</strong><br>
+                    GT:"150.000" vs Pred:"15.000"<br>
+                    Dist=1, MaxLen=7 => <span style="color:#fff;">Score = 0.857</span><br>
+                    <div style="margin-top:6px;border-top:1px dashed #444;padding-top:6px;"></div>
+                    <strong style="color:var(--red);">Ex 2 (Wrong Match):</strong><br>
+                    GT:"Thuế VAT" vs Pred:"Tổng cộng"<br>
+                    Dist=9, MaxLen=9 => <span style="color:var(--red);">Score = 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: Roadmap -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="speaker-badge sp4"><i class="fa-solid fa-microphone"></i> Nguyen Thi My Cam</div>
+    <div style="width:100%;max-width:1280px;z-index:1;">
+        <div class="sec-title">
+            <div class="label-top">Conclusion</div>
+            <h2>Progress & Future Roadmap</h2>
+        </div>
+        <div class="g2" style="align-items:stretch;">
+            <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(16,185,129,.05));border-color:var(--green);">
+                <h3 style="margin-bottom:16px;color:var(--green);"><i class="fa-solid fa-check-circle"></i> Current Status</h3>
+                <ul>
+                    <li>100% E2E Pipeline implementation finished.</li>
+                    <li>Dataset complete: 12,000+ total images (Real + Synthetic).</li>
+                    <li><strong>Currently Running:</strong> Model Training and Benchmarks on Kaggle GPU.</li>
+                </ul>
+            </div>
+            <div class="card" style="background:linear-gradient(135deg,rgba(79,142,247,.1),rgba(79,142,247,.05));border-color:var(--accent);">
+                <h3 style="margin-bottom:16px;color:var(--accent);"><i class="fa-solid fa-rocket"></i> Next Steps</h3>
+                <ul>
+                    <li><strong>Model Optimization:</strong> Continue fine-tuning and exploring advanced data augmentations to further improve ANLS and Fuzzy F1 scores.</li>
+                    <li><strong>API & Web Demo:</strong> Package the final model into a FastAPI backend with a UI Dashboard.</li>
+                    <li><strong>Long Document Handling:</strong> Implement a Sliding Window algorithm for receipts exceeding 512 tokens.</li>
+                    <li><strong>FISAT Paper:</strong> Finalize empirical benchmark numbers and complete the research paper draft.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: Q&A -->
+<div class="slide">
+    <div class="bg-grid"></div>
+    <div class="bg-glow" style="width:700px;height:700px;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%);opacity:.15;"></div>
+    
+    <div style="text-align:center;z-index:1;">
+        <i class="fa-regular fa-comments" style="font-size:72px;color:var(--accent);margin-bottom:24px;"></i>
+        <h1 style="background:linear-gradient(135deg,#f0f4ff 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px;">Q & A</h1>
+        <p style="font-size:24px;color:var(--text-muted);">Thank you for listening!</p>
+    </div>
+</div>
+
+<!-- Nav dots & Slide Logic -->
+<div id="nav"></div>
+<div id="slide-num">1 / 12</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const nav    = document.getElementById('nav');
+    const numEl  = document.getElementById('slide-num');
+    let cur = 0;
+    const N = slides.length;
+
+    slides.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.onclick = () => go(i);
+        nav.appendChild(d);
+    });
+
+    function go(idx) {
+        slides[cur].classList.remove('active');
+        nav.children[cur].classList.remove('active');
+        cur = (idx + N) % N;
+        slides[cur].classList.add('active');
+        nav.children[cur].classList.add('active');
+        numEl.textContent = `${cur + 1} / ${N}`;
+    }
+
+    window.addEventListener('keydown', e => {
+        if (['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+        if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key))          { e.preventDefault(); go(cur - 1); }
+    });
+    window.addEventListener('click', e => {
+        if (e.target.tagName.toLowerCase() === 'a') return;
+        go(cur + 1);
+    });
+    window.addEventListener('contextmenu', e => { e.preventDefault(); go(cur - 1); });
+</script>
+</body>
+</html>

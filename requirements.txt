@@ -1,0 +1,17 @@
+paddlepaddle
+paddleocr>=2.7.3
+fastapi
+uvicorn
+label-studio
+pillow
+requests
+python-multipart
+jinja2
+
+torch
+transformers
+datasets
+seqeval
+evaluate
+scikit-learn
+

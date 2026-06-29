@@ -13,6 +13,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [preprocessedImage, setPreprocessedImage] = useState<string | null>(null);
+  const [showPreprocessed, setShowPreprocessed] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +25,8 @@ export default function Home() {
       // Reset result when new file is uploaded
       setResult(null);
       setResultImage(null);
+      setPreprocessedImage(null);
+      setShowPreprocessed(false);
     }
   };
 
@@ -38,6 +42,8 @@ export default function Home() {
       setPreview(URL.createObjectURL(selectedFile));
       setResult(null);
       setResultImage(null);
+      setPreprocessedImage(null);
+      setShowPreprocessed(false);
     }
   };
 
@@ -46,6 +52,8 @@ export default function Home() {
     setLoading(true);
     setResult(null);
     setResultImage(null);
+    setPreprocessedImage(null);
+    setShowPreprocessed(false);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -64,6 +72,10 @@ export default function Home() {
       setResult(response.data.extraction);
       // Backend returns a relative image url like /api/image/...
       setResultImage(`http://localhost:8005${response.data.image_url}`);
+      if (response.data.preprocessed_url) {
+        setPreprocessedImage(`http://localhost:8005${response.data.preprocessed_url}`);
+        setShowPreprocessed(true); // Auto-show preprocessed image if available
+      }
     } catch (error: any) {
       console.error(error);
       alert("Đã xảy ra lỗi khi trích xuất: " + (error.response?.data?.error || error.message));
@@ -267,12 +279,31 @@ export default function Home() {
                     
                     {/* Image Panel */}
                     <div className="p-6 bg-black/20 flex flex-col">
-                      <div className="flex items-center gap-2 mb-4 text-slate-300">
-                        <FileImage className="w-5 h-5 text-blue-400" />
-                        <span className="font-medium">Ảnh Hóa Đơn</span>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <FileImage className="w-5 h-5 text-blue-400" />
+                          <span className="font-medium">Ảnh Hóa Đơn</span>
+                        </div>
+                        {preprocessedImage && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-400">Kết quả (Có Box)</span>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                className="sr-only peer" 
+                                checked={showPreprocessed}
+                                onChange={(e) => setShowPreprocessed(e.target.checked)}
+                              />
+                              <div className="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
+                            </label>
+                            <span className="text-xs text-indigo-400 font-medium">Bản làm sạch (OpenCV)</span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1 rounded-xl overflow-hidden bg-black/40 border border-white/5 flex items-center justify-center p-2 relative">
-                        {resultImage ? (
+                        {showPreprocessed && preprocessedImage ? (
+                          <img src={preprocessedImage} alt="Preprocessed" className="max-h-[600px] object-contain rounded-lg shadow-2xl" />
+                        ) : resultImage ? (
                           <img src={resultImage} alt="Result" className="max-h-[600px] object-contain rounded-lg shadow-2xl" />
                         ) : preview ? (
                           <img src={preview} alt="Preview" className="max-h-[600px] object-contain rounded-lg opacity-70" />
