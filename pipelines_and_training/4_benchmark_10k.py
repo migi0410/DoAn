@@ -332,7 +332,7 @@ def run_benchmark():
         gt_keys = set(gt.keys())
         pred_keys = set(pred.keys())
         for k in gt_keys.union(pred_keys):
-            if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
+            if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST", "ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]:
                 continue
             gt_val = gt.get(k, "")
             pred_val = pred.get(k, "")
