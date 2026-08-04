@@ -217,11 +217,11 @@ def convert_sample(img_path, ground_truths, mode="noise"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", type=str, choices=["noise", "clean", "clean_fast", "both"], required=True)
-    parser.add_argument("--output", type=str, required=True)
+    parser.add_argument("--output", type=str, required=True); parser.add_argument("--input_dir", type=str, required=False, default="")
     args = parser.parse_args()
     
-    base_dir = r"/workspace" if os.path.exists("/workspace") else r"C:\Users\Admin\OneDrive\DoAn"
-    gt_file = os.path.join(base_dir, "FINAL_BBOX_DATASET_V3.json")
+    base_dir = args.input_dir if args.input_dir else (r"/workspace" if os.path.exists("/workspace") else r"C:\Users\Admin\OneDrive\DoAn")
+    gt_file = os.path.join(os.path.dirname(base_dir), "FINAL_BBOX_DATASET_V3.json") if os.path.exists(os.path.join(os.path.dirname(base_dir), "FINAL_BBOX_DATASET_V3.json")) else os.path.join(base_dir, "FINAL_BBOX_DATASET_V3.json")
     
     with open(gt_file, "r", encoding="utf-8") as f:
         dataset = json.load(f)
