@@ -231,7 +231,11 @@ if __name__ == "__main__":
     import multiprocessing
     
     def process_wrapper(sample):
-        img_path = os.path.join(base_dir, "FINAL_RUNPOD_DATASET", sample["file_name"])
+        if base_dir.endswith("FINAL_RUNPOD_DATASET"):
+            img_path = os.path.join(base_dir, sample["file_name"])
+        else:
+            img_path = os.path.join(base_dir, "FINAL_RUNPOD_DATASET", sample["file_name"])
+            
         if not os.path.exists(img_path):
             return None
         try:
