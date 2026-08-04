@@ -10,7 +10,7 @@ from transformers import (
     Trainer,
     DefaultDataCollator
 )
-import evaluate
+import subprocess; import sys; subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'evaluate', 'seqeval']); import evaluate
 import numpy as np
 
 def prepare_dataset(data_path, processor):
