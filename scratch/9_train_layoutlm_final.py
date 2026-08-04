@@ -126,15 +126,26 @@ if __name__ == "__main__":
         batch["pixel_values"] = torch.zeros((batch_size, 3, 224, 224), dtype=torch.float32)
         return batch
 
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=dataset["train"],
-        eval_dataset=dataset["test"],
-        tokenizer=processor,
-        data_collator=custom_collator,
-        compute_metrics=compute_metrics,
-    )
+    try:
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=dataset["train"],
+            eval_dataset=dataset["test"],
+            processing_class=processor,
+            data_collator=custom_collator,
+            compute_metrics=compute_metrics,
+        )
+    except TypeError:
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=dataset["train"],
+            eval_dataset=dataset["test"],
+            tokenizer=processor,
+            data_collator=custom_collator,
+            compute_metrics=compute_metrics,
+        )
     
     print(f"Bắt đầu huấn luyện mô hình và lưu tại {args.output_dir}...")
     trainer.train()
