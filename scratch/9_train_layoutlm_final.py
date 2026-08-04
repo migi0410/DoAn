@@ -10,7 +10,7 @@ from transformers import (
     Trainer,
     DefaultDataCollator
 )
-import subprocess; import sys; subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'setuptools', 'wheel']); subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'evaluate', 'seqeval']); import evaluate
+import subprocess; import sys; subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'setuptools', 'wheel', 'setuptools_scm']); subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'seqeval', '--no-build-isolation']); subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'evaluate']); import evaluate
 import numpy as np
 
 def prepare_dataset(data_path, processor):
