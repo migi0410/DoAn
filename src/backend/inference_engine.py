@@ -53,7 +53,10 @@ class PhoBertModel:
                 word_predicted_labels[word_idx] = self.id2label[pred]
                 
         def parse_labels_from_predictions(words, labels):
-            parsed = {"SELLER": "", "ADDRESS": "", "TIMESTAMP": "", "TOTAL_COST": ""}
+            parsed = {
+                "SELLER": "", "ADDRESS": "", "TIMESTAMP": "", "TOTAL_COST": "",
+                "ITEM_NAME": "", "ITEM_QTY": "", "ITEM_PRICE": "", "ITEM_AMOUNT": ""
+            }
             current_entity = {"label": None, "words": []}
             for word, label in zip(words, labels):
                 if label != "O":
@@ -63,6 +66,8 @@ class PhoBertModel:
                         if current_entity["label"]:
                             if current_entity["label"] in parsed:
                                 parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+                            else:
+                                parsed[current_entity["label"]] = " ".join(current_entity["words"])
                         current_entity = {"label": entity_type, "words": [word]}
                     elif bio_tag == "I" and current_entity["label"] == entity_type:
                         current_entity["words"].append(word)
@@ -70,9 +75,14 @@ class PhoBertModel:
                     if current_entity["label"]:
                         if current_entity["label"] in parsed:
                             parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+                        else:
+                            parsed[current_entity["label"]] = " ".join(current_entity["words"])
                         current_entity = {"label": None, "words": []}
-            if current_entity["label"] and current_entity["label"] in parsed:
-                parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+            if current_entity["label"]:
+                if current_entity["label"] in parsed:
+                    parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+                else:
+                    parsed[current_entity["label"]] = " ".join(current_entity["words"])
             for k in parsed:
                 parsed[k] = parsed[k].strip()
             return parsed
@@ -143,7 +153,10 @@ class LayoutLMModel:
                 word_predicted_labels[word_idx] = self.id2label[pred]
                 
         def parse_labels_from_predictions(words, labels):
-            parsed = {"SELLER": "", "ADDRESS": "", "TIMESTAMP": "", "TOTAL_COST": ""}
+            parsed = {
+                "SELLER": "", "ADDRESS": "", "TIMESTAMP": "", "TOTAL_COST": "",
+                "ITEM_NAME": "", "ITEM_QTY": "", "ITEM_PRICE": "", "ITEM_AMOUNT": ""
+            }
             current_entity = {"label": None, "words": []}
             for word, label in zip(words, labels):
                 if label != "O":
@@ -153,6 +166,8 @@ class LayoutLMModel:
                         if current_entity["label"]:
                             if current_entity["label"] in parsed:
                                 parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+                            else:
+                                parsed[current_entity["label"]] = " ".join(current_entity["words"])
                         current_entity = {"label": entity_type, "words": [word]}
                     elif bio_tag == "I" and current_entity["label"] == entity_type:
                         current_entity["words"].append(word)
@@ -160,9 +175,14 @@ class LayoutLMModel:
                     if current_entity["label"]:
                         if current_entity["label"] in parsed:
                             parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+                        else:
+                            parsed[current_entity["label"]] = " ".join(current_entity["words"])
                         current_entity = {"label": None, "words": []}
-            if current_entity["label"] and current_entity["label"] in parsed:
-                parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+            if current_entity["label"]:
+                if current_entity["label"] in parsed:
+                    parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
+                else:
+                    parsed[current_entity["label"]] = " ".join(current_entity["words"])
             for k in parsed:
                 parsed[k] = parsed[k].strip()
             return parsed
@@ -493,7 +513,7 @@ class ModelRegistry:
                 result = model.predict(img_path)
                 
         # Fill missing keys if any
-        for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
+        for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST", "ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]:
             if key not in result:
                 result[key] = ""
                 
