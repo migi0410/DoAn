@@ -216,9 +216,11 @@ class Qwen2VLModelWrapper:
             import json
             with open(os.path.join(model_dir, "adapter_config.json")) as f:
                 adapter_config = json.load(f)
-                base_model_id = adapter_config.get("base_model_name_or_path", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit")
+                base_model_id = adapter_config.get("base_model_name_or_path", "Qwen/Qwen2-VL-2B-Instruct")
+                if base_model_id.startswith("/root/") or base_model_id.startswith("/workspace/"):
+                    base_model_id = "Qwen/Qwen2-VL-2B-Instruct"
         except:
-            base_model_id = "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit"
+            base_model_id = "Qwen/Qwen2-VL-2B-Instruct"
             
         print(f"Loading Qwen2-VL Base: {base_model_id}")
         try:
@@ -253,6 +255,11 @@ class Qwen2VLModelWrapper:
                         if key in cfg:
                             del cfg[key]
                             changed = True
+                    
+                    if cfg.get("base_model_name_or_path", "").startswith("/root/") or cfg.get("base_model_name_or_path", "").startswith("/workspace/"):
+                        cfg["base_model_name_or_path"] = "Qwen/Qwen2-VL-2B-Instruct"
+                        changed = True
+                        
                     if changed:
                         with open(adapter_path, 'w') as f:
                             json.dump(cfg, f, indent=2)
