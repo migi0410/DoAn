@@ -215,7 +215,7 @@ export default function Home() {
         `"${String(data.ADDRESS || data.address || "").replace(/"/g, '""')}"`,
         `"${String(data.TIMESTAMP || data.timestamp || "").replace(/"/g, '""')}"`,
         `"${String(data.TOTAL_COST || data.total_cost || "").replace(/"/g, '""')}"`,
-        `"${String(JSON.stringify(data.ITEM_NAME || data.items || [])).replace(/"/g, '""')}"`,
+        `"${String(JSON.stringify(data.ITEMS || data.items || [])).replace(/"/g, '""')}"`,
         `"${doc.status}"`
       ];
       csvRows.push(values.join(","));
@@ -486,9 +486,63 @@ export default function Home() {
                       <p className="text-sm font-semibold text-slate-500 animate-pulse">Running KIE Model...</p>
                     </div>
                   ) : selectedDoc.result ? (
-                    <pre className="text-xs text-slate-700 font-mono font-medium whitespace-pre-wrap bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
-                      {JSON.stringify(selectedDoc.result.extraction || selectedDoc.result, null, 2)}
-                    </pre>
+                    <div className="space-y-4">
+                      {(() => {
+                        const data = selectedDoc.result.extraction || selectedDoc.result;
+                        return (
+                          <div className="text-xs text-slate-700">
+                            <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200 mb-3 shadow-sm">
+                              <div className="font-semibold text-slate-500">SELLER:</div>
+                              <div className="col-span-2 font-medium text-slate-800">{data.SELLER || data.seller || "N/A"}</div>
+                              
+                              <div className="font-semibold text-slate-500">ADDRESS:</div>
+                              <div className="col-span-2 font-medium text-slate-800">{data.ADDRESS || data.address || "N/A"}</div>
+                              
+                              <div className="font-semibold text-slate-500">TIMESTAMP:</div>
+                              <div className="col-span-2 font-medium text-slate-800">{data.TIMESTAMP || data.timestamp || "N/A"}</div>
+                              
+                              <div className="font-semibold text-slate-500">TOTAL COST:</div>
+                              <div className="col-span-2 font-bold text-indigo-600">{data.TOTAL_COST || data.total_cost || "N/A"}</div>
+                            </div>
+                            
+                            <div className="font-bold text-slate-600 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                              <Layers className="w-3.5 h-3.5 text-blue-500" />
+                              Items List
+                            </div>
+                            <div className="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                              <table className="w-full text-left border-collapse bg-white">
+                                <thead>
+                                  <tr className="bg-slate-100 text-slate-500 border-b border-slate-200">
+                                    <th className="px-2 py-2.5 font-semibold w-12 text-center">Qty</th>
+                                    <th className="px-2 py-2.5 font-semibold">Name</th>
+                                    <th className="px-2 py-2.5 font-semibold text-right">Price</th>
+                                    <th className="px-2 py-2.5 font-semibold text-right">Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                  {(data.ITEMS || data.items || []).length > 0 ? (
+                                    (data.ITEMS || data.items || []).map((item: any, idx: number) => (
+                                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-2 py-2 align-middle text-center font-medium bg-slate-50/50">{item.ITEM_QTY || item.item_qty || item.SL || "-"}</td>
+                                        <td className="px-2 py-2 align-middle font-medium text-slate-800">{item.ITEM_NAME || item.item_name || "-"}</td>
+                                        <td className="px-2 py-2 align-middle text-right text-slate-500">{item.ITEM_PRICE || item.item_price || "-"}</td>
+                                        <td className="px-2 py-2 align-middle text-right font-semibold text-slate-700 bg-slate-50/50">{item.ITEM_AMOUNT || item.item_amount || "-"}</td>
+                                      </tr>
+                                    ))
+                                  ) : (
+                                    <tr>
+                                      <td colSpan={4} className="p-6 text-center text-slate-400 italic font-medium">
+                                        No items extracted
+                                      </td>
+                                    </tr>
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   ) : selectedDoc.status === "error" ? (
                      <div className="h-full flex items-center justify-center text-sm text-red-500 font-semibold text-center p-4">
                         Analysis Failed.<br/>Please check the backend logs.
