@@ -278,36 +278,39 @@ class Qwen2VLModelWrapper:
                             json.dump(cfg, f, indent=2)
                             
                     # Patch safetensors keys to match HuggingFace PeftModel format
-                    # Swift exports: base_model.model.layers.X.lora_A.weight
+                    # Swift exports: base_model.model.model.language_model.layers.X.lora_A.weight
                     # HF PeftModel expects: base_model.model.model.layers.X.lora_A.default.weight
+                    # Fix: remove '.language_model.' + add '.default' to lora adapter names
                     safetensors_path = os.path.join(model_dir, "adapter_model.safetensors")
-                    bak_path = safetensors_path + ".bak"
-                    if os.path.exists(safetensors_path) and not os.path.exists(bak_path):
+                    if os.path.exists(safetensors_path):
                         from safetensors.torch import load_file, save_file
+                        import re as _re
                         try:
                             sd = load_file(safetensors_path)
                             sample_key = next(iter(sd.keys()))
-                            print(f"Safetensors sample key (before patch): {sample_key}")
+                            needs_patch = "language_model" in sample_key or not ".default." in sample_key
                             
-                            new_sd = {}
-                            for k, v in sd.items():
-                                new_k = k
-                                # Fix 1: base_model.model.layers -> base_model.model.model.layers
-                                # (Swift omits the Qwen2VLModel 'model.' wrapper)
-                                new_k = new_k.replace("base_model.model.layers.", "base_model.model.model.layers.")
-                                new_k = new_k.replace("base_model.model.visual.", "base_model.model.visual.")  # keep visual as-is
-                                # Fix 2: lora_A.weight -> lora_A.default.weight (add HF adapter name)
-                                new_k = new_k.replace(".lora_A.weight", ".lora_A.default.weight")
-                                new_k = new_k.replace(".lora_B.weight", ".lora_B.default.weight")
-                                new_sd[new_k] = v
-                            
-                            sample_new_key = next(iter(new_sd.keys()))
-                            print(f"Safetensors sample key (after patch):  {sample_new_key}")
-                            
-                            import shutil
-                            shutil.copy(safetensors_path, bak_path)
-                            save_file(new_sd, safetensors_path)
-                            print("Safetensors keys patched successfully!")
+                            if needs_patch:
+                                print(f"Patching safetensors keys...")
+                                print(f"  Before: {sample_key}")
+                                new_sd = {}
+                                for k, v in sd.items():
+                                    new_k = k
+                                    # Fix 1: remove '.language_model.' from the path
+                                    new_k = new_k.replace(".language_model.", ".")
+                                    # Fix 2: lora_A.weight -> lora_A.default.weight (only if .default not already there)
+                                    new_k = _re.sub(r'\.(lora_[AB])\.weight$', r'.\1.default.weight', new_k)
+                                    new_sd[new_k] = v
+                                
+                                sample_new_key = next(iter(new_sd.keys()))
+                                print(f"  After:  {sample_new_key}")
+                                
+                                import shutil
+                                shutil.copy(safetensors_path, safetensors_path + ".bak_orig")
+                                save_file(new_sd, safetensors_path)
+                                print("Safetensors keys patched successfully!")
+                            else:
+                                print(f"Safetensors keys already correct: {sample_key}")
                         except Exception as e:
                             print(f"Failed to patch safetensors: {e}")
                             
