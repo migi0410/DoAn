@@ -399,7 +399,7 @@ class ModelRegistry:
         elif model_name == "qwen2_vl":
             if self.qwen_model is None:
                 print("Lazy Loading Qwen2-VL...")
-                path1 = os.path.join(self.models_dir, "src_v2", "src_v2", "qwen2_vl_lora_swift")
+                path1 = os.path.join(self.models_dir, "qwen2_vl_lora_v2")
                 path = path1 if os.path.exists(path1) else os.path.join(self.models_dir, "qwen2-vl-finetuned-lora")
                 self.qwen_model = Qwen2VLModelWrapper(path)
             return self.qwen_model
