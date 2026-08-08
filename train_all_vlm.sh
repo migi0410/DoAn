@@ -48,6 +48,24 @@ echo "============================================"
 echo ""
 
 # ============================================
+# KIEM TRA WANDB
+# ============================================
+if ! python -c "import wandb" 2>/dev/null; then
+    echo "[WandB] Not installed. Installing..."
+    pip install wandb -q
+fi
+
+if [ -z "$WANDB_API_KEY" ]; then
+    echo "[WandB] WANDB_API_KEY not set. Logging to tensorboard only."
+    REPORT_TO="tensorboard"
+else
+    echo "[WandB] API key found. Logging to wandb + tensorboard."
+    export WANDB_PROJECT="avir-kie-vlm"
+    REPORT_TO="tensorboard wandb"
+fi
+echo ""
+
+# ============================================
 # BUOC 1: TRAIN QWEN2-VL-2B-INSTRUCT
 # ============================================
 echo "[1/2] Training Qwen2-VL-2B-Instruct..."
@@ -74,7 +92,7 @@ swift sft \
     --bf16 true \
     --gradient_checkpointing true \
     --dataloader_num_workers 2 \
-    --report_to tensorboard \
+    --report_to $REPORT_TO \
     --logging_steps 10 \
     2>&1 | tee "$LOG_DIR/qwen2vl_train.log"
 
@@ -111,7 +129,7 @@ swift sft \
     --bf16 true \
     --gradient_checkpointing true \
     --dataloader_num_workers 2 \
-    --report_to tensorboard \
+    --report_to $REPORT_TO \
     --logging_steps 10 \
     2>&1 | tee "$LOG_DIR/minicpm_train.log"
 
