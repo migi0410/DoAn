@@ -312,7 +312,7 @@ class MiniCPMVModelWrapper:
             
         print(f"Loading MiniCPM-V Base: {base_model_id}")
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
-        self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto")
+        self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", torch_dtype=torch.float16)
         
         if os.path.exists(model_dir):
             print(f"Loading MiniCPM-V LoRA: {model_dir}")
