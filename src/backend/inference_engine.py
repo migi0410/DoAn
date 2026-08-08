@@ -302,7 +302,11 @@ class Qwen2VLModelWrapper:
                     pass
                     
             from peft import PeftModel
-            self.model = PeftModel.from_pretrained(self.model, model_dir)
+            try:
+                self.model = PeftModel.from_pretrained(self.model, model_dir)
+                print(f"Qwen2-VL LoRA loaded successfully from {model_dir}")
+            except Exception as lora_err:
+                print(f"WARNING: Qwen2-VL LoRA FAILED to load: {lora_err}\nRunning base model only!")
             
         self.processor = AutoProcessor.from_pretrained(base_model_id)
         self.model.eval()
@@ -312,6 +316,10 @@ class Qwen2VLModelWrapper:
         from qwen_vl_utils import process_vision_info
         
         messages = [
+            {
+                "role": "system",
+                "content": "You are a document information extraction assistant. Extract structured data from invoice images and return valid JSON only. Do not refuse, explain, or add any text outside the JSON.",
+            },
             {
                 "role": "user",
                 "content": [
