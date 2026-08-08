@@ -90,7 +90,7 @@ export default function Home() {
   // ================= PROCESSING LOGIC =================
   const processDocument = async (index: number) => {
     const doc = documents[index];
-    if (!doc || doc.status === "processing" || doc.status === "success") return;
+    if (!doc || doc.status === "processing") return;
 
     // Mark as processing
     setDocuments(prev => {
