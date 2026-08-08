@@ -12,9 +12,10 @@ import os
 import re
 from pathlib import Path
 
-INPUT_FILE  = "data/FINAL_RUNPOD_DATASET/train.jsonl"
+INPUT_DIR   = "data/FINAL_SPLIT_JSONL_ONLY"
 OUTPUT_DIR  = "data/CLEAN_TRAIN_DATASET"
-OUTPUT_FILE = f"{OUTPUT_DIR}/train.jsonl"
+
+SPLITS = ["train", "val", "test"]
 
 STANDARD_PROMPT = "<image>Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
 
@@ -91,10 +92,14 @@ def main():
     kept = 0
     skipped_no_json = 0
     skipped_no_fields = 0
-    field_renames = 0
+def process_split(split_name):
+    input_file  = f"{INPUT_DIR}/{split_name}.jsonl"
+    output_file = f"{OUTPUT_DIR}/{split_name}.jsonl"
 
-    with open(INPUT_FILE, "r", encoding="utf-8") as fin, \
-         open(OUTPUT_FILE, "w", encoding="utf-8") as fout:
+    total = kept = skipped_no_json = skipped_no_fields = field_renames = 0
+
+    with open(input_file, "r", encoding="utf-8") as fin, \
+         open(output_file, "w", encoding="utf-8") as fout:
 
         for line in fin:
             line = line.strip()
@@ -143,25 +148,26 @@ def main():
             fout.write(json.dumps(record, ensure_ascii=False) + "\n")
             kept += 1
 
-    print("=" * 55)
-    print("  DATASET CLEAN REPORT")
-    print("=" * 55)
-    print(f"  Total samples in:            {total:>6}")
-    print(f"  Kept (clean):                {kept:>6}  ({100*kept/total:.1f}%)")
-    print(f"  Skipped (parse error):       {skipped_no_json:>6}")
-    print(f"  Skipped (no SELLER/items):   {skipped_no_fields:>6}")
-    print(f"  Samples with renamed fields: {field_renames:>6}")
-    print("=" * 55)
-    print(f"  Output: {OUTPUT_FILE}")
+    print(f"  [{split_name:5s}] {total:>5} in -> {kept:>5} kept "
+          f"| skip_parse={skipped_no_json} skip_empty={skipped_no_fields} renamed={field_renames}")
+    return kept
 
-    # Show 2 sample outputs
-    print("\n--- Sample output (first 2 records) ---")
-    with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
-        for i, line in enumerate(f):
-            if i >= 2: break
-            rec = json.loads(line)
-            print(f"\n[{i+1}] User:      {rec['messages'][0]['content'][:80]}")
-            print(f"     Assistant: {rec['messages'][1]['content'][:150]}...")
+
+def main():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    print("=" * 60)
+    print("  DATASET CLEAN REPORT")
+    print("=" * 60)
+
+    totals = {}
+    for split in SPLITS:
+        totals[split] = process_split(split)
+
+    print("=" * 60)
+    print(f"  Total kept: {sum(totals.values())} samples across {len(SPLITS)} splits")
+    print(f"  Output dir: {OUTPUT_DIR}/")
+    print("=" * 60)
 
 
 if __name__ == "__main__":

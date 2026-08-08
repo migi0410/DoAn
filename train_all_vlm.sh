@@ -9,6 +9,7 @@
 set -e
 
 DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/train.jsonl"
+VAL_DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/val.jsonl"
 LOG_DIR="/workspace/logs"
 mkdir -p "$LOG_DIR"
 
@@ -40,6 +41,7 @@ swift sft \
     --model_type qwen2_vl \
     --template_type qwen2_vl \
     --dataset "$DATASET_PATH" \
+    --val_dataset "$VAL_DATASET_PATH" \
     --output_dir /workspace/qwen2_vl_lora_v2 \
     --train_type lora \
     --lora_rank 16 \
@@ -79,6 +81,7 @@ swift sft \
     --model_type minicpm_v2_6 \
     --template_type minicpmv2_6 \
     --dataset "$DATASET_PATH" \
+    --val_dataset "$VAL_DATASET_PATH" \
     --output_dir /workspace/minicpm_v_lora_v2 \
     --train_type lora \
     --lora_rank 16 \

@@ -8,12 +8,14 @@
 set -e
 
 DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/train.jsonl"
+VAL_DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/val.jsonl"
 OUTPUT_DIR="/workspace/qwen2_vl_lora_v2"
 MODEL="Qwen/Qwen2-VL-2B-Instruct"
 
 echo "============================================"
 echo "  Qwen2-VL LoRA Training"
 echo "  Dataset: $DATASET_PATH"
+echo "  Val:     $VAL_DATASET_PATH"
 echo "  Output:  $OUTPUT_DIR"
 echo "  Epochs:  1"
 echo "============================================"
@@ -25,7 +27,7 @@ if [ ! -f "$DATASET_PATH" ]; then
     exit 1
 fi
 
-echo "Dataset found: $(wc -l < $DATASET_PATH) samples"
+echo "Train: $(wc -l < $DATASET_PATH) samples | Val: $(wc -l < $VAL_DATASET_PATH) samples"
 echo "Starting training..."
 echo ""
 
@@ -34,6 +36,7 @@ swift sft \
     --model_type qwen2_vl \
     --template_type qwen2_vl \
     --dataset "$DATASET_PATH" \
+    --val_dataset "$VAL_DATASET_PATH" \
     --output_dir "$OUTPUT_DIR" \
     --train_type lora \
     --lora_rank 16 \
@@ -41,7 +44,6 @@ swift sft \
     --lora_dropout 0.05 \
     --target_modules all-linear \
     --freeze_vit true \
-    --freeze_aligner true \
     --num_train_epochs 1 \
     --learning_rate 2e-5 \
     --per_device_train_batch_size 1 \
