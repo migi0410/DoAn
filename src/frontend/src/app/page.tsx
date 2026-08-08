@@ -24,7 +24,8 @@ export default function Home() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   
   // Settings State
-  const [baseline, setBaseline] = useState("layoutlmv3");
+  const [ocrEngine, setOcrEngine] = useState("craft");
+  const [kieModel, setKieModel] = useState("layoutlmv3");
   const [preprocess, setPreprocess] = useState(false);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
   
@@ -98,6 +99,10 @@ export default function Home() {
       return copy;
     });
 
+    let baseline = kieModel;
+    if (kieModel === "phobert" && ocrEngine === "paddle") baseline = "phobert_paddle";
+    if (kieModel === "layoutlmv3" && ocrEngine === "craft") baseline = "layoutlmv3_craft";
+
     const formData = new FormData();
     formData.append("file", doc.file);
     formData.append("baseline", baseline);
@@ -155,6 +160,10 @@ export default function Home() {
       };
       return copy;
     });
+
+    let baseline = kieModel;
+    if (kieModel === "phobert" && ocrEngine === "paddle") baseline = "phobert_paddle";
+    if (kieModel === "layoutlmv3" && ocrEngine === "craft") baseline = "layoutlmv3_craft";
 
     const formData = new FormData();
     formData.append("file", doc.file);
@@ -232,16 +241,33 @@ export default function Home() {
       <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between shrink-0 shadow-sm z-10">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">OCR:</label>
+            <select 
+              value={ocrEngine} 
+              onChange={e => setOcrEngine(e.target.value)}
+              disabled={kieModel === "qwen2_vl" || kieModel === "minicpm_v"}
+              className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500 disabled:opacity-50"
+            >
+              <option value="craft">CRAFT + VietOCR</option>
+              <option value="paddle">PaddleOCR</option>
+              <option value="none" disabled hidden>Built-in VLM</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Model:</label>
             <select 
-              value={baseline} 
-              onChange={e => setBaseline(e.target.value)}
+              value={kieModel} 
+              onChange={e => {
+                const newModel = e.target.value;
+                setKieModel(newModel);
+                if (newModel === "qwen2_vl" || newModel === "minicpm_v") setOcrEngine("none");
+                else if (ocrEngine === "none") setOcrEngine("craft");
+              }}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500"
             >
-              <option value="phobert_paddle">PaddleOCR + PhoBERT</option>
-              <option value="phobert">CRAFT + VietOCR + PhoBERT</option>
-              <option value="layoutlmv3">PaddleOCR + LayoutLMv3</option>
-              <option value="layoutlmv3_craft">CRAFT + VietOCR + LayoutLMv3</option>
+              <option value="phobert">PhoBERT</option>
+              <option value="layoutlmv3">LayoutLMv3</option>
               <option value="qwen2_vl">Qwen2-VL</option>
               <option value="minicpm_v">MiniCPM-V</option>
             </select>
@@ -387,21 +413,21 @@ export default function Home() {
 
                 {/* VQA CHAT */}
                 <div className={`bg-white border border-slate-200 rounded-2xl p-4 shadow-sm h-64 flex flex-col shrink-0 transition-all ${
-                  (baseline === "qwen2_vl" || baseline === "minicpm_v") ? "" : "opacity-60 pointer-events-none grayscale-[50%]"
+                  (kieModel === "qwen2_vl" || kieModel === "minicpm_v") ? "" : "opacity-60 pointer-events-none grayscale-[50%]"
                 }`}>
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
                       <Bot className="w-4 h-4 text-indigo-500" /> Visual Q&A
                     </h2>
                     <div className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                       {(baseline === "qwen2_vl" || baseline === "minicpm_v") ? baseline : "Locked"}
+                       {(kieModel === "qwen2_vl" || kieModel === "minicpm_v") ? (kieModel === "qwen2_vl" ? "Qwen2-VL" : "MiniCPM-V") : "Locked"}
                     </div>
                   </div>
 
                   <div className="flex-1 overflow-y-auto mb-3 space-y-3 pr-2">
                     {selectedDoc.chatHistory.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center text-slate-400">
-                        {!(baseline === "qwen2_vl" || baseline === "minicpm_v") ? (
+                        {!(kieModel === "qwen2_vl" || kieModel === "minicpm_v") ? (
                           <p className="text-xs font-semibold text-red-400 text-center">Select Qwen2-VL or MiniCPM-V<br/>to enable Chat.</p>
                         ) : (
                           <p className="text-xs font-medium text-center">Ask a question about this specific document.</p>
