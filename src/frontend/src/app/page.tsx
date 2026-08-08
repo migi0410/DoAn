@@ -23,7 +23,7 @@ export default function Home() {
   const [isPredicting, setIsPredicting] = useState(false);
   const [result, setResult] = useState<any>(null);
 
-  const [chatModel, setChatModel] = useState("gemini");
+  // chatModel state removed, we use `baseline` directly
   const [question, setQuestion] = useState("");
   const [chatHistory, setChatHistory] = useState<{ role: "user" | "bot", content: string }[]>([]);
   const [isChatting, setIsChatting] = useState(false);
@@ -96,7 +96,7 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("model", chatModel);
+    formData.append("model", baseline);
     formData.append("question", q);
 
     try {
@@ -235,9 +235,9 @@ export default function Home() {
                 onChange={e => setBaseline(e.target.value)}
                 className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500"
               >
-                <option value="layoutlmv3_craft">LayoutLMv3 + CRAFT</option>
-                <option value="layoutlmv3">LayoutLMv3</option>
-                <option value="phobert">PhoBERT</option>
+                <option value="phobert">CRAFT + VietOCR + PhoBERT</option>
+                <option value="layoutlmv3">PaddleOCR + LayoutLMv3</option>
+                <option value="layoutlmv3_craft">CRAFT + VietOCR + LayoutLMv3</option>
                 <option value="qwen2_vl">Qwen2-VL</option>
                 <option value="minicpm_v">MiniCPM-V</option>
               </select>
@@ -313,27 +313,30 @@ export default function Home() {
               </div>
 
               {/* CHAT SECTION */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl shadow-slate-200/50 flex-1 flex flex-col min-h-[350px]">
+              <div className={`bg-white border border-slate-200 rounded-2xl p-6 shadow-xl shadow-slate-200/50 flex-1 flex flex-col min-h-[350px] transition-all ${
+                (baseline === "qwen2_vl" || baseline === "minicpm_v") ? "" : "opacity-60 pointer-events-none grayscale-[50%]"
+              }`}>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <Bot className="w-5 h-5 text-indigo-500" /> Document VLM Q&A
                   </h2>
-                  <select 
-                    value={chatModel} 
-                    onChange={e => setChatModel(e.target.value)}
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 focus:outline-none focus:border-indigo-500 shadow-inner"
-                  >
-                    <option value="gemini">Gemini Pro Vision</option>
-                    <option value="qwen2_vl">Qwen2-VL</option>
-                    <option value="minicpm_v">MiniCPM-V</option>
-                  </select>
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 shadow-inner">
+                    {(baseline === "qwen2_vl" || baseline === "minicpm_v") 
+                      ? "Active: " + (baseline === "qwen2_vl" ? "Qwen2-VL" : "MiniCPM-V") 
+                      : "Locked for Non-VLM Models"}
+                  </div>
                 </div>
 
                 <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-4 overflow-y-auto mb-4 space-y-4 max-h-[300px] shadow-inner">
                   {chatHistory.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-slate-400">
                       <Bot className="w-8 h-8 mb-2 opacity-30" />
-                      <p className="text-sm font-medium">Ask any question about the document.</p>
+                      <p className="text-sm font-medium text-center">Ask any question about the document.</p>
+                      {!(baseline === "qwen2_vl" || baseline === "minicpm_v") && (
+                         <p className="text-xs font-semibold text-red-400 mt-2 text-center">
+                            Please select Qwen2-VL or MiniCPM-V<br/>above to enable Visual Q&A.
+                         </p>
+                      )}
                     </div>
                   ) : (
                     chatHistory.map((msg, i) => (
