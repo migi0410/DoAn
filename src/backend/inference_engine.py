@@ -371,28 +371,40 @@ class Qwen2VLModelWrapper:
                 
             data = json.loads(response)
             
+            # Convert all keys to uppercase for easier matching
+            data_upper = {k.upper(): v for k, v in data.items()}
+            
             # 3. Handle Columnar Arrays for VLM output
             item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
             items = []
             
+            # Sometimes models output a single string instead of a list if there's only 1 item
+            for k in item_keys:
+                if k in data_upper and not isinstance(data_upper[k], list):
+                    if isinstance(data_upper[k], str) and data_upper[k] != "":
+                        # Convert to list
+                        data_upper[k] = [data_upper[k]]
+                    else:
+                        data_upper[k] = []
+            
             # Find the max length among all item arrays to reconstruct objects
             max_len = 0
             for k in item_keys:
-                if k in data and isinstance(data[k], list):
-                    max_len = max(max_len, len(data[k]))
+                if k in data_upper and isinstance(data_upper[k], list):
+                    max_len = max(max_len, len(data_upper[k]))
             
             if max_len > 0:
                 for i in range(max_len):
                     item = {}
                     for k in item_keys:
-                        if k in data and isinstance(data[k], list) and i < len(data[k]):
-                            item[k] = str(data[k][i])
+                        if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
+                            item[k] = str(data_upper[k][i])
                         else:
                             item[k] = ""
                     items.append(item)
                     
             clean_data = {}
-            for k, v in data.items():
+            for k, v in data_upper.items():
                 if k in item_keys:
                     continue  # Handled above
                 if k == "ITEMS" and isinstance(v, list):
@@ -401,9 +413,10 @@ class Qwen2VLModelWrapper:
                     for item in v:
                         clean_item = {}
                         for ik, iv in item.items():
-                            if ik == "SL":
-                                ik = "ITEM_QTY"
-                            clean_item[ik] = str(iv)
+                            ik_upper = ik.upper()
+                            if ik_upper == "SL":
+                                ik_upper = "ITEM_QTY"
+                            clean_item[ik_upper] = str(iv)
                         clean_items.append(clean_item)
                     clean_data[k] = clean_items
                 else:
@@ -483,28 +496,40 @@ class MiniCPMVModelWrapper:
                 
             data = json.loads(response)
             
+            # Convert all keys to uppercase for easier matching
+            data_upper = {k.upper(): v for k, v in data.items()}
+            
             # 3. Handle Columnar Arrays for VLM output
             item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
             items = []
             
+            # Sometimes models output a single string instead of a list if there's only 1 item
+            for k in item_keys:
+                if k in data_upper and not isinstance(data_upper[k], list):
+                    if isinstance(data_upper[k], str) and data_upper[k] != "":
+                        # Convert to list
+                        data_upper[k] = [data_upper[k]]
+                    else:
+                        data_upper[k] = []
+            
             # Find the max length among all item arrays to reconstruct objects
             max_len = 0
             for k in item_keys:
-                if k in data and isinstance(data[k], list):
-                    max_len = max(max_len, len(data[k]))
+                if k in data_upper and isinstance(data_upper[k], list):
+                    max_len = max(max_len, len(data_upper[k]))
             
             if max_len > 0:
                 for i in range(max_len):
                     item = {}
                     for k in item_keys:
-                        if k in data and isinstance(data[k], list) and i < len(data[k]):
-                            item[k] = str(data[k][i])
+                        if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
+                            item[k] = str(data_upper[k][i])
                         else:
                             item[k] = ""
                     items.append(item)
                     
             clean_data = {}
-            for k, v in data.items():
+            for k, v in data_upper.items():
                 if k in item_keys:
                     continue  # Handled above
                 if k == "ITEMS" and isinstance(v, list):
@@ -513,9 +538,10 @@ class MiniCPMVModelWrapper:
                     for item in v:
                         clean_item = {}
                         for ik, iv in item.items():
-                            if ik == "SL":
-                                ik = "ITEM_QTY"
-                            clean_item[ik] = str(iv)
+                            ik_upper = ik.upper()
+                            if ik_upper == "SL":
+                                ik_upper = "ITEM_QTY"
+                            clean_item[ik_upper] = str(iv)
                         clean_items.append(clean_item)
                     clean_data[k] = clean_items
                 else:
