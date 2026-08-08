@@ -93,6 +93,7 @@ async def predict(
     except Exception as e:
         import traceback
         err_str = traceback.format_exc()
+        print("API ERROR:", err_str)
         return JSONResponse(status_code=500, content={"error": str(e), "traceback": err_str})
 
 @app.post("/api/chat")
@@ -116,6 +117,7 @@ async def chat(
     except Exception as e:
         import traceback
         err_str = traceback.format_exc()
+        print("API ERROR:", err_str)
         return JSONResponse(status_code=500, content={"error": str(e), "traceback": err_str})
 
 
