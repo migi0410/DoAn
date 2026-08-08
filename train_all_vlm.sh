@@ -56,11 +56,11 @@ fi
 
 if [ -z "$WANDB_API_KEY" ]; then
     echo "[WandB] WANDB_API_KEY not set. Logging to tensorboard only."
-    REPORT_TO="tensorboard"
+    WANDB_FLAG=""
 else
     echo "[WandB] API key found. Logging to wandb + tensorboard."
     export WANDB_PROJECT="avir-kie-vlm"
-    REPORT_TO="tensorboard wandb"
+    WANDB_FLAG="--report_to wandb"
 fi
 echo ""
 
@@ -91,7 +91,7 @@ swift sft \
     --bf16 true \
     --gradient_checkpointing true \
     --dataloader_num_workers 2 \
-    --report_to $REPORT_TO \
+    --report_to tensorboard $WANDB_FLAG \
     --logging_steps 10 \
     2>&1 | tee "$LOG_DIR/qwen2vl_train.log"
 
@@ -128,7 +128,7 @@ swift sft \
     --bf16 true \
     --gradient_checkpointing true \
     --dataloader_num_workers 2 \
-    --report_to $REPORT_TO \
+    --report_to tensorboard $WANDB_FLAG \
     --logging_steps 10 \
     2>&1 | tee "$LOG_DIR/minicpm_train.log"
 
