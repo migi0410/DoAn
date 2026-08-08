@@ -251,16 +251,19 @@ class Qwen2VLModelWrapper:
                     with open(adapter_path, 'r') as f:
                         cfg = json.load(f)
                     changed = False
-                    for key in [
-                        "alora_alpha", "alora_invocation_tokens", "lora_dropout_layer_iter", "lora_dropout_step_iter",
-                        "modules_to_save", "arrow_config", "corda_config", "eva_config", "lora_ga_config",
-                        "megatron_config", "megatron_core", "qalora_group_size", "target_parameters",
-                        "trainable_token_indices", "use_bdlora", "use_qalora", "ensure_weight_tying", "exclude_modules",
-                        "lora_bias"
-                    ]:
-                        if key in cfg:
-                            del cfg[key]
-                            changed = True
+                    whitelist = {
+                        "peft_type", "auto_mapping", "base_model_name_or_path", "revision",
+                        "task_type", "inference_mode", "r", "target_modules", "lora_alpha",
+                        "lora_dropout", "fan_in_fan_out", "bias", "modules_to_save",
+                        "init_lora_weights", "layers_to_transform", "layers_pattern",
+                        "rank_pattern", "alpha_pattern", "megatron_config", "megatron_core",
+                        "loftq_config", "use_rslora", "use_dora", "layer_replication", "target_parameters"
+                    }
+                    
+                    keys_to_delete = [k for k in cfg.keys() if k not in whitelist]
+                    for key in keys_to_delete:
+                        del cfg[key]
+                        changed = True
                     
                     if cfg.get("base_model_name_or_path", "").startswith("/root/") or cfg.get("base_model_name_or_path", "").startswith("/workspace/"):
                         cfg["base_model_name_or_path"] = "Qwen/Qwen2-VL-2B-Instruct"
