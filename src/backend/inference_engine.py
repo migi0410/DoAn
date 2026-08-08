@@ -349,7 +349,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
@@ -461,9 +461,14 @@ class MiniCPMVModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
+        print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
+        try:
+            with open("debug_vlm.txt", "w", encoding="utf-8") as f:
+                f.write(response)
+        except: pass
         
         # Robust JSON parsing
         try:
@@ -478,27 +483,50 @@ class MiniCPMVModelWrapper:
                 
             data = json.loads(response)
             
-            # 3. Clean up list-based strings and map keys
-            def clean_val(v):
-                if isinstance(v, list) and len(v) > 0:
-                    return str(v[0])
-                return str(v) if v is not None else ""
-                
+            # 3. Handle Columnar Arrays for VLM output
+            item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
+            items = []
+            
+            # Find the max length among all item arrays to reconstruct objects
+            max_len = 0
+            for k in item_keys:
+                if k in data and isinstance(data[k], list):
+                    max_len = max(max_len, len(data[k]))
+            
+            if max_len > 0:
+                for i in range(max_len):
+                    item = {}
+                    for k in item_keys:
+                        if k in data and isinstance(data[k], list) and i < len(data[k]):
+                            item[k] = str(data[k][i])
+                        else:
+                            item[k] = ""
+                    items.append(item)
+                    
             clean_data = {}
             for k, v in data.items():
+                if k in item_keys:
+                    continue  # Handled above
                 if k == "ITEMS" and isinstance(v, list):
+                    # Handle if the model happens to output standard format
                     clean_items = []
                     for item in v:
                         clean_item = {}
                         for ik, iv in item.items():
-                            # Map SL to ITEM_QTY
                             if ik == "SL":
                                 ik = "ITEM_QTY"
-                            clean_item[ik] = clean_val(iv)
+                            clean_item[ik] = str(iv)
                         clean_items.append(clean_item)
                     clean_data[k] = clean_items
                 else:
-                    clean_data[k] = clean_val(v)
+                    # Generic cleanup for string fields
+                    if isinstance(v, list) and len(v) > 0:
+                        clean_data[k] = str(v[0])
+                    else:
+                        clean_data[k] = str(v) if v is not None else ""
+                        
+            if items:
+                clean_data["ITEMS"] = items
             
             return clean_data
         except Exception as e:
