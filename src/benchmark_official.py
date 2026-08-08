@@ -101,18 +101,35 @@ def flatten_items(pred: dict) -> dict:
 # =============================================
 def parse_gt_from_record(record: dict) -> dict:
     content = record["messages"][1]["content"]
+
+    # Format 1: ```json ... ``` (OFFICIAL_DATASET)
     m = re.search(r'```json\s*(.*?)\s*```', content, re.DOTALL)
     if m:
         json_str = m.group(1)
     else:
-        start = content.find('{')
-        end   = content.rfind('}')
-        json_str = content[start:end+1] if start != -1 else ""
+        # Format 2: `json\n{...}\n` (MCOCR — single backtick, escaped newlines)
+        content_unescaped = content.replace('\\n', '\n')
+        m2 = re.search(r'`json\s*(.*?)\s*`', content_unescaped, re.DOTALL)
+        if m2:
+            json_str = m2.group(1)
+        else:
+            start = content_unescaped.find('{')
+            end   = content_unescaped.rfind('}')
+            json_str = content_unescaped[start:end+1] if start != -1 else ""
+
     try:
         data = json.loads(json_str)
-        return normalize_pred_keys(data)
     except Exception:
         return {}
+
+    data = normalize_pred_keys(data)
+
+    # MCOCR fields are arrays → take first element as string
+    for field in HEADER_FIELDS:
+        if isinstance(data.get(field), list):
+            data[field] = data[field][0] if data[field] else ""
+
+    return data
 
 def get_image_path(record: dict, images_base: str) -> str:
     images = record.get("images", [])
@@ -256,15 +273,30 @@ def main():
 
     models = ALL_MODELS if args.models == "all" else args.models.split(",")
 
-    samples = []
-    with open(args.test, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.strip():
-                samples.append(json.loads(line))
-    if args.limit > 0:
-        samples = samples[:args.limit]
-    print(f"Loaded {len(samples)} test samples")
-    print(f"Models: {models}\n")
+    # Build dataset list: support multiple files
+    dataset_specs = []
+    for ds_spec in args.test.split(","):
+        parts = ds_spec.strip().split(":")
+        path  = parts[0]
+        limit = int(parts[1]) if len(parts) > 1 else args.limit
+        dataset_specs.append((path, limit))
+
+    # Load all samples, tagged by source
+    all_samples = []
+    for path, lim in dataset_specs:
+        samples = []
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    r = json.loads(line)
+                    r["_source"] = os.path.basename(path)
+                    samples.append(r)
+        if lim > 0:
+            samples = samples[:lim]
+        all_samples.extend(samples)
+        print(f"  {os.path.basename(path)}: {len(samples)} samples")
+
+    print(f"Total: {len(all_samples)} samples across {len(dataset_specs)} dataset(s)")
 
     all_results   = {}
     all_per_sample = {}
@@ -278,7 +310,7 @@ def main():
         per_sample = []
         errors     = 0
 
-        for idx, record in enumerate(tqdm(samples, desc=model)):
+        for idx, record in enumerate(tqdm(all_samples, desc=model)):
             gt = parse_gt_from_record(record)
             if not gt:
                 errors += 1
