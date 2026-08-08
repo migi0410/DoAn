@@ -277,24 +277,37 @@ class Qwen2VLModelWrapper:
                         with open(adapter_path, 'w') as f:
                             json.dump(cfg, f, indent=2)
                             
-                    # Patch safetensors keys to remove Swift's custom language_model prefix
+                    # Patch safetensors keys to match HuggingFace PeftModel format
+                    # Swift exports: base_model.model.layers.X.lora_A.weight
+                    # HF PeftModel expects: base_model.model.model.layers.X.lora_A.default.weight
                     safetensors_path = os.path.join(model_dir, "adapter_model.safetensors")
-                    if os.path.exists(safetensors_path):
+                    bak_path = safetensors_path + ".bak"
+                    if os.path.exists(safetensors_path) and not os.path.exists(bak_path):
                         from safetensors.torch import load_file, save_file
-                        import torch
                         try:
                             sd = load_file(safetensors_path)
-                            needs_patch = any("language_model" in k for k in sd.keys())
-                            if needs_patch:
-                                print("Patching Swift safetensors keys...")
-                                new_sd = {}
-                                for k, v in sd.items():
-                                    new_k = k.replace("model.language_model.", "")
-                                    new_sd[new_k] = v
-                                # Backup original
-                                import shutil
-                                shutil.copy(safetensors_path, safetensors_path + ".bak")
-                                save_file(new_sd, safetensors_path)
+                            sample_key = next(iter(sd.keys()))
+                            print(f"Safetensors sample key (before patch): {sample_key}")
+                            
+                            new_sd = {}
+                            for k, v in sd.items():
+                                new_k = k
+                                # Fix 1: base_model.model.layers -> base_model.model.model.layers
+                                # (Swift omits the Qwen2VLModel 'model.' wrapper)
+                                new_k = new_k.replace("base_model.model.layers.", "base_model.model.model.layers.")
+                                new_k = new_k.replace("base_model.model.visual.", "base_model.model.visual.")  # keep visual as-is
+                                # Fix 2: lora_A.weight -> lora_A.default.weight (add HF adapter name)
+                                new_k = new_k.replace(".lora_A.weight", ".lora_A.default.weight")
+                                new_k = new_k.replace(".lora_B.weight", ".lora_B.default.weight")
+                                new_sd[new_k] = v
+                            
+                            sample_new_key = next(iter(new_sd.keys()))
+                            print(f"Safetensors sample key (after patch):  {sample_new_key}")
+                            
+                            import shutil
+                            shutil.copy(safetensors_path, bak_path)
+                            save_file(new_sd, safetensors_path)
+                            print("Safetensors keys patched successfully!")
                         except Exception as e:
                             print(f"Failed to patch safetensors: {e}")
                             
