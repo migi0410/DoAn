@@ -240,6 +240,25 @@ class Qwen2VLModelWrapper:
         
         if os.path.exists(model_dir):
             print(f"Loading Qwen2-VL LoRA: {model_dir}")
+            
+            # Clean swift custom keys from adapter_config.json before loading
+            adapter_path = os.path.join(model_dir, "adapter_config.json")
+            if os.path.exists(adapter_path):
+                import json
+                try:
+                    with open(adapter_path, 'r') as f:
+                        cfg = json.load(f)
+                    changed = False
+                    for key in ["alora_alpha", "alora_invocation_tokens", "lora_dropout_layer_iter", "lora_dropout_step_iter", "modules_to_save"]:
+                        if key in cfg:
+                            del cfg[key]
+                            changed = True
+                    if changed:
+                        with open(adapter_path, 'w') as f:
+                            json.dump(cfg, f, indent=2)
+                except:
+                    pass
+                    
             from peft import PeftModel
             self.model = PeftModel.from_pretrained(self.model, model_dir)
             
@@ -474,7 +493,8 @@ class ModelRegistry:
                 path1 = os.path.join(self.models_dir, "DoAn", "3_models_new", "src_v2", "src_v2", "qwen2_vl_lora_swift")
                 path2 = os.path.join(self.models_dir, "3_models_new", "src_v2", "src_v2", "qwen2_vl_lora_swift")
                 path3 = os.path.join(self.models_dir, "qwen2_vl_lora_v2")
-                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else os.path.join(self.models_dir, "qwen2-vl-finetuned-lora")
+                path4 = os.path.join(self.models_dir, "qwen2_vl_lora_swift")
+                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else path4 if os.path.exists(path4) else os.path.join(self.models_dir, "qwen2-vl-finetuned-lora")
                 self.qwen_model = Qwen2VLModelWrapper(path)
             return self.qwen_model
         elif model_name == "minicpm_v":
