@@ -1,0 +1,114 @@
+#!/bin/bash
+# train_all_vlm.sh
+# Train Qwen2-VL + MiniCPM-V-2_6 tuan tu voi CLEAN dataset
+# 1 epoch moi model, train xong la dung, khong chay them gi ca
+#
+# Cach dung: bash train_all_vlm.sh
+# Log duoc ghi tu dong vao: /workspace/logs/
+
+set -e
+
+DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/train.jsonl"
+LOG_DIR="/workspace/logs"
+mkdir -p "$LOG_DIR"
+
+# ============================================
+# KIEM TRA DATASET
+# ============================================
+if [ ! -f "$DATASET_PATH" ]; then
+    echo "ERROR: Dataset not found at $DATASET_PATH"
+    echo "Run: git pull origin main"
+    exit 1
+fi
+
+SAMPLE_COUNT=$(wc -l < "$DATASET_PATH")
+echo "============================================"
+echo "  Dataset: $DATASET_PATH"
+echo "  Samples: $SAMPLE_COUNT"
+echo "============================================"
+echo ""
+
+# ============================================
+# BUOC 1: TRAIN QWEN2-VL-2B-INSTRUCT
+# ============================================
+echo "[1/2] Training Qwen2-VL-2B-Instruct..."
+echo "      Output: /workspace/qwen2_vl_lora_v2"
+echo ""
+
+swift sft \
+    --model Qwen/Qwen2-VL-2B-Instruct \
+    --model_type qwen2_vl \
+    --template_type qwen2_vl \
+    --dataset "$DATASET_PATH" \
+    --output_dir /workspace/qwen2_vl_lora_v2 \
+    --train_type lora \
+    --lora_rank 16 \
+    --lora_alpha 32 \
+    --lora_dropout 0.05 \
+    --target_modules all-linear \
+    --freeze_vit true \
+    --freeze_aligner true \
+    --num_train_epochs 1 \
+    --learning_rate 2e-5 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 16 \
+    --max_length 2048 \
+    --save_steps 200 \
+    --save_total_limit 3 \
+    --bf16 true \
+    --gradient_checkpointing true \
+    --dataloader_num_workers 2 \
+    --report_to tensorboard \
+    --logging_steps 10 \
+    2>&1 | tee "$LOG_DIR/qwen2vl_train.log"
+
+echo ""
+echo "[1/2] Qwen2-VL training DONE."
+echo "      Log saved to: $LOG_DIR/qwen2vl_train.log"
+echo ""
+
+# ============================================
+# BUOC 2: TRAIN MINICPM-V-2_6
+# ============================================
+echo "[2/2] Training MiniCPM-V-2_6..."
+echo "      Output: /workspace/minicpm_v_lora_v2"
+echo ""
+
+swift sft \
+    --model openbmb/MiniCPM-V-2_6 \
+    --model_type minicpm_v2_6 \
+    --template_type minicpmv2_6 \
+    --dataset "$DATASET_PATH" \
+    --output_dir /workspace/minicpm_v_lora_v2 \
+    --train_type lora \
+    --lora_rank 16 \
+    --lora_alpha 32 \
+    --lora_dropout 0.05 \
+    --target_modules all-linear \
+    --freeze_vit true \
+    --freeze_aligner true \
+    --num_train_epochs 1 \
+    --learning_rate 2e-5 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 16 \
+    --max_length 2048 \
+    --save_steps 200 \
+    --save_total_limit 3 \
+    --bf16 true \
+    --gradient_checkpointing true \
+    --dataloader_num_workers 2 \
+    --report_to tensorboard \
+    --logging_steps 10 \
+    2>&1 | tee "$LOG_DIR/minicpm_train.log"
+
+echo ""
+echo "[2/2] MiniCPM-V training DONE."
+echo "      Log saved to: $LOG_DIR/minicpm_train.log"
+echo ""
+
+echo "============================================"
+echo "  ALL TRAINING COMPLETE"
+echo "  Qwen2-VL:  /workspace/qwen2_vl_lora_v2"
+echo "  MiniCPM-V: /workspace/minicpm_v_lora_v2"
+echo "  Logs:      $LOG_DIR/"
+echo "============================================"
