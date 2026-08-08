@@ -445,8 +445,10 @@ class Qwen2VLModelWrapper:
             if items:
                 clean_data["ITEMS"] = items
             
+            print(f"===== PARSED CLEAN DATA =====\n{clean_data}\n==============================")
             return clean_data
         except Exception as e:
+            print(f"===== PARSER ERROR =====\n{e}\nRESPONSE WAS:\n{response}\n========================")
             return {"OTHER": response}
 
 class MiniCPMVModelWrapper:
@@ -586,8 +588,10 @@ class MiniCPMVModelWrapper:
             if items:
                 clean_data["ITEMS"] = items
             
+            print(f"===== PARSED CLEAN DATA (MiniCPM) =====\n{clean_data}\n==============================")
             return clean_data
         except Exception as e:
+            print(f"===== PARSER ERROR (MiniCPM) =====\n{e}\nRESPONSE WAS:\n{response}\n==================================")
             return {"OTHER": response}
 
 class ModelRegistry:
