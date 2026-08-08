@@ -7,6 +7,7 @@
 # Log duoc ghi tu dong vao: /workspace/logs/
 
 set -e
+set -o pipefail  # Ensure errors in pipes (e.g. tee) are caught
 
 DATASET_PATH="/workspace/DoAn/data/OFFICIAL_DATASET/train.jsonl"
 VAL_DATASET_PATH="/workspace/DoAn/data/OFFICIAL_DATASET/val.jsonl"
@@ -38,18 +39,14 @@ echo ""
 
 swift sft \
     --model Qwen/Qwen2-VL-2B-Instruct \
-    --model_type qwen2_vl \
-    --template_type qwen2_vl \
     --dataset "$DATASET_PATH" \
     --val_dataset "$VAL_DATASET_PATH" \
     --output_dir /workspace/qwen2_vl_lora_official \
-    --train_type lora \
     --lora_rank 16 \
     --lora_alpha 32 \
     --lora_dropout 0.05 \
     --target_modules all-linear \
     --freeze_vit true \
-    --freeze_aligner true \
     --num_train_epochs 1 \
     --learning_rate 2e-5 \
     --per_device_train_batch_size 1 \
@@ -78,12 +75,9 @@ echo ""
 
 swift sft \
     --model openbmb/MiniCPM-V-2_6 \
-    --model_type minicpm_v2_6 \
-    --template_type minicpmv2_6 \
     --dataset "$DATASET_PATH" \
     --val_dataset "$VAL_DATASET_PATH" \
     --output_dir /workspace/minicpm_v_lora_official \
-    --train_type lora \
     --lora_rank 16 \
     --lora_alpha 32 \
     --lora_dropout 0.05 \
