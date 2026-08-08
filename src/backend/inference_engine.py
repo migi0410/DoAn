@@ -363,17 +363,36 @@ class Qwen2VLModelWrapper:
             # 1. Strip markdown
             if "```json" in response:
                 response = response.split("```json")[1].split("```")[0].strip()
+            elif "```" in response:
+                response = response.split("```")[1].strip()
             
-            # 2. Extract JSON block (handles trailing garble like }})
-            match = re.search(r'\{.*\}', response, re.DOTALL)
-            if match:
-                response = match.group(0)
+            # 2. Extract JSON block robustly (handles extra }})
+            start_idx = response.find("{")
+            if start_idx != -1:
+                end_idx = response.rfind("}")
+                while end_idx > start_idx:
+                    try:
+                        # Try parsing from start_idx to end_idx
+                        candidate = response[start_idx:end_idx+1]
+                        data = json.loads(candidate)
+                        break
+                    except json.JSONDecodeError:
+                        # If fails, try the next inner '}'
+                        end_idx = response.rfind("}", start_idx, end_idx)
+                else:
+                    data = json.loads(response[start_idx:])
+            else:
+                data = json.loads(response)
                 
-            data = json.loads(response)
-            
             # Convert all keys to uppercase for easier matching
             data_upper = {k.upper(): v for k, v in data.items()}
             
+            # Helper to unpack single-element lists
+            def unpack_val(val):
+                if isinstance(val, list) and len(val) > 0:
+                    return str(val[0])
+                return str(val) if val is not None else ""
+                
             # 3. Handle Columnar Arrays for VLM output
             item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
             items = []
@@ -398,7 +417,8 @@ class Qwen2VLModelWrapper:
                     item = {}
                     for k in item_keys:
                         if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
-                            item[k] = str(data_upper[k][i])
+                            # The item itself might be a list (like ["Bàn chải"]) inside the array!
+                            item[k] = unpack_val(data_upper[k][i])
                         else:
                             item[k] = ""
                     items.append(item)
@@ -408,7 +428,7 @@ class Qwen2VLModelWrapper:
                 if k in item_keys:
                     continue  # Handled above
                 if k == "ITEMS" and isinstance(v, list):
-                    # Handle if the model happens to output standard format
+                    # Handle if the model happens to output standard format natively
                     clean_items = []
                     for item in v:
                         clean_item = {}
@@ -416,15 +436,11 @@ class Qwen2VLModelWrapper:
                             ik_upper = ik.upper()
                             if ik_upper == "SL":
                                 ik_upper = "ITEM_QTY"
-                            clean_item[ik_upper] = str(iv)
+                            clean_item[ik_upper] = unpack_val(iv)
                         clean_items.append(clean_item)
                     clean_data[k] = clean_items
                 else:
-                    # Generic cleanup for string fields
-                    if isinstance(v, list) and len(v) > 0:
-                        clean_data[k] = str(v[0])
-                    else:
-                        clean_data[k] = str(v) if v is not None else ""
+                    clean_data[k] = unpack_val(v)
                         
             if items:
                 clean_data["ITEMS"] = items
@@ -488,17 +504,36 @@ class MiniCPMVModelWrapper:
             # 1. Strip markdown
             if "```json" in response:
                 response = response.split("```json")[1].split("```")[0].strip()
+            elif "```" in response:
+                response = response.split("```")[1].strip()
             
-            # 2. Extract JSON block (handles trailing garble like }})
-            match = re.search(r'\{.*\}', response, re.DOTALL)
-            if match:
-                response = match.group(0)
+            # 2. Extract JSON block robustly (handles extra }})
+            start_idx = response.find("{")
+            if start_idx != -1:
+                end_idx = response.rfind("}")
+                while end_idx > start_idx:
+                    try:
+                        # Try parsing from start_idx to end_idx
+                        candidate = response[start_idx:end_idx+1]
+                        data = json.loads(candidate)
+                        break
+                    except json.JSONDecodeError:
+                        # If fails, try the next inner '}'
+                        end_idx = response.rfind("}", start_idx, end_idx)
+                else:
+                    data = json.loads(response[start_idx:])
+            else:
+                data = json.loads(response)
                 
-            data = json.loads(response)
-            
             # Convert all keys to uppercase for easier matching
             data_upper = {k.upper(): v for k, v in data.items()}
             
+            # Helper to unpack single-element lists
+            def unpack_val(val):
+                if isinstance(val, list) and len(val) > 0:
+                    return str(val[0])
+                return str(val) if val is not None else ""
+                
             # 3. Handle Columnar Arrays for VLM output
             item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
             items = []
@@ -523,7 +558,8 @@ class MiniCPMVModelWrapper:
                     item = {}
                     for k in item_keys:
                         if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
-                            item[k] = str(data_upper[k][i])
+                            # The item itself might be a list (like ["Bàn chải"]) inside the array!
+                            item[k] = unpack_val(data_upper[k][i])
                         else:
                             item[k] = ""
                     items.append(item)
@@ -533,7 +569,7 @@ class MiniCPMVModelWrapper:
                 if k in item_keys:
                     continue  # Handled above
                 if k == "ITEMS" and isinstance(v, list):
-                    # Handle if the model happens to output standard format
+                    # Handle if the model happens to output standard format natively
                     clean_items = []
                     for item in v:
                         clean_item = {}
@@ -541,15 +577,11 @@ class MiniCPMVModelWrapper:
                             ik_upper = ik.upper()
                             if ik_upper == "SL":
                                 ik_upper = "ITEM_QTY"
-                            clean_item[ik_upper] = str(iv)
+                            clean_item[ik_upper] = unpack_val(iv)
                         clean_items.append(clean_item)
                     clean_data[k] = clean_items
                 else:
-                    # Generic cleanup for string fields
-                    if isinstance(v, list) and len(v) > 0:
-                        clean_data[k] = str(v[0])
-                    else:
-                        clean_data[k] = str(v) if v is not None else ""
+                    clean_data[k] = unpack_val(v)
                         
             if items:
                 clean_data["ITEMS"] = items
