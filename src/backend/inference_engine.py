@@ -385,29 +385,33 @@ class ModelRegistry:
         elif model_name == "phobert":
             if self.phobert_model is None:
                 print("Lazy Loading PhoBERT...")
-                path1 = os.path.join(self.models_dir, "phobert_best_model")
-                path = path1 if os.path.exists(path1) else os.path.join(self.models_dir, "phobert-base-kie")
+                path1 = os.path.join(self.models_dir, "3_models_new", "phobert_best_model")
+                path2 = os.path.join(self.models_dir, "phobert_best_model")
+                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else os.path.join(self.models_dir, "phobert-base-kie")
                 self.phobert_model = PhoBertModel(path)
             return self.phobert_model
         elif model_name == "layoutlmv3":
             if self.layoutlm_model is None:
                 print("Lazy Loading LayoutLMv3...")
-                path1 = os.path.join(self.models_dir, "layoutlmv3_best_model")
-                path = path1 if os.path.exists(path1) else os.path.join(self.models_dir, "layoutlm-avir-kie-best-10k")
+                path1 = os.path.join(self.models_dir, "3_models_new", "layoutlmv3_best_model")
+                path2 = os.path.join(self.models_dir, "layoutlmv3_best_model")
+                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else os.path.join(self.models_dir, "layoutlm-avir-kie-best-10k")
                 self.layoutlm_model = LayoutLMModel(path)
             return self.layoutlm_model
         elif model_name == "qwen2_vl":
             if self.qwen_model is None:
                 print("Lazy Loading Qwen2-VL...")
-                path1 = os.path.join(self.models_dir, "qwen2_vl_lora_v2")
-                path = path1 if os.path.exists(path1) else os.path.join(self.models_dir, "qwen2-vl-finetuned-lora")
+                path1 = os.path.join(self.models_dir, "3_models_new", "src_v2", "src_v2", "qwen2_vl_lora_swift")
+                path2 = os.path.join(self.models_dir, "qwen2_vl_lora_v2")
+                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else os.path.join(self.models_dir, "qwen2-vl-finetuned-lora")
                 self.qwen_model = Qwen2VLModelWrapper(path)
             return self.qwen_model
         elif model_name == "minicpm_v":
             if self.minicpm_model is None:
                 print("Lazy Loading MiniCPM-V...")
-                path1 = os.path.join(self.models_dir, "minicpm_lora_swift")
-                path = path1 if os.path.exists(path1) else os.path.join(self.models_dir, "minicpm-v-finetuned")
+                path1 = os.path.join(self.models_dir, "checkpoint-728")
+                path2 = os.path.join(self.models_dir, "minicpm_lora_swift")
+                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else os.path.join(self.models_dir, "minicpm-v-finetuned")
                 self.minicpm_model = MiniCPMVModelWrapper(path)
             return self.minicpm_model
         return None
