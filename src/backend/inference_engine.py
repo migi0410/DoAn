@@ -289,11 +289,45 @@ class Qwen2VLModelWrapper:
 
     def predict(self, img_path):
         prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
-        import json
+        import json, re
         response = self.generate_response(img_path, prompt)
+        
+        # Robust JSON parsing
         try:
-            return json.loads(response)
-        except Exception:
+            # 1. Strip markdown
+            if "```json" in response:
+                response = response.split("```json")[1].split("```")[0].strip()
+            
+            # 2. Extract JSON block (handles trailing garble like }})
+            match = re.search(r'\{.*\}', response, re.DOTALL)
+            if match:
+                response = match.group(0)
+                
+            data = json.loads(response)
+            
+            # 3. Clean up list-based strings and map keys
+            def clean_val(v):
+                if isinstance(v, list) and len(v) > 0:
+                    return str(v[0])
+                return str(v) if v is not None else ""
+                
+            clean_data = {}
+            for k, v in data.items():
+                if k == "ITEMS" and isinstance(v, list):
+                    clean_items = []
+                    for item in v:
+                        clean_item = {}
+                        for ik, iv in item.items():
+                            if ik == "SL":
+                                ik = "ITEM_QTY"
+                            clean_item[ik] = clean_val(iv)
+                        clean_items.append(clean_item)
+                    clean_data[k] = clean_items
+                else:
+                    clean_data[k] = clean_val(v)
+            
+            return clean_data
+        except Exception as e:
             return {"OTHER": response}
 
 class MiniCPMVModelWrapper:
@@ -339,11 +373,46 @@ class MiniCPMVModelWrapper:
 
     def predict(self, img_path):
         prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
-        import json
+        import json, re
         response = self.generate_response(img_path, prompt)
+        
+        # Robust JSON parsing
         try:
-            return json.loads(response)
-        except Exception:
+            # 1. Strip markdown
+            if "```json" in response:
+                response = response.split("```json")[1].split("```")[0].strip()
+            
+            # 2. Extract JSON block (handles trailing garble like }})
+            match = re.search(r'\{.*\}', response, re.DOTALL)
+            if match:
+                response = match.group(0)
+                
+            data = json.loads(response)
+            
+            # 3. Clean up list-based strings and map keys
+            def clean_val(v):
+                if isinstance(v, list) and len(v) > 0:
+                    return str(v[0])
+                return str(v) if v is not None else ""
+                
+            clean_data = {}
+            for k, v in data.items():
+                if k == "ITEMS" and isinstance(v, list):
+                    clean_items = []
+                    for item in v:
+                        clean_item = {}
+                        for ik, iv in item.items():
+                            # Map SL to ITEM_QTY
+                            if ik == "SL":
+                                ik = "ITEM_QTY"
+                            clean_item[ik] = clean_val(iv)
+                        clean_items.append(clean_item)
+                    clean_data[k] = clean_items
+                else:
+                    clean_data[k] = clean_val(v)
+            
+            return clean_data
+        except Exception as e:
             return {"OTHER": response}
 
 class ModelRegistry:
