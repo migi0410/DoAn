@@ -68,6 +68,7 @@ async def predict(
             
         # 2. Run Inference via Registry
         result, words, bboxes = registry.predict(baseline, img_path, preprocess=preprocess)
+        print(f"===== FINAL RESULT TO FRONTEND =====\n{result}\n=====================================")
         
         # 3. Draw Bounding Boxes
         import cv2
