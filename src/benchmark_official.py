@@ -131,15 +131,23 @@ def parse_gt_from_record(record: dict) -> dict:
 
     return data
 
-def get_image_path(record: dict, images_base: str) -> str:
+def get_image_path(record: dict, images_dirs: list) -> str:
+    """Search for image across multiple base directories."""
     images = record.get("images", [])
     if not images:
         return ""
     img = images[0]
+    # Already absolute and exists
     if os.path.isabs(img) and os.path.exists(img):
         return img
     img_name = os.path.basename(img)
-    return os.path.join(images_base, img_name)
+    # Search in all provided dirs
+    for base in images_dirs:
+        candidate = os.path.join(base, img_name)
+        if os.path.exists(candidate):
+            return candidate
+    # Return best guess (first dir) even if not found, to report error correctly
+    return os.path.join(images_dirs[0], img_name) if images_dirs else img_name
 
 # =============================================
 # CALL API
@@ -264,12 +272,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api",    default="http://localhost:8000")
     parser.add_argument("--test",   default="data/OFFICIAL_DATASET/test.jsonl")
-    parser.add_argument("--images", default="/workspace/FINAL_RUNPOD_DATASET/images")
+    parser.add_argument("--images", default="/workspace/FINAL_RUNPOD_DATASET/images,/workspace/bench_images",
+                        help="Comma-separated list of image directories to search")
     parser.add_argument("--models", default="all")
     parser.add_argument("--limit",  type=int, default=0)
     parser.add_argument("--out",    default="benchmark_results")
     parser.add_argument("--timeout",type=int, default=180)
     args = parser.parse_args()
+    images_dirs = [d.strip() for d in args.images.split(",") if d.strip()]
 
     models = ALL_MODELS if args.models == "all" else args.models.split(",")
 
@@ -316,7 +326,7 @@ def main():
                 errors += 1
                 continue
 
-            img_path = get_image_path(record, args.images)
+            img_path = get_image_path(record, images_dirs)
             if not img_path or not os.path.exists(img_path):
                 errors += 1
                 continue
