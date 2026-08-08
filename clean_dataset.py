@@ -17,7 +17,7 @@ OUTPUT_DIR  = "data/OFFICIAL_DATASET"
 
 SPLITS = ["train", "val", "test"]
 
-STANDARD_PROMPT = "<image>Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
+STANDARD_PROMPT = "<image>Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
 
 # Map alias field names -> standard field names
 FIELD_ALIASES = {
