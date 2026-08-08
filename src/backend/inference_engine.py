@@ -335,7 +335,7 @@ class Qwen2VLModelWrapper:
         inputs = inputs.to(self.device)
         
         with torch.no_grad():
-            generated_ids = self.model.generate(**inputs, max_new_tokens=512, do_sample=False)
+            generated_ids = self.model.generate(**inputs, max_new_tokens=2048, do_sample=False)
             generated_ids_trimmed = [
                 out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
             ]
@@ -349,7 +349,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
+        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
@@ -484,7 +484,8 @@ class MiniCPMVModelWrapper:
             image=None,
             msgs=msgs,
             tokenizer=self.tokenizer,
-            sampling=False
+            sampling=False,
+            max_new_tokens=2048
         )
         return res
 
@@ -492,7 +493,7 @@ class MiniCPMVModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
+        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
