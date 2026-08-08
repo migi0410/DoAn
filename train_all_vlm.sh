@@ -8,8 +8,8 @@
 
 set -e
 
-DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/train.jsonl"
-VAL_DATASET_PATH="/workspace/DoAn/data/CLEAN_TRAIN_DATASET/val.jsonl"
+DATASET_PATH="/workspace/DoAn/data/OFFICIAL_DATASET/train.jsonl"
+VAL_DATASET_PATH="/workspace/DoAn/data/OFFICIAL_DATASET/val.jsonl"
 LOG_DIR="/workspace/logs"
 mkdir -p "$LOG_DIR"
 
@@ -42,7 +42,7 @@ swift sft \
     --template_type qwen2_vl \
     --dataset "$DATASET_PATH" \
     --val_dataset "$VAL_DATASET_PATH" \
-    --output_dir /workspace/qwen2_vl_lora_v2 \
+    --output_dir /workspace/qwen2_vl_lora_official \
     --train_type lora \
     --lora_rank 16 \
     --lora_alpha 32 \
@@ -82,7 +82,7 @@ swift sft \
     --template_type minicpmv2_6 \
     --dataset "$DATASET_PATH" \
     --val_dataset "$VAL_DATASET_PATH" \
-    --output_dir /workspace/minicpm_v_lora_v2 \
+    --output_dir /workspace/minicpm_v_lora_official \
     --train_type lora \
     --lora_rank 16 \
     --lora_alpha 32 \
@@ -111,7 +111,7 @@ echo ""
 
 echo "============================================"
 echo "  ALL TRAINING COMPLETE"
-echo "  Qwen2-VL:  /workspace/qwen2_vl_lora_v2"
-echo "  MiniCPM-V: /workspace/minicpm_v_lora_v2"
+echo "  Qwen2-VL:  /workspace/qwen2_vl_lora_official"
+echo "  MiniCPM-V: /workspace/minicpm_v_lora_official"
 echo "  Logs:      $LOG_DIR/"
 echo "============================================"

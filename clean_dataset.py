@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 
 INPUT_DIR   = "data/FINAL_SPLIT_JSONL_ONLY"
-OUTPUT_DIR  = "data/CLEAN_TRAIN_DATASET"
+OUTPUT_DIR  = "data/OFFICIAL_DATASET"
 
 SPLITS = ["train", "val", "test"]
 

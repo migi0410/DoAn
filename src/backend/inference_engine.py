@@ -675,20 +675,29 @@ class ModelRegistry:
         elif model_name == "qwen2_vl":
             if self.qwen_model is None:
                 print("Lazy Loading Qwen2-VL...")
-                path0 = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
-                path1 = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
-                path2 = os.path.join(self.models_dir, "DoAn", "3_models_new", "src_v2", "src_v2", "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
-                path3 = os.path.join(self.models_dir, "3_models_new", "src_v2", "src_v2", "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
-                path4 = os.path.join(self.models_dir, "qwen2_vl_lora_v2")
-                path = path0 if os.path.exists(path0) else path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else path4 if os.path.exists(path4) else os.path.join(self.models_dir, "qwen2-vl-finetuned-lora")
+                # Priority: official trained checkpoint > old checkpoints
+                path_official  = os.path.join(self.models_dir, "qwen2_vl_lora_official")
+                path_legacy0   = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
+                path_legacy1   = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
+                path = (path_official if os.path.exists(path_official)
+                        else path_legacy0 if os.path.exists(path_legacy0)
+                        else path_legacy1 if os.path.exists(path_legacy1)
+                        else path_official)  # fallback will show clear error
+                print(f"Qwen2-VL path: {path}")
                 self.qwen_model = Qwen2VLModelWrapper(path)
             return self.qwen_model
         elif model_name == "minicpm_v":
             if self.minicpm_model is None:
                 print("Lazy Loading MiniCPM-V...")
-                path1 = os.path.join(self.models_dir, "checkpoint-728")
-                path2 = os.path.join(self.models_dir, "minicpm_lora_swift")
-                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else os.path.join(self.models_dir, "minicpm-v-finetuned")
+                # Priority: official trained checkpoint > old checkpoints
+                path_official = os.path.join(self.models_dir, "minicpm_v_lora_official")
+                path_legacy0  = os.path.join(self.models_dir, "checkpoint-728")
+                path_legacy1  = os.path.join(self.models_dir, "minicpm_lora_swift")
+                path = (path_official if os.path.exists(path_official)
+                        else path_legacy0 if os.path.exists(path_legacy0)
+                        else path_legacy1 if os.path.exists(path_legacy1)
+                        else path_official)  # fallback will show clear error
+                print(f"MiniCPM-V path: {path}")
                 self.minicpm_model = MiniCPMVModelWrapper(path)
             return self.minicpm_model
         return None
