@@ -276,6 +276,28 @@ class Qwen2VLModelWrapper:
                     if changed:
                         with open(adapter_path, 'w') as f:
                             json.dump(cfg, f, indent=2)
+                            
+                    # Patch safetensors keys to remove Swift's custom language_model prefix
+                    safetensors_path = os.path.join(model_dir, "adapter_model.safetensors")
+                    if os.path.exists(safetensors_path):
+                        from safetensors.torch import load_file, save_file
+                        import torch
+                        try:
+                            sd = load_file(safetensors_path)
+                            needs_patch = any("language_model" in k for k in sd.keys())
+                            if needs_patch:
+                                print("Patching Swift safetensors keys...")
+                                new_sd = {}
+                                for k, v in sd.items():
+                                    new_k = k.replace("model.language_model.", "")
+                                    new_sd[new_k] = v
+                                # Backup original
+                                import shutil
+                                shutil.copy(safetensors_path, safetensors_path + ".bak")
+                                save_file(new_sd, safetensors_path)
+                        except Exception as e:
+                            print(f"Failed to patch safetensors: {e}")
+                            
                 except:
                     pass
                     
@@ -330,6 +352,11 @@ class Qwen2VLModelWrapper:
         prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
+        print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
+        try:
+            with open("debug_vlm.txt", "w", encoding="utf-8") as f:
+                f.write(response)
+        except: pass
         
         # Robust JSON parsing
         try:
