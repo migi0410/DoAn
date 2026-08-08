@@ -265,6 +265,10 @@ class Qwen2VLModelWrapper:
                         del cfg[key]
                         changed = True
                     
+                    if "target_modules" in cfg and isinstance(cfg["target_modules"], str) and "language_model" in cfg["target_modules"]:
+                        cfg["target_modules"] = ["down_proj", "gate_proj", "up_proj", "v_proj", "q_proj", "k_proj", "o_proj"]
+                        changed = True
+                        
                     if cfg.get("base_model_name_or_path", "").startswith("/root/") or cfg.get("base_model_name_or_path", "").startswith("/workspace/"):
                         cfg["base_model_name_or_path"] = "Qwen/Qwen2-VL-2B-Instruct"
                         changed = True
