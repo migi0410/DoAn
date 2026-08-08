@@ -23,17 +23,16 @@ if [ ! -f "$DATASET_PATH" ]; then
     exit 1
 fi
 
-# Tao symlink images de Swift doc duoc anh tu JSONL (path relative)
-# Ảnh nằm ở /workspace/FINAL_RUNPOD_DATASET/images (không phải trong DoAn/)
+# Tao symlink images tai CWD (/workspace/DoAn/images)
+# Vi Swift resolve path tuong doi tu thu muc chay script, khong phai tu JSONL
 IMAGES_SRC="/workspace/FINAL_RUNPOD_DATASET/images"
-IMAGES_LINK="/workspace/DoAn/data/OFFICIAL_DATASET/images"
+IMAGES_LINK="/workspace/DoAn/images"
 if [ ! -L "$IMAGES_LINK" ] && [ ! -d "$IMAGES_LINK" ]; then
     if [ -d "$IMAGES_SRC" ]; then
         ln -sf "$IMAGES_SRC" "$IMAGES_LINK"
         echo "Symlink created: $IMAGES_LINK -> $IMAGES_SRC"
     else
         echo "ERROR: Images not found at $IMAGES_SRC"
-        echo "Please check where images are stored on RunPod"
         exit 1
     fi
 else
