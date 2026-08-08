@@ -266,6 +266,7 @@ export default function Home() {
               }}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500"
             >
+              <option value="rule_based">Rule-based (Heuristic)</option>
               <option value="phobert">PhoBERT</option>
               <option value="layoutlmv3">LayoutLMv3</option>
               <option value="qwen2_vl">Qwen2-VL</option>
