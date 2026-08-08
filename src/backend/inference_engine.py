@@ -349,7 +349,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
@@ -474,7 +474,7 @@ class MiniCPMVModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
