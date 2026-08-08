@@ -54,8 +54,8 @@ class PhoBertModel:
                 
         def parse_labels_from_predictions(words, labels):
             parsed = {
-                "SELLER": "", "ADDRESS": "", "TIMESTAMP": "", "TOTAL_COST": "",
-                "ITEM_NAME": "", "ITEM_QTY": "", "ITEM_PRICE": "", "ITEM_AMOUNT": ""
+                "SELLER": [], "ADDRESS": [], "TIMESTAMP": [], "TOTAL_COST": [],
+                "ITEM_NAME": [], "ITEM_QTY": [], "ITEM_PRICE": [], "ITEM_AMOUNT": []
             }
             current_entity = {"label": None, "words": []}
             for word, label in zip(words, labels):
@@ -64,27 +64,35 @@ class PhoBertModel:
                     entity_type = label[2:]
                     if bio_tag == "B":
                         if current_entity["label"]:
-                            if current_entity["label"] in parsed:
-                                parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
-                            else:
-                                parsed[current_entity["label"]] = " ".join(current_entity["words"])
+                            parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
                         current_entity = {"label": entity_type, "words": [word]}
                     elif bio_tag == "I" and current_entity["label"] == entity_type:
                         current_entity["words"].append(word)
                 else:
                     if current_entity["label"]:
-                        if current_entity["label"] in parsed:
-                            parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
-                        else:
-                            parsed[current_entity["label"]] = " ".join(current_entity["words"])
+                        parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
                         current_entity = {"label": None, "words": []}
             if current_entity["label"]:
-                if current_entity["label"] in parsed:
-                    parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
-                else:
-                    parsed[current_entity["label"]] = " ".join(current_entity["words"])
-            for k in parsed:
-                parsed[k] = parsed[k].strip()
+                parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
+            
+            for k in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
+                parsed[k] = " ".join(parsed[k]).strip()
+                
+            items = []
+            max_len = max(len(parsed["ITEM_NAME"]), len(parsed["ITEM_QTY"]), len(parsed["ITEM_PRICE"]), len(parsed["ITEM_AMOUNT"]))
+            for i in range(max_len):
+                items.append({
+                    "ITEM_NAME": parsed["ITEM_NAME"][i] if i < len(parsed["ITEM_NAME"]) else "",
+                    "ITEM_QTY": parsed["ITEM_QTY"][i] if i < len(parsed["ITEM_QTY"]) else "",
+                    "ITEM_PRICE": parsed["ITEM_PRICE"][i] if i < len(parsed["ITEM_PRICE"]) else "",
+                    "ITEM_AMOUNT": parsed["ITEM_AMOUNT"][i] if i < len(parsed["ITEM_AMOUNT"]) else ""
+                })
+            
+            del parsed["ITEM_NAME"]
+            del parsed["ITEM_QTY"]
+            del parsed["ITEM_PRICE"]
+            del parsed["ITEM_AMOUNT"]
+            parsed["ITEMS"] = items
             return parsed
 
         return parse_labels_from_predictions(words, word_predicted_labels)
@@ -154,8 +162,8 @@ class LayoutLMModel:
                 
         def parse_labels_from_predictions(words, labels):
             parsed = {
-                "SELLER": "", "ADDRESS": "", "TIMESTAMP": "", "TOTAL_COST": "",
-                "ITEM_NAME": "", "ITEM_QTY": "", "ITEM_PRICE": "", "ITEM_AMOUNT": ""
+                "SELLER": [], "ADDRESS": [], "TIMESTAMP": [], "TOTAL_COST": [],
+                "ITEM_NAME": [], "ITEM_QTY": [], "ITEM_PRICE": [], "ITEM_AMOUNT": []
             }
             current_entity = {"label": None, "words": []}
             for word, label in zip(words, labels):
@@ -164,27 +172,35 @@ class LayoutLMModel:
                     entity_type = label[2:]
                     if bio_tag == "B":
                         if current_entity["label"]:
-                            if current_entity["label"] in parsed:
-                                parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
-                            else:
-                                parsed[current_entity["label"]] = " ".join(current_entity["words"])
+                            parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
                         current_entity = {"label": entity_type, "words": [word]}
                     elif bio_tag == "I" and current_entity["label"] == entity_type:
                         current_entity["words"].append(word)
                 else:
                     if current_entity["label"]:
-                        if current_entity["label"] in parsed:
-                            parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
-                        else:
-                            parsed[current_entity["label"]] = " ".join(current_entity["words"])
+                        parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
                         current_entity = {"label": None, "words": []}
             if current_entity["label"]:
-                if current_entity["label"] in parsed:
-                    parsed[current_entity["label"]] += " " + " ".join(current_entity["words"])
-                else:
-                    parsed[current_entity["label"]] = " ".join(current_entity["words"])
-            for k in parsed:
-                parsed[k] = parsed[k].strip()
+                parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
+            
+            for k in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
+                parsed[k] = " ".join(parsed[k]).strip()
+                
+            items = []
+            max_len = max(len(parsed["ITEM_NAME"]), len(parsed["ITEM_QTY"]), len(parsed["ITEM_PRICE"]), len(parsed["ITEM_AMOUNT"]))
+            for i in range(max_len):
+                items.append({
+                    "ITEM_NAME": parsed["ITEM_NAME"][i] if i < len(parsed["ITEM_NAME"]) else "",
+                    "ITEM_QTY": parsed["ITEM_QTY"][i] if i < len(parsed["ITEM_QTY"]) else "",
+                    "ITEM_PRICE": parsed["ITEM_PRICE"][i] if i < len(parsed["ITEM_PRICE"]) else "",
+                    "ITEM_AMOUNT": parsed["ITEM_AMOUNT"][i] if i < len(parsed["ITEM_AMOUNT"]) else ""
+                })
+            
+            del parsed["ITEM_NAME"]
+            del parsed["ITEM_QTY"]
+            del parsed["ITEM_PRICE"]
+            del parsed["ITEM_AMOUNT"]
+            parsed["ITEMS"] = items
             return parsed
 
         return parse_labels_from_predictions(words, word_predicted_labels)
@@ -272,7 +288,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT, OTHER."
+        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
         import json
         response = self.generate_response(img_path, prompt)
         try:
@@ -322,7 +338,7 @@ class MiniCPMVModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT, OTHER."
+        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, và mảng ITEMS gồm các object chứa (ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT)."
         import json
         response = self.generate_response(img_path, prompt)
         try:
@@ -513,9 +529,11 @@ class ModelRegistry:
                 result = model.predict(img_path)
                 
         # Fill missing keys if any
-        for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST", "ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]:
+        for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
             if key not in result:
                 result[key] = ""
+        if "ITEMS" not in result:
+            result["ITEMS"] = []
                 
         return result, words, bboxes
 
