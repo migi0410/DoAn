@@ -238,8 +238,8 @@ export default function Home() {
               onChange={e => setBaseline(e.target.value)}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500"
             >
-              <option value="phobert">CRAFT + VietOCR + PhoBERT</option>
               <option value="phobert_paddle">PaddleOCR + PhoBERT</option>
+              <option value="phobert">CRAFT + VietOCR + PhoBERT</option>
               <option value="layoutlmv3">PaddleOCR + LayoutLMv3</option>
               <option value="layoutlmv3_craft">CRAFT + VietOCR + LayoutLMv3</option>
               <option value="qwen2_vl">Qwen2-VL</option>
