@@ -255,7 +255,8 @@ class Qwen2VLModelWrapper:
                         "alora_alpha", "alora_invocation_tokens", "lora_dropout_layer_iter", "lora_dropout_step_iter",
                         "modules_to_save", "arrow_config", "corda_config", "eva_config", "lora_ga_config",
                         "megatron_config", "megatron_core", "qalora_group_size", "target_parameters",
-                        "trainable_token_indices", "use_bdlora", "use_qalora", "ensure_weight_tying", "exclude_modules"
+                        "trainable_token_indices", "use_bdlora", "use_qalora", "ensure_weight_tying", "exclude_modules",
+                        "lora_bias"
                     ]:
                         if key in cfg:
                             del cfg[key]
