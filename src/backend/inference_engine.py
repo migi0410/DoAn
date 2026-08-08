@@ -328,6 +328,9 @@ class ModelRegistry:
         self.qwen_model = None
         self.minicpm_model = None
         
+        self.craft = None
+        self.vietocr_detector = None
+        
         base_dir = os.path.dirname(os.path.dirname(__file__))
         if os.path.exists("/workspace"): 
             self.models_dir = "/workspace"
@@ -389,11 +392,69 @@ class ModelRegistry:
                     pass
         return words, bboxes
 
+    def _init_craft_vietocr(self):
+        if self.craft is None:
+            print("Lazy Loading CRAFT and VietOCR...")
+            import torch
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            try:
+                from craft_text_detector import Craft
+                from vietocr.tool.predictor import Predictor
+                from vietocr.tool.config import Cfg
+            except ImportError:
+                print("Missing craft-text-detector or vietocr.")
+                return False
+                
+            self.craft = Craft(output_dir=None, crop_type="box", cuda=(device == 'cuda'))
+            config = Cfg.load_config_from_name('vgg_transformer')
+            config['cnn']['pretrained'] = False
+            config['device'] = device
+            self.vietocr_detector = Predictor(config)
+        return True
+
     def run_craft_vietocr(self, img_path):
-        print("Running CRAFT + VietOCR (Placeholder)...")
-        # TODO: Integrate actual CRAFT + VietOCR code here.
-        print("Warning: CRAFT + VietOCR not yet implemented. Falling back to PaddleOCR.")
-        return self.run_paddle_ocr(img_path)
+        import cv2
+        import numpy as np
+        from PIL import Image
+        
+        if not self._init_craft_vietocr():
+            print("Warning: CRAFT + VietOCR not installed. Falling back to PaddleOCR.")
+            return self.run_paddle_ocr(img_path)
+            
+        print("Running CRAFT + VietOCR...")
+        image_cv = cv2.imread(img_path)
+        image_rgb = cv2.cvtColor(image_cv, cv2.COLOR_BGR2RGB)
+        
+        prediction_result = self.craft.detect_text(img_path)
+        boxes = prediction_result["boxes"]
+        
+        words, bboxes = [], []
+        
+        def crop_poly(img, pts):
+            rect = cv2.boundingRect(pts.astype(np.int32))
+            x, y, w, h = rect
+            pad = 2
+            x = max(0, x - pad)
+            y = max(0, y - pad)
+            w = min(img.shape[1] - x, w + pad*2)
+            h = min(img.shape[0] - y, h + pad*2)
+            return img[y:y+h, x:x+w]
+            
+        for box in boxes:
+            cropped_cv = crop_poly(image_rgb, box)
+            if cropped_cv.shape[0] == 0 or cropped_cv.shape[1] == 0:
+                continue
+            cropped_pil = Image.fromarray(cropped_cv)
+            try:
+                text = self.vietocr_detector.predict(cropped_pil)
+            except:
+                text = ""
+                
+            if text.strip():
+                words.append(text)
+                bboxes.append(box.tolist())
+                
+        return words, bboxes
 
     def predict(self, baseline, img_path, preprocess=False):
         words, bboxes = [], []
