@@ -274,7 +274,7 @@ class Qwen2VLModelWrapper:
         inputs = inputs.to(self.device)
         
         with torch.no_grad():
-            generated_ids = self.model.generate(**inputs, max_new_tokens=256)
+            generated_ids = self.model.generate(**inputs, max_new_tokens=512, do_sample=False)
             generated_ids_trimmed = [
                 out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
             ]
@@ -363,8 +363,7 @@ class MiniCPMVModelWrapper:
             image=None,
             msgs=msgs,
             tokenizer=self.tokenizer,
-            sampling=True,
-            temperature=0.7
+            sampling=False
         )
         return res
 
