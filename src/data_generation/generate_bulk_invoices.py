@@ -12,7 +12,6 @@ if hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8')
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data_generation')))
 from invoice_templates import TEMPLATES_MAP
 from receipt_augmenter import ReceiptAugmenter
 from synthetic_generator import generate_random_invoice_data, render_html_with_data

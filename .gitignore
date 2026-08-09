@@ -61,7 +61,6 @@ data/test_mcocr_bert.*
 src_v2/
 src/pipelines_and_training/
 src/scripts/
-src/data_generation/
 src/baselines/
 src/utils/
 src/chuan_bi_data.py
