@@ -25,7 +25,7 @@ export const Navbar = () => {
             
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-colors text-sm text-slate-700"
+              className="hidden flex items-center gap-2 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-colors text-sm text-slate-700"
             >
               <Settings className="w-4 h-4 text-slate-500" />
               <span className="font-medium">Config API</span>
