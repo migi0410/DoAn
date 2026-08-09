@@ -528,14 +528,15 @@ class MiniCPMVModelWrapper:
         with open(img_path, "rb") as f:
             fname = os.path.basename(img_path)
             r = session.post(
-                f"{self.SERVER_URL}/predict",
+                f"{self.SERVER_URL}/chat",
+                data={"question": question},
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
             )
         if not r.ok:
             raise RuntimeError(f"MiniCPM proxy error {r.status_code}: {r.text}")
         data = r.json()
-        return str(data)
+        return data.get("answer", str(data))
 
 class ModelRegistry:
     _instance = None

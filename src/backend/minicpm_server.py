@@ -90,6 +90,23 @@ async def predict(file: UploadFile = File(...)):
         import traceback
         return JSONResponse(status_code=500, content={"error": str(e), "traceback": traceback.format_exc()})
 
+@app.post("/chat")
+def chat(file: UploadFile = File(...), question: str = Form(...)):
+    try:
+        from PIL import Image
+        tmp = f"/tmp/{uuid.uuid4()}.jpg"
+        with open(tmp, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+        image = Image.open(tmp).convert("RGB")
+        msgs = [{"role": "user", "content": [image, question]}]
+        res = _model.chat(image=None, msgs=msgs, tokenizer=_tokenizer,
+                          sampling=False, max_new_tokens=1024)
+        os.unlink(tmp)
+        return JSONResponse(content={"answer": res})
+    except Exception as e:
+        import traceback
+        return JSONResponse(status_code=500, content={"error": str(e), "traceback": traceback.format_exc()})
+
 def _parse_vlm_response(response: str) -> dict:
     try:
         if "```json" in response:
