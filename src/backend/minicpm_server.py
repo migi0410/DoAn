@@ -34,10 +34,22 @@ async def startup():
     print(f"[MiniCPM-Server] Loading base: {BASE_MODEL}")
     _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
     
+    import sys
+    import transformers
+    try:
+        from transformers.models.siglip.modeling_siglip import SiglipVisionTransformer
+        SiglipVisionTransformer._no_split_modules = ["SiglipVisionEncoderLayer"]
+    except Exception:
+        pass
+        
+    for name, module in sys.modules.items():
+        if hasattr(module, "SiglipVisionTransformer"):
+            module.SiglipVisionTransformer._no_split_modules = ["SiglipVisionEncoderLayer"]
+
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
         torch_dtype=torch.float16,
-        device_map={"llm": 0, "vpm": 0, "resampler": 0}
+        device_map="auto"
     )
     if os.path.exists(MODEL_DIR):
         print(f"[MiniCPM-Server] Loading LoRA: {MODEL_DIR}")
