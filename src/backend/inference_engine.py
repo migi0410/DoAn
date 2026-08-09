@@ -478,177 +478,80 @@ class Qwen2VLModelWrapper:
             return {"OTHER": response}
 
 class MiniCPMVModelWrapper:
+    """
+    HTTP proxy wrapper for MiniCPM-V.
+    The actual model runs in a separate venv (transformers==4.40) via minicpm_server.py
+    to avoid version conflicts with Qwen2-VL (needs transformers>=4.46).
+    """
+    SERVER_URL = "http://localhost:8001"
+
     def __init__(self, model_dir):
-        import torch, builtins, typing
-        # Inject typing into builtins so modeling_minicpmv.py (trust_remote_code) can use List etc.
-        for name in ["List", "Optional", "Dict", "Any", "Tuple", "Union", "Set", "Callable"]:
-            if not hasattr(builtins, name):
-                setattr(builtins, name, getattr(typing, name))
-        from transformers import AutoModel, AutoTokenizer
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        import subprocess, sys, time, requests as _req
+        self._proc = None
+        venv_python = "/workspace/minicpm_env/bin/python3"
+        server_script = os.path.join(os.path.dirname(__file__), "minicpm_server.py")
 
+        if not os.path.exists(venv_python):
+            raise RuntimeError(
+                "MiniCPM venv not found. Run setup_minicpm.sh first:\n"
+                "  bash /workspace/DoAn/setup_minicpm.sh"
+            )
+
+        # Check if server already running
         try:
-            import json
-            with open(os.path.join(model_dir, "adapter_config.json")) as f:
-                adapter_config = json.load(f)
-                base_model_id = adapter_config.get("base_model_name_or_path", "openbmb/MiniCPM-Llama3-V-2_5")
-        except:
-            base_model_id = "openbmb/MiniCPM-Llama3-V-2_5"
+            r = _req.get(f"{self.SERVER_URL}/health", timeout=2)
+            if r.ok:
+                print("[MiniCPM] Server already running.")
+                return
+        except Exception:
+            pass
 
-        print(f"Loading MiniCPM-V Base: {base_model_id}")
-        # Hook PreTrainedModel.__init_subclass__ so MiniCPMV gets all_tied_weights_keys
-        # automatically when the class is created by trust_remote_code
-        try:
-            from transformers.modeling_utils import PreTrainedModel
-            _orig_isc = PreTrainedModel.__dict__.get('__init_subclass__')
-            @classmethod
-            def _patched_isc(cls, **kw):
-                if _orig_isc:
-                    _orig_isc.__func__(cls, **kw) if hasattr(_orig_isc, '__func__') else _orig_isc(cls, **kw)
-                if 'all_tied_weights_keys' not in cls.__dict__:
-                    try:
-                        cls.all_tied_weights_keys = []
-                    except Exception:
-                        pass
-            PreTrainedModel.__init_subclass__ = _patched_isc
-            # Also patch the base class directly
-            if 'all_tied_weights_keys' not in PreTrainedModel.__dict__:
-                PreTrainedModel.all_tied_weights_keys = []
-        except Exception as _pe:
-            print(f"  (PreTrainedModel patch skipped: {_pe})")
-        self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
-        self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", dtype=torch.float16)
-
-        if os.path.exists(model_dir):
-            print(f"Loading MiniCPM-V LoRA: {model_dir}")
-            # Fix: 'all_tied_weights_keys' may be a read-only property on LlamaModel.
-            # Replace with a settable class-level attribute so PEFT can set it.
-            try:
-                self.model.all_tied_weights_keys = []
-            except AttributeError:
-                type(self.model).all_tied_weights_keys = []
-            from peft import PeftModel
-            try:
-                self.model = PeftModel.from_pretrained(self.model, model_dir)
-            except Exception as e:
-                print(f"PEFT load failed ({e}), using base model only.")
-
-        self.model.eval()
-
-    def generate_response(self, img_path, prompt):
-        from PIL import Image
-        image = Image.open(img_path).convert('RGB')
-        msgs = [{'role': 'user', 'content': [image, prompt]}]
-        res = self.model.chat(
-            image=None,
-            msgs=msgs,
-            tokenizer=self.tokenizer,
-            sampling=False,
-            max_new_tokens=2048
+        # Start server as subprocess
+        env = {**os.environ, "MINICPM_MODEL_DIR": model_dir}
+        self._proc = subprocess.Popen(
+            [venv_python, server_script],
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
         )
-        return res
-
-    def chat(self, img_path, question):
-        return self.generate_response(img_path, question)
+        print("[MiniCPM] Starting subprocess server...")
+        # Wait up to 180s for server to be ready
+        for _ in range(90):
+            time.sleep(2)
+            try:
+                r = _req.get(f"{self.SERVER_URL}/health", timeout=2)
+                if r.ok:
+                    print("[MiniCPM] Subprocess server ready!")
+                    return
+            except Exception:
+                pass
+        raise RuntimeError("MiniCPM server did not start in time.")
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
-        import json, re
-        response = self.generate_response(img_path, prompt)
-        print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
-        try:
-            with open("debug_vlm.txt", "w", encoding="utf-8") as f:
-                f.write(response)
-        except: pass
-        
-        \
-        try:
-            \
-            if "```json" in response:
-                response = response.split("```json")[1].split("```")[0].strip()
-            elif "```" in response:
-                response = response.split("```")[1].strip()
-            
-            start_idx = response.find("{")
-            if start_idx != -1:
-                end_idx = response.rfind("}")
-                while end_idx > start_idx:
-                    try:
-                        \
-                        candidate = response[start_idx:end_idx+1]
-                        data = json.loads(candidate)
-                        break
-                    except json.JSONDecodeError:
-                        \
-                        end_idx = response.rfind("}", start_idx, end_idx)
-                else:
-                    data = json.loads(response[start_idx:])
-            else:
-                data = json.loads(response)
-                
-            data_upper = {k.upper(): v for k, v in data.items()}
-            
-            \
-            def unpack_val(val):
-                if isinstance(val, list) and len(val) > 0:
-                    return str(val[0])
-                return str(val) if val is not None else ""
-                
-            item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
-            items = []
-            
-            \
-            for k in item_keys:
-                if k in data_upper and not isinstance(data_upper[k], list):
-                    if isinstance(data_upper[k], str) and data_upper[k] != "":
-                        \
-                        data_upper[k] = [data_upper[k]]
-                    else:
-                        data_upper[k] = []
-            
-            max_len = 0
-            for k in item_keys:
-                if k in data_upper and isinstance(data_upper[k], list):
-                    max_len = max(max_len, len(data_upper[k]))
-            
-            if max_len > 0:
-                for i in range(max_len):
-                    item = {}
-                    for k in item_keys:
-                        if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
-                            \
-                            item[k] = unpack_val(data_upper[k][i])
-                        else:
-                            item[k] = ""
-                    items.append(item)
-                    
-            clean_data = {}
-            for k, v in data_upper.items():
-                if k in item_keys:
-                    continue
-                elif k == "ITEMS" and isinstance(v, list):
-                    \
-                    clean_items = []
-                    for item in v:
-                        clean_item = {}
-                        for ik, iv in item.items():
-                            ik_upper = ik.upper()
-                            if ik_upper == "SL":
-                                ik_upper = "ITEM_QTY"
-                            clean_item[ik_upper] = unpack_val(iv)
-                        clean_items.append(clean_item)
-                    clean_data[k] = clean_items
-                else:
-                    clean_data[k] = unpack_val(v)
-                        
-            if items:
-                clean_data["ITEMS"] = items
-            
-            print(f"===== PARSED CLEAN DATA (MiniCPM) =====\n{clean_data}\n==============================")
-            return clean_data
-        except Exception as e:
-            print(f"===== PARSER ERROR (MiniCPM) =====\n{e}\nRESPONSE WAS:\n{response}\n==================================")
-            return {"OTHER": response}
+        import requests
+        with open(img_path, "rb") as f:
+            fname = os.path.basename(img_path)
+            r = requests.post(
+                f"{self.SERVER_URL}/predict",
+                files={"file": (fname, f, "image/jpeg")},
+                timeout=120,
+            )
+        r.raise_for_status()
+        return r.json()
+
+    def chat(self, img_path, question):
+        import requests
+        with open(img_path, "rb") as f:
+            fname = os.path.basename(img_path)
+            r = requests.post(
+                f"{self.SERVER_URL}/predict",
+                files={"file": (fname, f, "image/jpeg")},
+                timeout=120,
+            )
+        r.raise_for_status()
+        data = r.json()
+        return str(data)
+
 
 class ModelRegistry:
     _instance = None
@@ -748,10 +651,16 @@ class ModelRegistry:
             return self.qwen_model
         elif model_name == "minicpm_v":
             if self.minicpm_model is None:
-                # MiniCPM-Llama3-V-2_5 requires transformers<=4.40 (trust_remote_code incompatible with newer versions)
-                # Disabled to avoid startup crash. Re-enable when environment is pinned.
-                print("MiniCPM-V: skipped (transformers version incompatible with MiniCPM remote code)")
-                return None
+                print("Lazy Loading MiniCPM-V (via subprocess server)...")
+                path_official = os.path.join(self.models_dir, "minicpm_v_lora_official")
+                path_legacy0  = os.path.join(self.models_dir, "checkpoint-728")
+                path_legacy1  = os.path.join(self.models_dir, "minicpm_lora_swift")
+                path = (path_official if os.path.exists(path_official)
+                        else path_legacy0 if os.path.exists(path_legacy0)
+                        else path_legacy1 if os.path.exists(path_legacy1)
+                        else path_official)
+                print(f"MiniCPM-V path: {path}")
+                self.minicpm_model = MiniCPMVModelWrapper(path)
             return self.minicpm_model
         return None
 
