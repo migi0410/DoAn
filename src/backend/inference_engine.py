@@ -112,7 +112,8 @@ class LayoutLMModel:
     def __init__(self, model_dir):
         import torch
         from transformers import AutoProcessor, AutoModelForTokenClassification
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Force CPU to avoid CUDA 'GET was unable to find an engine' error for conv2d patch_embed
+        self.device = torch.device('cpu')
         
         try:
             self.processor = AutoProcessor.from_pretrained(model_dir)
@@ -158,10 +159,10 @@ class LayoutLMModel:
             image_pil, words, boxes=normalized_boxes, return_tensors="pt", truncation=True, max_length=512
         )
         
-        encoding_gpu = {k: v.to(self.device) for k, v in encoding.items()}
+        encoding_device = {k: v.to(self.device) for k, v in encoding.items()}
         
         with torch.no_grad():
-            outputs = self.model(**encoding_gpu)
+            outputs = self.model(**encoding_device)
             
         predictions = torch.argmax(outputs.logits, dim=-1).squeeze().tolist()
         word_ids = encoding.word_ids()
