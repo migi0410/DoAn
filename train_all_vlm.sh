@@ -86,7 +86,7 @@ swift sft \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
     --max_length 2048 \
-    --save_steps 200 \
+    --save_steps 100 \
     --save_total_limit 3 \
     --bf16 true \
     --gradient_checkpointing true \
@@ -123,7 +123,7 @@ swift sft \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 16 \
     --max_length 2048 \
-    --save_steps 200 \
+    --save_steps 100 \
     --save_total_limit 3 \
     --bf16 true \
     --gradient_checkpointing true \
