@@ -238,8 +238,9 @@ class Qwen2VLModelWrapper:
             base_model_id = "Qwen/Qwen2-VL-2B-Instruct"
             
         print(f"Loading Qwen2-VL Base: {base_model_id}")
+        import torch
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-            base_model_id, device_map="auto"
+            base_model_id, device_map="auto", torch_dtype=torch.float16
         )
         
         if os.path.exists(model_dir):
