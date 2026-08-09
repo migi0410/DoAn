@@ -653,13 +653,24 @@ class ModelRegistry:
         elif model_name == "minicpm_v":
             if self.minicpm_model is None:
                 print("Lazy Loading MiniCPM-V (via subprocess server)...")
-                path_official = os.path.join(self.models_dir, "minicpm_v_lora_official")
-                path_legacy0  = os.path.join(self.models_dir, "checkpoint-728")
-                path_legacy1  = os.path.join(self.models_dir, "minicpm_lora_swift")
-                path = (path_official if os.path.exists(path_official)
-                        else path_legacy0 if os.path.exists(path_legacy0)
-                        else path_legacy1 if os.path.exists(path_legacy1)
-                        else path_official)
+                import glob
+                # Search both inside DoAn and directly in models_dir (/workspace)
+                search_paths = [
+                    os.path.join(self.models_dir, "minicpm_lora_swift", "**", "checkpoint-*", "adapter_config.json"),
+                    os.path.join(self.models_dir, "DoAn", "minicpm_lora_swift", "**", "checkpoint-*", "adapter_config.json"),
+                    os.path.join(self.models_dir, "**", "minicpm_v_lora*", "adapter_config.json")
+                ]
+                
+                matches = []
+                for sp in search_paths:
+                    matches.extend(glob.glob(sp, recursive=True))
+                    
+                if matches:
+                    # Use the latest checkpoint found
+                    path = os.path.dirname(sorted(matches)[-1])
+                else:
+                    path = os.path.join(self.models_dir, "minicpm_v_lora_official")
+                    
                 print(f"MiniCPM-V path: {path}")
                 self.minicpm_model = MiniCPMVModelWrapper(path)
             return self.minicpm_model

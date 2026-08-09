@@ -113,8 +113,14 @@ def _parse_vlm_response(response: str) -> dict:
             items.append(item)
 
         clean = {k: unpack(v) for k, v in data_upper.items() if k not in item_keys and k != "ITEMS"}
-        if items:
+        
+        if "ITEMS" in data_upper and isinstance(data_upper["ITEMS"], list) and len(data_upper["ITEMS"]) > 0:
+            clean["ITEMS"] = data_upper["ITEMS"]
+        elif items:
             clean["ITEMS"] = items
+        else:
+            clean["ITEMS"] = []
+            
         return clean
     except Exception as e:
         return {"OTHER": response, "parse_error": str(e)}
