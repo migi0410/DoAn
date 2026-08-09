@@ -618,10 +618,13 @@ class ModelRegistry:
         
     def _initialize(self):
         print("Initializing Model Registry...")
+        import torch
+        _dev = "gpu" if torch.cuda.is_available() else "cpu"
         try:
-            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", use_gpu=True)
-        except Exception:
-            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", use_gpu=False)
+            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", device=_dev)
+        except TypeError:
+            # fallback for older paddleocr API
+            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", use_gpu=torch.cuda.is_available())
         self.rule_model = None
         self.phobert_model = None
         self.layoutlm_model = None
@@ -698,16 +701,31 @@ class ModelRegistry:
 
     def run_paddle_ocr(self, img_path):
         print("Running PaddleOCR...")
-        result = self.ocr_paddle.ocr(img_path, cls=False)
+        try:
+            result = self.ocr_paddle.ocr(img_path)
+        except TypeError:
+            result = self.ocr_paddle.ocr(img_path, cls=False)
         words, bboxes = [], []
-        if result and result[0]:
-            for line in result[0]:
+        if not result:
+            return words, bboxes
+        # v4 returns list of dicts; v2.7 returns [[line, ...]]
+        page = result[0] if isinstance(result, list) else result
+        if isinstance(page, dict):
+            for text, box in zip(page.get("rec_texts", []), page.get("rec_boxes", [])):
+                words.append(text)
+                bboxes.append(box.tolist() if hasattr(box, "tolist") else box)
+        elif isinstance(page, list):
+            for item in page:
                 try:
-                    box = line[0]
-                    text = line[1][0]
-                    if isinstance(box, (list, tuple)) and not isinstance(box, str):
-                        bboxes.append(box)
-                        words.append(text)
+                    if isinstance(item, dict):
+                        words.append(item.get("rec_text", ""))
+                        box = item.get("rec_box", [])
+                        bboxes.append(box.tolist() if hasattr(box, "tolist") else box)
+                    else:
+                        box, (text, _conf) = item[0], item[1]
+                        if isinstance(box, (list, tuple)):
+                            bboxes.append(box)
+                            words.append(text)
                 except Exception:
                     pass
         return words, bboxes
