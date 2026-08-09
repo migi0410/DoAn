@@ -812,7 +812,16 @@ class ModelRegistry:
         for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
             if key not in result:
                 result[key] = ""
-        if "ITEMS" not in result:
+            elif isinstance(result[key], dict):
+                # If the model hallucinated an object, try to extract its name/value, or just stringify it
+                val = result[key]
+                result[key] = str(val.get("name", val.get("value", val)))
+            elif isinstance(result[key], list):
+                result[key] = str(result[key][0]) if result[key] else ""
+            else:
+                result[key] = str(result[key])
+        
+        if "ITEMS" not in result or not isinstance(result["ITEMS"], list):
             result["ITEMS"] = []
                 
         return result, words, bboxes
