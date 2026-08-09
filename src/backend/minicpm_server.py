@@ -77,8 +77,15 @@ async def predict(file: UploadFile = File(...)):
         msgs = [{"role": "user", "content": [image, prompt]}]
         res = _model.chat(image=None, msgs=msgs, tokenizer=_tokenizer,
                           sampling=False, max_new_tokens=2048)
+        print(f"================ VLM RAW RESPONSE ================\n{res}\n================================================")
+        try:
+            with open("/workspace/DoAn/debug_minicpm.txt", "w", encoding="utf-8") as f:
+                f.write(res)
+        except: pass
+        
         os.unlink(tmp)
         result = _parse_vlm_response(res)
+        print(f"================ PARSED RESULT ================\n{result}\n================================================")
         return JSONResponse(content=result)
     except Exception as e:
         import traceback
