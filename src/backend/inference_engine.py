@@ -430,33 +430,11 @@ class MiniCPMVModelWrapper:
     SERVER_URL = "http://127.0.0.1:8005"
 
     def __init__(self, model_dir):
-        import subprocess, sys, time, requests as _req
+        import subprocess, sys, time, requests as _req, os
         self._proc = None
         
         self.session = _req.Session()
         self.session.trust_env = False
-        
-    def shutdown(self):
-        """Kills the subprocess to free VRAM"""
-        if self._proc is not None:
-            print("Terminating MiniCPM-V server...")
-            try:
-                import psutil
-                parent = psutil.Process(self._proc.pid)
-                for child in parent.children(recursive=True):
-                    child.kill()
-                parent.kill()
-            except:
-                pass
-            self._proc.terminate()
-            self._proc = None
-        else:
-            # Maybe it was running from a previous instance, try to kill port 8005
-            import subprocess
-            try:
-                subprocess.run(["fuser", "-k", "8005/tcp"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-            except:
-                pass
         
         venv_python = "/workspace/minicpm_env/bin/python3"
         server_script = os.path.join(os.path.dirname(__file__), "minicpm_server.py")
@@ -496,9 +474,31 @@ class MiniCPMVModelWrapper:
             except Exception:
                 pass
         raise RuntimeError("MiniCPM server did not start in time (waited 600s).")
+        
+    def shutdown(self):
+        """Kills the subprocess to free VRAM"""
+        if self._proc is not None:
+            print("Terminating MiniCPM-V server...")
+            try:
+                import psutil
+                parent = psutil.Process(self._proc.pid)
+                for child in parent.children(recursive=True):
+                    child.kill()
+                parent.kill()
+            except:
+                pass
+            self._proc.terminate()
+            self._proc = None
+        else:
+            # Maybe it was running from a previous instance, try to kill port 8005
+            import subprocess
+            try:
+                subprocess.run(["fuser", "-k", "8005/tcp"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except:
+                pass
 
     def predict(self, img_path):
-        import requests
+        import requests, os
         session = requests.Session()
         session.trust_env = False
         with open(img_path, "rb") as f:
@@ -513,7 +513,7 @@ class MiniCPMVModelWrapper:
         return r.json()
 
     def chat(self, img_path, question):
-        import requests
+        import requests, os
         session = requests.Session()
         session.trust_env = False
         with open(img_path, "rb") as f:
@@ -527,7 +527,6 @@ class MiniCPMVModelWrapper:
             raise RuntimeError(f"MiniCPM proxy error {r.status_code}: {r.text}")
         data = r.json()
         return str(data)
-
 
 class ModelRegistry:
     _instance = None
