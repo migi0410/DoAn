@@ -371,7 +371,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ... từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
@@ -380,9 +380,7 @@ class Qwen2VLModelWrapper:
                 f.write(response)
         except: pass
         
-        \
         try:
-            \
             if "```json" in response:
                 response = response.split("```json")[1].split("```")[0].strip()
             elif "```" in response:
@@ -391,24 +389,43 @@ class Qwen2VLModelWrapper:
             start_idx = response.find("{")
             if start_idx != -1:
                 end_idx = response.rfind("}")
-                while end_idx > start_idx:
-                    try:
-                        \
-                        candidate = response[start_idx:end_idx+1]
-                        data = json.loads(candidate)
-                        break
-                    except json.JSONDecodeError:
-                        \
-                        end_idx = response.rfind("}", start_idx, end_idx)
-                else:
-                    data = json.loads(response[start_idx:])
-            else:
-                data = json.loads(response)
-                
-            data_upper = {k.upper(): v for k, v in data.items()}
+                if end_idx > start_idx:
+                    response = response[start_idx:end_idx+1]
             
-            \
-            def unpack_val(val):
+            parsed = json.loads(response)
+            parsed = {k.upper(): v for k, v in parsed.items()}
+            
+            for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
+                if key not in parsed:
+                    parsed[key] = ""
+            
+            if "ITEMS" not in parsed:
+                items = []
+                item_names = parsed.get("ITEM_NAME", [])
+                item_qtys = parsed.get("ITEM_QTY", [])
+                item_prices = parsed.get("ITEM_PRICE", [])
+                item_amounts = parsed.get("ITEM_AMOUNT", [])
+                
+                if not isinstance(item_names, list): item_names = [item_names]
+                if not isinstance(item_qtys, list): item_qtys = [item_qtys]
+                if not isinstance(item_prices, list): item_prices = [item_prices]
+                if not isinstance(item_amounts, list): item_amounts = [item_amounts]
+                
+                num_items = max(len(item_names), len(item_qtys), len(item_prices), len(item_amounts))
+                for i in range(num_items):
+                    items.append({
+                        "ITEM_NAME": item_names[i] if i < len(item_names) else "",
+                        "ITEM_QTY": item_qtys[i] if i < len(item_qtys) else "",
+                        "ITEM_PRICE": item_prices[i] if i < len(item_prices) else "",
+                        "ITEM_AMOUNT": item_amounts[i] if i < len(item_amounts) else "",
+                    })
+                parsed["ITEMS"] = items
+            return parsed, [], []
+        except Exception as e:
+            print(f"Failed to parse VLM response: {e}")
+            return {}, [], []
+
+    def unpack_val(val):
                 if isinstance(val, list) and len(val) > 0:
                     return str(val[0])
                 return str(val) if val is not None else ""

@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { useConfig } from "@/context/ConfigContext";
-import { UploadCloud, Image as ImageIcon, Send, FileJson, Loader2, Bot, Layers, CheckCircle2, Download, Trash2, Play, XCircle } from "lucide-react";
+import { UploadCloud, Image as ImageIcon, Send, FileJson, Loader2, Bot, Layers, CheckCircle2, Download, Trash2, Play, XCircle, RotateCw } from "lucide-react";
 import axios from "axios";
 
 // Unified state for a single document
@@ -80,6 +80,42 @@ export default function Home() {
       }
       return next;
     });
+  };
+
+  const rotateDocument = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const doc = documents[index];
+    if (doc.status === "processing") return;
+    
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.height;
+      canvas.height = img.width;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(90 * Math.PI / 180);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+      
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const newFile = new File([blob], doc.file.name, { type: doc.file.type || "image/jpeg" });
+        setDocuments(prev => {
+          const next = [...prev];
+          next[index] = { 
+            ...next[index], 
+            file: newFile, 
+            preview: URL.createObjectURL(newFile),
+            status: "pending",
+            result: null,
+            chatHistory: []
+          };
+          return next;
+        });
+      }, doc.file.type || "image/jpeg");
+    };
+    img.src = doc.preview;
   };
 
   const clearAll = () => {
@@ -357,12 +393,22 @@ export default function Home() {
                       {doc.status === "error" && <span className="text-[10px] uppercase font-bold text-red-600 flex items-center gap-1"><XCircle className="w-3 h-3"/> Error</span>}
                     </div>
                   </div>
-                  <button 
-                    onClick={(e) => removeDocument(idx, e)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all">
+                    <button 
+                      onClick={(e) => rotateDocument(idx, e)}
+                      title="Rotate 90°"
+                      className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                    >
+                      <RotateCw className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => removeDocument(idx, e)}
+                      title="Remove"
+                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
