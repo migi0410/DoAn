@@ -36,16 +36,19 @@ async def startup():
     
     import sys
     import transformers
-    try:
-        from transformers.models.siglip.modeling_siglip import SiglipVisionTransformer
-        SiglipVisionTransformer._no_split_modules = ["SiglipVisionEncoderLayer"]
-    except Exception:
-        pass
+    import accelerate
+    
+    # 1. Trigger dynamic module import by creating a lightweight meta model
+    _config = AutoConfig.from_pretrained(BASE_MODEL, trust_remote_code=True)
+    with accelerate.init_empty_weights():
+        _ = AutoModel.from_config(_config, trust_remote_code=True)
         
+    # 2. Now that the custom Siglip is loaded in sys.modules, patch it!
     for name, module in sys.modules.items():
         if hasattr(module, "SiglipVisionTransformer"):
             module.SiglipVisionTransformer._no_split_modules = ["SiglipVisionEncoderLayer"]
 
+    # 3. Load the actual model with 'auto' mapping flawlessly
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
         torch_dtype=torch.float16,
