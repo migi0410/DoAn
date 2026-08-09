@@ -72,8 +72,7 @@ async def predict(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, f)
         image = Image.open(tmp).convert("RGB")
         prompt = ("Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, "
-                  "ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON. "
-                  "TUYỆT ĐỐI CHỈ lấy thông tin có trong ảnh, KHÔNG ĐƯỢC tự bịa thêm dữ liệu, KHÔNG giải thích.")
+                  "ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON.")
         msgs = [{"role": "user", "content": [image, prompt]}]
         res = _model.chat(image=None, msgs=msgs, tokenizer=_tokenizer,
                           sampling=False, max_new_tokens=2048)

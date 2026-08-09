@@ -371,7 +371,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON. TUYỆT ĐỐI CHỈ lấy thông tin có trong ảnh, KHÔNG ĐƯỢC tự bịa thêm dữ liệu, KHÔNG giải thích."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
