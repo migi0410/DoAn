@@ -501,8 +501,14 @@ class MiniCPMVModelWrapper:
 
         if os.path.exists(model_dir):
             print(f"Loading MiniCPM-V LoRA: {model_dir}")
+            # Patch missing attribute required by newer PEFT versions
+            if not hasattr(self.model, 'all_tied_weights_keys'):
+                self.model.all_tied_weights_keys = []
             from peft import PeftModel
-            self.model = PeftModel.from_pretrained(self.model, model_dir)
+            try:
+                self.model = PeftModel.from_pretrained(self.model, model_dir)
+            except Exception as e:
+                print(f"PEFT load failed ({e}), using base model only.")
 
         self.model.eval()
 
