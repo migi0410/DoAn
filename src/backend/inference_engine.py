@@ -698,17 +698,34 @@ class ModelRegistry:
 
     def run_paddle_ocr(self, img_path):
         print("Running PaddleOCR...")
-        result = self.ocr_paddle.ocr(img_path, cls=False)
+        try:
+            result = self.ocr_paddle.ocr(img_path)
+        except TypeError:
+            result = self.ocr_paddle.predict(img_path)
         words, bboxes = [], []
-        if result and result[0]:
-            for line in result[0]:
+        # Handle both old format (list of lines) and new format (list of dicts)
+        raw = result[0] if result and isinstance(result, list) else result
+        if isinstance(raw, dict):
+            # New PaddleOCR v4 format: dict with 'rec_texts', 'rec_boxes'
+            texts = raw.get("rec_texts", [])
+            boxes = raw.get("rec_boxes", raw.get("dt_boxes", []))
+            for text, box in zip(texts, boxes):
+                words.append(text)
+                bboxes.append(box.tolist() if hasattr(box, "tolist") else box)
+        elif isinstance(raw, list):
+            for item in raw:
                 try:
-                    box = line[0]
-                    text = line[1][0]
-                    if isinstance(box, (list, tuple)) and not isinstance(box, str):
-                        bboxes.append(box)
-                        words.append(text)
-                except:
+                    if isinstance(item, dict):
+                        words.append(item.get("rec_text", ""))
+                        box = item.get("rec_box", item.get("dt_box", []))
+                        bboxes.append(box.tolist() if hasattr(box, "tolist") else box)
+                    else:
+                        box = item[0]
+                        text = item[1][0] if isinstance(item[1], (list, tuple)) else item[1]
+                        if isinstance(box, (list, tuple)) and not isinstance(box, str):
+                            bboxes.append(box)
+                            words.append(text)
+                except Exception:
                     pass
         return words, bboxes
 
