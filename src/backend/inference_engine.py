@@ -648,7 +648,13 @@ class ModelRegistry:
             self.models_dir = os.path.join(base_dir, "trained_models")
             
         print(f"Models Directory configured to: {self.models_dir}")
-        print("Model Registry Initialized (Lazy Loading mode)...")
+        print("Eager loading all models...")
+        self.get_model("rule_based")
+        self.get_model("phobert")
+        self.get_model("layoutlmv3")
+        self.get_model("qwen2_vl")
+        self.get_model("minicpm_v")
+        print("All models loaded and ready!")
 
     def get_model(self, model_name):
         if model_name == "rule_based":
