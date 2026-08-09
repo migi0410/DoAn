@@ -281,7 +281,10 @@ export default function Home() {
             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">OCR:</label>
             <select 
               value={ocrEngine} 
-              onChange={e => setOcrEngine(e.target.value)}
+              onChange={e => {
+                setOcrEngine(e.target.value);
+                setDocuments(prev => prev.map(d => ({ ...d, status: "pending", result: null, chatHistory: [] })));
+              }}
               disabled={kieModel === "qwen2_vl" || kieModel === "minicpm_v"}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500 disabled:opacity-50"
             >
@@ -300,6 +303,7 @@ export default function Home() {
                 setKieModel(newModel);
                 if (newModel === "qwen2_vl" || newModel === "minicpm_v") setOcrEngine("none");
                 else if (ocrEngine === "none") setOcrEngine("craft");
+                setDocuments(prev => prev.map(d => ({ ...d, status: "pending", result: null, chatHistory: [] })));
               }}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500"
             >
