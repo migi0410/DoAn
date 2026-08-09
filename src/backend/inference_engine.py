@@ -111,9 +111,8 @@ class PhoBertModel:
 class LayoutLMModel:
     def __init__(self, model_dir):
         import torch
-        from transformers import AutoProcessor, AutoModelForTokenClassification
-        # Force CPU to avoid CUDA 'GET was unable to find an engine' error for conv2d patch_embed
-        self.device = torch.device('cpu')
+        # Use GPU, but we will disable cudnn for the forward pass to avoid the 'GET was unable to find an engine' error
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         try:
             self.processor = AutoProcessor.from_pretrained(model_dir)
@@ -159,10 +158,12 @@ class LayoutLMModel:
             image_pil, words, boxes=normalized_boxes, return_tensors="pt", truncation=True, max_length=512
         )
         
-        encoding_device = {k: v.to(self.device) for k, v in encoding.items()}
+        encoding_gpu = {k: v.to(self.device) for k, v in encoding.items()}
         
         with torch.no_grad():
-            outputs = self.model(**encoding_device)
+            # Disable cudnn explicitly for this forward pass to avoid CUDA engine crash
+            with torch.backends.cudnn.flags(enabled=False):
+                outputs = self.model(**encoding_gpu)
             
         predictions = torch.argmax(outputs.logits, dim=-1).squeeze().tolist()
         word_ids = encoding.word_ids()
