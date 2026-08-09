@@ -241,7 +241,7 @@ class Qwen2VLModelWrapper:
         try:
             from transformers import BitsAndBytesConfig
             quantization_config = BitsAndBytesConfig(
-                load_in_4bit=True,
+                load_in_8bit=True,
                 llm_int8_enable_fp32_cpu_offload=True
             )
             self.model = Qwen2VLForConditionalGeneration.from_pretrained(
