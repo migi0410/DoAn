@@ -357,7 +357,7 @@ class Qwen2VLModelWrapper:
         inputs = inputs.to(self.device)
         
         with torch.no_grad():
-            generated_ids = self.model.generate(**inputs, max_new_tokens=2048, do_sample=False)
+            generated_ids = self.model.generate(**inputs, max_new_tokens=2048, do_sample=False, repetition_penalty=1.05)
             generated_ids_trimmed = [
                 out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
             ]
@@ -371,7 +371,7 @@ class Qwen2VLModelWrapper:
         return self.generate_response(img_path, question)
 
     def predict(self, img_path):
-        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
+        prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON. TUYỆT ĐỐI CHỈ lấy thông tin có trong ảnh, KHÔNG ĐƯỢC tự bịa thêm dữ liệu, KHÔNG giải thích."
         import json, re
         response = self.generate_response(img_path, prompt)
         print(f"================ VLM RAW RESPONSE ================\n{response}\n================================================")
