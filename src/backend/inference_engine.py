@@ -52,6 +52,7 @@ class PhoBertModel:
             if word_idx is not None and word_predicted_labels[word_idx] == "O":
                 word_predicted_labels[word_idx] = self.id2label[pred]
                 
+        _LABEL_MAP = {"ITEM_QUANTITY": "ITEM_QTY", "ITEM_TOTAL": "ITEM_AMOUNT"}
         def parse_labels_from_predictions(words, labels):
             parsed = {
                 "SELLER": [], "ADDRESS": [], "TIMESTAMP": [], "TOTAL_COST": [],
@@ -61,7 +62,7 @@ class PhoBertModel:
             for word, label in zip(words, labels):
                 if label != "O":
                     bio_tag = label[0]
-                    entity_type = label[2:]
+                    entity_type = _LABEL_MAP.get(label[2:], label[2:])
                     if bio_tag == "B":
                         if current_entity["label"]:
                             parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
@@ -160,6 +161,7 @@ class LayoutLMModel:
             if word_idx is not None and word_predicted_labels[word_idx] == "O":
                 word_predicted_labels[word_idx] = self.id2label[pred]
                 
+        _LABEL_MAP = {"ITEM_QUANTITY": "ITEM_QTY", "ITEM_TOTAL": "ITEM_AMOUNT"}
         def parse_labels_from_predictions(words, labels):
             parsed = {
                 "SELLER": [], "ADDRESS": [], "TIMESTAMP": [], "TOTAL_COST": [],
@@ -169,7 +171,7 @@ class LayoutLMModel:
             for word, label in zip(words, labels):
                 if label != "O":
                     bio_tag = label[0]
-                    entity_type = label[2:]
+                    entity_type = _LABEL_MAP.get(label[2:], label[2:])
                     if bio_tag == "B":
                         if current_entity["label"]:
                             parsed[current_entity["label"]].append(" ".join(current_entity["words"]))
