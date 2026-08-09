@@ -239,8 +239,14 @@ class Qwen2VLModelWrapper:
             
         print(f"Loading Qwen2-VL Base: {base_model_id}")
         import torch
+        from transformers import BitsAndBytesConfig
+        quant_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_quant_type="nf4",
+        )
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-            base_model_id, device_map="auto", torch_dtype=torch.float16
+            base_model_id, device_map="auto", quantization_config=quant_config
         )
         
         if os.path.exists(model_dir):
