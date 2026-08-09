@@ -60,17 +60,23 @@ class ImagePreprocessor:
         if w > 1500:
             ratio = 1500.0 / w
             image = cv2.resize(image, (int(w * ratio), int(h * ratio)))
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if len(image.shape) == 3 else image
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-        enhanced = clahe.apply(blurred)
-        binary = cv2.adaptiveThreshold(enhanced, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 5)
-        blur_for_unsharp = cv2.GaussianBlur(binary, (5, 5), 1.0)
-        sharpened = float(2.0) * binary - float(1.0) * blur_for_unsharp
-        sharpened = np.maximum(sharpened, np.zeros(sharpened.shape))
-        sharpened = np.minimum(sharpened, 255 * np.ones(sharpened.shape))
-        sharpened = sharpened.round().astype(np.uint8)
-        return cv2.cvtColor(sharpened, cv2.COLOR_GRAY2BGR)
+            
+        # 1. Gentle Unsharp Masking
+        gaussian = cv2.GaussianBlur(image, (0, 0), 2.0)
+        sharpened = cv2.addWeighted(image, 1.5, gaussian, -0.5, 0)
+        
+        # 2. Mild Contrast Enhancement via LAB color space (preserves colors)
+        try:
+            lab = cv2.cvtColor(sharpened, cv2.COLOR_BGR2LAB)
+            l, a, b = cv2.split(lab)
+            clahe = cv2.createCLAHE(clipLimit=1.2, tileGridSize=(8, 8))
+            l_eq = clahe.apply(l)
+            lab_eq = cv2.merge((l_eq, a, b))
+            enhanced = cv2.cvtColor(lab_eq, cv2.COLOR_LAB2BGR)
+            return enhanced
+        except Exception:
+            # Fallback if image is somehow grayscale
+            return sharpened
 
     @staticmethod
     def crop_document(image: np.ndarray) -> np.ndarray:
