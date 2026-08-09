@@ -496,6 +496,26 @@ class MiniCPMVModelWrapper:
             base_model_id = "openbmb/MiniCPM-Llama3-V-2_5"
 
         print(f"Loading MiniCPM-V Base: {base_model_id}")
+        # Hook PreTrainedModel.__init_subclass__ so MiniCPMV gets all_tied_weights_keys
+        # automatically when the class is created by trust_remote_code
+        try:
+            from transformers.modeling_utils import PreTrainedModel
+            _orig_isc = PreTrainedModel.__dict__.get('__init_subclass__')
+            @classmethod
+            def _patched_isc(cls, **kw):
+                if _orig_isc:
+                    _orig_isc.__func__(cls, **kw) if hasattr(_orig_isc, '__func__') else _orig_isc(cls, **kw)
+                if 'all_tied_weights_keys' not in cls.__dict__:
+                    try:
+                        cls.all_tied_weights_keys = []
+                    except Exception:
+                        pass
+            PreTrainedModel.__init_subclass__ = _patched_isc
+            # Also patch the base class directly
+            if 'all_tied_weights_keys' not in PreTrainedModel.__dict__:
+                PreTrainedModel.all_tied_weights_keys = []
+        except Exception as _pe:
+            print(f"  (PreTrainedModel patch skipped: {_pe})")
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
         self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", dtype=torch.float16)
 
