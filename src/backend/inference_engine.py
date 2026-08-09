@@ -658,7 +658,7 @@ class ModelRegistry:
                 search_paths = [
                     os.path.join(self.models_dir, "minicpm_lora_swift", "**", "checkpoint-*", "adapter_config.json"),
                     os.path.join(self.models_dir, "DoAn", "minicpm_lora_swift", "**", "checkpoint-*", "adapter_config.json"),
-                    os.path.join(self.models_dir, "**", "minicpm_v_lora*", "adapter_config.json")
+                    os.path.join(self.models_dir, "minicpm_v_lora_official", "**", "adapter_config.json")
                 ]
                 
                 matches = []
