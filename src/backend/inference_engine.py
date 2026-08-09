@@ -482,7 +482,7 @@ class Qwen2VLModelWrapper:
 
 class MiniCPMVModelWrapper:
     """Wrapper to communicate with the isolated MiniCPM-V server"""
-    SERVER_URL = "http://127.0.0.1:8001"
+    SERVER_URL = "http://127.0.0.1:8005"
 
     def __init__(self, model_dir):
         import subprocess, sys, time, requests as _req
