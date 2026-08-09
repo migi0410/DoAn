@@ -51,9 +51,10 @@ async def startup():
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
         torch_dtype=torch.float16,
+        device_map={"": 0} if "quantization_config" in quantization_kwargs else None,
         **quantization_kwargs
     )
-    # Only use .to("cuda") if we are NOT using 4-bit (4-bit AutoModel distributes automatically or handles it natively)
+    # Only use .to("cuda") if we are NOT using 4-bit
     if "quantization_config" not in quantization_kwargs:
         _model = _model.to("cuda")
     if os.path.exists(MODEL_DIR):
