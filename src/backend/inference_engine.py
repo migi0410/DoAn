@@ -443,8 +443,8 @@ class Qwen2VLModelWrapper:
             clean_data = {}
             for k, v in data_upper.items():
                 if k in item_keys:
-                    continueif k == "ITEMS" and isinstance(v, list):
-                    \
+                    continue
+                elif k == "ITEMS" and isinstance(v, list):
                     clean_items = []
                     for item in v:
                         clean_item = {}
@@ -582,7 +582,8 @@ class MiniCPMVModelWrapper:
             clean_data = {}
             for k, v in data_upper.items():
                 if k in item_keys:
-                    continueif k == "ITEMS" and isinstance(v, list):
+                    continue
+                elif k == "ITEMS" and isinstance(v, list):
                     \
                     clean_items = []
                     for item in v:
@@ -686,7 +687,7 @@ class ModelRegistry:
                 path = (path_official if os.path.exists(path_official)
                         else path_legacy0 if os.path.exists(path_legacy0)
                         else path_legacy1 if os.path.exists(path_legacy1)
-                        else path_official)\
+                        else path_official)
                 print(f"MiniCPM-V path: {path}")
                 self.minicpm_model = MiniCPMVModelWrapper(path)
             return self.minicpm_model
@@ -778,7 +779,8 @@ class ModelRegistry:
         
         \
         if baseline in ["qwen2_vl", "minicpm_v"]:
-            passelif baseline in ["phobert_paddle", "layoutlmv3", "rule_based"]:
+            pass
+        elif baseline in ["phobert_paddle", "layoutlmv3", "rule_based"]:
             words, bboxes = self.run_paddle_ocr(img_path)
         elif baseline in ["phobert", "layoutlmv3_craft"]:
             words, bboxes = self.run_craft_vietocr(img_path)

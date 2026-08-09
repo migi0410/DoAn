@@ -172,7 +172,7 @@ def match_items(pred: dict, gt: dict) -> tuple:
     if not gt_names or not pred_names:
         return 0.0, 0.0, 0.0, 0.0
 
-    matched_pairs = []\
+    matched_pairs = []
     matched_gt   = set()
     matched_pred = set()
     for i, pn in enumerate(pred_names):

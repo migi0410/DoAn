@@ -61,7 +61,7 @@ async def predict(
                     processed = ImagePreprocessor.process_all(img)
                     preprocessed_path = os.path.join(UPLOAD_DIR, f"preprocessed_{file_id}.{ext}")
                     cv2.imwrite(preprocessed_path, processed)
-                    img_path = preprocessed_path\
+                    img_path = preprocessed_path
                     preprocessed_url = f"/api/image/{os.path.basename(preprocessed_path)}"
             except Exception as e:
                 print("CV Preprocessing error:", e)
