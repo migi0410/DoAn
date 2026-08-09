@@ -368,7 +368,7 @@ class Qwen2VLModelWrapper:
         return output_text[0]
 
     def chat(self, img_path, question):
-        prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn và chính xác: {question}"
+        prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn, chính xác. LUÔN LUÔN trả lời bằng Tiếng Việt: {question}"
         return self.generate_response(img_path, prompt)
 
     def predict(self, img_path):
