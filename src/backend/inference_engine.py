@@ -518,8 +518,8 @@ class MiniCPMVModelWrapper:
             stderr=subprocess.STDOUT,
         )
         print("[MiniCPM] Starting subprocess server...")
-        # Wait up to 180s for server to be ready
-        for _ in range(90):
+        # Wait up to 600s for server to be ready
+        for _ in range(300):
             time.sleep(2)
             try:
                 r = self.session.get(f"{self.SERVER_URL}/health", timeout=2)
@@ -528,7 +528,7 @@ class MiniCPMVModelWrapper:
                     return
             except Exception:
                 pass
-        raise RuntimeError("MiniCPM server did not start in time.")
+        raise RuntimeError("MiniCPM server did not start in time (waited 600s).")
 
     def predict(self, img_path):
         import requests
