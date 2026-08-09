@@ -288,7 +288,7 @@ export default function Home() {
               disabled={kieModel === "qwen2_vl" || kieModel === "minicpm_v"}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-blue-500 disabled:opacity-50"
             >
-              <option value="craft">CRAFT + VietOCR</option>
+              <option value="craft">VietOCR (Paddle Det)</option>
               <option value="paddle">PaddleOCR</option>
               <option value="none" disabled hidden>Built-in VLM</option>
             </select>
