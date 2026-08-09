@@ -479,10 +479,14 @@ class Qwen2VLModelWrapper:
 
 class MiniCPMVModelWrapper:
     def __init__(self, model_dir):
-        import torch
+        import torch, builtins, typing
+        # Inject typing into builtins so modeling_minicpmv.py (trust_remote_code) can use List etc.
+        for name in ["List", "Optional", "Dict", "Any", "Tuple", "Union", "Set", "Callable"]:
+            if not hasattr(builtins, name):
+                setattr(builtins, name, getattr(typing, name))
         from transformers import AutoModel, AutoTokenizer
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        
+
         try:
             import json
             with open(os.path.join(model_dir, "adapter_config.json")) as f:
@@ -490,16 +494,16 @@ class MiniCPMVModelWrapper:
                 base_model_id = adapter_config.get("base_model_name_or_path", "openbmb/MiniCPM-Llama3-V-2_5")
         except:
             base_model_id = "openbmb/MiniCPM-Llama3-V-2_5"
-            
+
         print(f"Loading MiniCPM-V Base: {base_model_id}")
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
-        self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", torch_dtype=torch.float16)
-        
+        self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", dtype=torch.float16)
+
         if os.path.exists(model_dir):
             print(f"Loading MiniCPM-V LoRA: {model_dir}")
             from peft import PeftModel
             self.model = PeftModel.from_pretrained(self.model, model_dir)
-            
+
         self.model.eval()
 
     def generate_response(self, img_path, prompt):
