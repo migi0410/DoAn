@@ -481,12 +481,8 @@ class Qwen2VLModelWrapper:
             return {"OTHER": response}
 
 class MiniCPMVModelWrapper:
-    """
-    HTTP proxy wrapper for MiniCPM-V.
-    The actual model runs in a separate venv (transformers==4.40) via minicpm_server.py
-    to avoid version conflicts with Qwen2-VL (needs transformers>=4.46).
-    """
-    SERVER_URL = "http://localhost:8001"
+    """Wrapper to communicate with the isolated MiniCPM-V server"""
+    SERVER_URL = "http://127.0.0.1:8001"
 
     def __init__(self, model_dir):
         import subprocess, sys, time, requests as _req
@@ -537,7 +533,7 @@ class MiniCPMVModelWrapper:
             r = requests.post(
                 f"{self.SERVER_URL}/predict",
                 files={"file": (fname, f, "image/jpeg")},
-                timeout=120,
+                timeout=300,
             )
         r.raise_for_status()
         return r.json()
@@ -549,7 +545,7 @@ class MiniCPMVModelWrapper:
             r = requests.post(
                 f"{self.SERVER_URL}/predict",
                 files={"file": (fname, f, "image/jpeg")},
-                timeout=120,
+                timeout=300,
             )
         r.raise_for_status()
         data = r.json()
