@@ -18,7 +18,7 @@ OUTPUT_JSONL = r"C:\Users\Admin\DoAn\data\test_mcocr_official.jsonl"
 
 PROMPT = "<image>Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON."
 
-# Alias -> canonical
+\
 FIELD_ALIASES = {
     "STORE_NAME":    "SELLER",
     "SHOP_NAME":     "SELLER",
@@ -36,7 +36,7 @@ ITEM_FIELDS   = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
 
 def get_image_name(image_path: str) -> str:
     """Extract filename from Label Studio image path."""
-    # /data/local-files/?d=D:/path/to/mcocr_public_xxx.jpg
+    \
     m = re.search(r'([^/\\?]+\.(?:jpg|jpeg|png|JPG|JPEG|PNG))$', image_path)
     return m.group(1) if m else os.path.basename(image_path)
 
@@ -46,7 +46,7 @@ def parse_entry(entry: dict) -> dict | None:
     image_path = entry.get("data", {}).get("image", "")
     img_name   = get_image_name(image_path)
 
-    # Collect predictions (may be in 'predictions' or 'annotations')
+    \
     results = []
     for pred in entry.get("predictions", []):
         results.extend(pred.get("result", []))
@@ -56,7 +56,6 @@ def parse_entry(entry: dict) -> dict | None:
     if not results:
         return None
 
-    # Group by id: {id -> {label: str, text: str, y: float}}
     id_to_label = {}
     id_to_text  = {}
     id_to_y     = {}
@@ -81,21 +80,18 @@ def parse_entry(entry: dict) -> dict | None:
                 if rid not in id_to_y:
                     id_to_y[rid] = y_pos
 
-    # Group by field
-    field_items = defaultdict(list)  # field -> [(y, text)]
+    field_items = defaultdict(list)\
     for rid, label in id_to_label.items():
         text = id_to_text.get(rid, "")
         y    = id_to_y.get(rid, 0)
         field_items[label].append((y, text))
 
-    # Sort each field's entries by y (top-to-bottom)
     for field in field_items:
         field_items[field].sort(key=lambda x: x[0])
 
-    # Build output dict
     out = {}
 
-    # Header fields: join multiple lines (ADDRESS can have multiple lines)
+    \
     for field in HEADER_FIELDS:
         entries = field_items.get(field, [])
         if entries:
@@ -104,12 +100,10 @@ def parse_entry(entry: dict) -> dict | None:
         else:
             out[field] = ""
 
-    # Item fields: parallel arrays sorted by y
     for field in ITEM_FIELDS:
         entries = field_items.get(field, [])
         out[field] = [t for _, t in entries]
 
-    # Skip records with no useful data
     has_header = any(out.get(f) for f in HEADER_FIELDS)
     has_items  = any(out.get(f) for f in ITEM_FIELDS)
     if not has_header and not has_items:
@@ -158,7 +152,7 @@ def main():
 
     print(f"\nTotal: {len(all_records)} records  |  Skipped: {skipped}")
 
-    # Write JSONL
+    \
     os.makedirs(os.path.dirname(OUTPUT_JSONL), exist_ok=True)
     with open(OUTPUT_JSONL, "w", encoding="utf-8") as f:
         for record in all_records:
@@ -166,7 +160,7 @@ def main():
 
     print(f"Saved to: {OUTPUT_JSONL}")
 
-    # Quick sanity check: print first 2 records
+    \
     print("\n--- Sample record ---")
     r = all_records[0]
     print("Image:", r["images"])

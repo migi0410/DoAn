@@ -38,7 +38,7 @@ class PhoBertModel:
         word_ids = encoding.word_ids()
         encoding_gpu = {k: v.to(self.device) for k, v in encoding.items()}
         
-        # Clamp out-of-vocabulary tokens
+        \
         vocab_size = self.model.config.vocab_size
         encoding_gpu["input_ids"][encoding_gpu["input_ids"] >= vocab_size] = self.tokenizer.unk_token_id
         
@@ -243,7 +243,7 @@ class Qwen2VLModelWrapper:
         if os.path.exists(model_dir):
             print(f"Loading Qwen2-VL LoRA: {model_dir}")
             
-            # Clean swift custom keys from adapter_config.json before loading
+            \
             adapter_path = os.path.join(model_dir, "adapter_config.json")
             if os.path.exists(adapter_path):
                 import json
@@ -266,8 +266,8 @@ class Qwen2VLModelWrapper:
                         changed = True
                     
                     if "target_modules" in cfg and isinstance(cfg["target_modules"], str):
-                        # Swift uses regex strings; PeftModel needs a list of module name suffixes
-                        # Extract the model's actual attention/MLP projection names
+                        \
+\
                         cfg["target_modules"] = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
                         changed = True
                         print(f"Converted target_modules from regex to list")
@@ -280,10 +280,6 @@ class Qwen2VLModelWrapper:
                         with open(adapter_path, 'w') as f:
                             json.dump(cfg, f, indent=2)
                             
-                    # Patch safetensors keys to match HuggingFace PeftModel format
-                    # Swift exports: base_model.model.model.language_model.layers.X.lora_A.weight
-                    # HF PeftModel expects: base_model.model.model.layers.X.lora_A.default.weight
-                    # Fix: remove '.language_model.' + add '.default' to lora adapter names
                     safetensors_path = os.path.join(model_dir, "adapter_model.safetensors")
                     if os.path.exists(safetensors_path):
                         from safetensors.torch import load_file, save_file
@@ -299,9 +295,9 @@ class Qwen2VLModelWrapper:
                                 new_sd = {}
                                 for k, v in sd.items():
                                     new_k = k
-                                    # Fix 1: remove '.language_model.' from the path
+                                    \
                                     new_k = new_k.replace(".language_model.", ".")
-                                    # Fix 2: lora_A.weight -> lora_A.default.weight (only if .default not already there)
+                                    \
                                     new_k = _re.sub(r'\.(lora_[AB])\.weight$', r'.\1.default.weight', new_k)
                                     new_sd[new_k] = v
                                 
@@ -381,55 +377,51 @@ class Qwen2VLModelWrapper:
                 f.write(response)
         except: pass
         
-        # Robust JSON parsing
+        \
         try:
-            # 1. Strip markdown
+            \
             if "```json" in response:
                 response = response.split("```json")[1].split("```")[0].strip()
             elif "```" in response:
                 response = response.split("```")[1].strip()
             
-            # 2. Extract JSON block robustly (handles extra }})
             start_idx = response.find("{")
             if start_idx != -1:
                 end_idx = response.rfind("}")
                 while end_idx > start_idx:
                     try:
-                        # Try parsing from start_idx to end_idx
+                        \
                         candidate = response[start_idx:end_idx+1]
                         data = json.loads(candidate)
                         break
                     except json.JSONDecodeError:
-                        # If fails, try the next inner '}'
+                        \
                         end_idx = response.rfind("}", start_idx, end_idx)
                 else:
                     data = json.loads(response[start_idx:])
             else:
                 data = json.loads(response)
                 
-            # Convert all keys to uppercase for easier matching
             data_upper = {k.upper(): v for k, v in data.items()}
             
-            # Helper to unpack single-element lists
+            \
             def unpack_val(val):
                 if isinstance(val, list) and len(val) > 0:
                     return str(val[0])
                 return str(val) if val is not None else ""
                 
-            # 3. Handle Columnar Arrays for VLM output
             item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
             items = []
             
-            # Sometimes models output a single string instead of a list if there's only 1 item
+            \
             for k in item_keys:
                 if k in data_upper and not isinstance(data_upper[k], list):
                     if isinstance(data_upper[k], str) and data_upper[k] != "":
-                        # Convert to list
+                        \
                         data_upper[k] = [data_upper[k]]
                     else:
                         data_upper[k] = []
             
-            # Find the max length among all item arrays to reconstruct objects
             max_len = 0
             for k in item_keys:
                 if k in data_upper and isinstance(data_upper[k], list):
@@ -440,7 +432,7 @@ class Qwen2VLModelWrapper:
                     item = {}
                     for k in item_keys:
                         if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
-                            # The item itself might be a list (like ["Bàn chải"]) inside the array!
+                            \
                             item[k] = unpack_val(data_upper[k][i])
                         else:
                             item[k] = ""
@@ -449,9 +441,8 @@ class Qwen2VLModelWrapper:
             clean_data = {}
             for k, v in data_upper.items():
                 if k in item_keys:
-                    continue  # Handled above
-                if k == "ITEMS" and isinstance(v, list):
-                    # Handle if the model happens to output standard format natively
+                    continueif k == "ITEMS" and isinstance(v, list):
+                    \
                     clean_items = []
                     for item in v:
                         clean_item = {}
@@ -525,55 +516,51 @@ class MiniCPMVModelWrapper:
                 f.write(response)
         except: pass
         
-        # Robust JSON parsing
+        \
         try:
-            # 1. Strip markdown
+            \
             if "```json" in response:
                 response = response.split("```json")[1].split("```")[0].strip()
             elif "```" in response:
                 response = response.split("```")[1].strip()
             
-            # 2. Extract JSON block robustly (handles extra }})
             start_idx = response.find("{")
             if start_idx != -1:
                 end_idx = response.rfind("}")
                 while end_idx > start_idx:
                     try:
-                        # Try parsing from start_idx to end_idx
+                        \
                         candidate = response[start_idx:end_idx+1]
                         data = json.loads(candidate)
                         break
                     except json.JSONDecodeError:
-                        # If fails, try the next inner '}'
+                        \
                         end_idx = response.rfind("}", start_idx, end_idx)
                 else:
                     data = json.loads(response[start_idx:])
             else:
                 data = json.loads(response)
                 
-            # Convert all keys to uppercase for easier matching
             data_upper = {k.upper(): v for k, v in data.items()}
             
-            # Helper to unpack single-element lists
+            \
             def unpack_val(val):
                 if isinstance(val, list) and len(val) > 0:
                     return str(val[0])
                 return str(val) if val is not None else ""
                 
-            # 3. Handle Columnar Arrays for VLM output
             item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
             items = []
             
-            # Sometimes models output a single string instead of a list if there's only 1 item
+            \
             for k in item_keys:
                 if k in data_upper and not isinstance(data_upper[k], list):
                     if isinstance(data_upper[k], str) and data_upper[k] != "":
-                        # Convert to list
+                        \
                         data_upper[k] = [data_upper[k]]
                     else:
                         data_upper[k] = []
             
-            # Find the max length among all item arrays to reconstruct objects
             max_len = 0
             for k in item_keys:
                 if k in data_upper and isinstance(data_upper[k], list):
@@ -584,7 +571,7 @@ class MiniCPMVModelWrapper:
                     item = {}
                     for k in item_keys:
                         if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
-                            # The item itself might be a list (like ["Bàn chải"]) inside the array!
+                            \
                             item[k] = unpack_val(data_upper[k][i])
                         else:
                             item[k] = ""
@@ -593,9 +580,8 @@ class MiniCPMVModelWrapper:
             clean_data = {}
             for k, v in data_upper.items():
                 if k in item_keys:
-                    continue  # Handled above
-                if k == "ITEMS" and isinstance(v, list):
-                    # Handle if the model happens to output standard format natively
+                    continueif k == "ITEMS" and isinstance(v, list):
+                    \
                     clean_items = []
                     for item in v:
                         clean_item = {}
@@ -675,7 +661,7 @@ class ModelRegistry:
         elif model_name == "qwen2_vl":
             if self.qwen_model is None:
                 print("Lazy Loading Qwen2-VL...")
-                # Priority: official v7 checkpoint-582 (fully trained) > fallbacks
+                \
                 path_official  = os.path.join(self.models_dir, "qwen2_vl_lora_official", "v7-20260808-192851", "checkpoint-582")
                 path_official2 = os.path.join(self.models_dir, "qwen2_vl_lora_official")
                 path_legacy0   = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
@@ -689,14 +675,14 @@ class ModelRegistry:
         elif model_name == "minicpm_v":
             if self.minicpm_model is None:
                 print("Lazy Loading MiniCPM-V...")
-                # Priority: official trained checkpoint > old checkpoints
+                \
                 path_official = os.path.join(self.models_dir, "minicpm_v_lora_official")
                 path_legacy0  = os.path.join(self.models_dir, "checkpoint-728")
                 path_legacy1  = os.path.join(self.models_dir, "minicpm_lora_swift")
                 path = (path_official if os.path.exists(path_official)
                         else path_legacy0 if os.path.exists(path_legacy0)
                         else path_legacy1 if os.path.exists(path_legacy1)
-                        else path_official)  # fallback will show clear error
+                        else path_official)\
                 print(f"MiniCPM-V path: {path}")
                 self.minicpm_model = MiniCPMVModelWrapper(path)
             return self.minicpm_model
@@ -786,17 +772,15 @@ class ModelRegistry:
         words, bboxes = [], []
         result = {}
         
-        # 1. OCR Engine Selection
+        \
         if baseline in ["qwen2_vl", "minicpm_v"]:
-            pass # No OCR needed
-        elif baseline in ["phobert_paddle", "layoutlmv3", "rule_based"]:
+            passelif baseline in ["phobert_paddle", "layoutlmv3", "rule_based"]:
             words, bboxes = self.run_paddle_ocr(img_path)
         elif baseline in ["phobert", "layoutlmv3_craft"]:
             words, bboxes = self.run_craft_vietocr(img_path)
         else:
             words, bboxes = self.run_paddle_ocr(img_path)
 
-        # 2. Select Model & Run Inference
         if baseline == "rule_based":
             model = self.get_model("rule_based")
             if model:
@@ -818,7 +802,6 @@ class ModelRegistry:
             if model:
                 result = model.predict(img_path)
                 
-        # Fill missing keys if any
         for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
             if key not in result:
                 result[key] = ""

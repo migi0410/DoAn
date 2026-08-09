@@ -10,10 +10,10 @@ import shutil
 
 app = FastAPI(title="AVIR-KIE Inference API")
 
-# Setup CORS for Frontend (Next.js runs on port 3000)
+\
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all origins for local dev
+    allow_origins=["*"],\
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,7 +42,7 @@ async def predict(
     preprocess: bool = Form(False)
 ):
     try:
-        # 1. Save uploaded file
+        \
         file_id = str(uuid.uuid4())[:8]
         ext = file.filename.split('.')[-1]
         img_path = os.path.join(UPLOAD_DIR, f"upload_{file_id}.{ext}")
@@ -51,7 +51,7 @@ async def predict(
             shutil.copyfileobj(file.file, buffer)
             
         preprocessed_url = None
-        # Optional: Preprocess image with OpenCV
+        \
         if preprocess:
             try:
                 from utils.preprocessing import ImagePreprocessor
@@ -61,16 +61,15 @@ async def predict(
                     processed = ImagePreprocessor.process_all(img)
                     preprocessed_path = os.path.join(UPLOAD_DIR, f"preprocessed_{file_id}.{ext}")
                     cv2.imwrite(preprocessed_path, processed)
-                    img_path = preprocessed_path # override to use preprocessed image
+                    img_path = preprocessed_path\
                     preprocessed_url = f"/api/image/{os.path.basename(preprocessed_path)}"
             except Exception as e:
                 print("CV Preprocessing error:", e)
             
-        # 2. Run Inference via Registry
         result, words, bboxes = registry.predict(baseline, img_path, preprocess=preprocess)
         print(f"===== FINAL RESULT TO FRONTEND =====\n{result}\n=====================================")
         
-        # 3. Draw Bounding Boxes
+        \
         import cv2
         img = cv2.imread(img_path)
         for box in bboxes:
@@ -111,7 +110,6 @@ async def chat(
         with open(img_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Route to VLM inference
         answer = registry.chat(model, img_path, question)
         return JSONResponse(content={"success": True, "answer": answer})
 

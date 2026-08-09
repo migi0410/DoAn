@@ -4,7 +4,7 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from synthetic_generator import generate_random_invoice_data, generate_invoice_assets, render_html_with_data
 
-# Set page config for professional appearance
+\
 st.set_page_config(
     page_title="AVIR-KIE | Hóa đơn giả lập & Trích xuất Tọa độ",
     page_icon="🧾",
@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for rich aesthetics
+\
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -81,49 +81,47 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Helper function to draw bounding boxes
+\
 def draw_bboxes(image_path, annotations):
     img = Image.open(image_path).convert("RGB")
     draw = ImageDraw.Draw(img, "RGBA")
     
-    # Bảng màu cho từng loại nhãn để dễ phân biệt
+    \
     color_map = {
-        "SELLER": "#1f77b4",     # Xanh biển
-        "ADDRESS": "#ff7f0e",    # Cam
-        "TIMESTAMP": "#2ca02c",  # Xanh lá
-        "TOTAL_COST": "#d62728", # Đỏ
-        "ITEM_NAME": "#9467bd",  # Tím
-        "ITEM_PRICE": "#8c564b", # Nâu
-        "ITEM_QTY": "#e377c2",   # Hồng
-        "ITEM_AMOUNT": "#7f7f7f" # Xám
+        "SELLER": "#1f77b4",\
+        "ADDRESS": "#ff7f0e",\
+        "TIMESTAMP": "#2ca02c",\
+        "TOTAL_COST": "#d62728",\
+        "ITEM_NAME": "#9467bd",\
+        "ITEM_PRICE": "#8c564b",\
+        "ITEM_QTY": "#e377c2",\
+        "ITEM_AMOUNT": "#7f7f7f"\
     }
     
     for ann in annotations:
-        box = ann["box"] # [xmin, ymin, xmax, ymax]
+        box = ann["box"]\
         label = ann["label"]
-        color = color_map.get(label, "#17becf") # Mặc định xanh lơ
+        color = color_map.get(label, "#17becf")\
         
-        # Chỉ vẽ khung viền (bounding box) với màu tương ứng
+        \
         draw.rectangle(box, outline=color, width=2)
         
-        # Vẽ lớp phủ mờ (transparent overlay) bên trong box cho đẹp (tùy chọn)
-        # Chuyển đổi mã hex sang RGB
+        \
+\
         h = color.lstrip('#')
         rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-        fill_color = rgb + (30,) # Độ trong suốt (alpha = 30)
+        fill_color = rgb + (30,)\
         draw.rectangle(box, fill=fill_color)
         
     return img
 
-# Initialize session state for invoice data
 if "invoice_data" not in st.session_state:
     st.session_state["invoice_data"] = generate_random_invoice_data()
 
-# ---------------------------------------------------------
-# RENDER APP INTERFACE
-# ---------------------------------------------------------
+\
+\
+\
 
-# Title Banner
 st.markdown("""
 <div class="main-header">
     <h1>🧾 AVIR-KIE | Công Cụ Tạo Hóa Đơn Giả Lập & Gán Nhãn Tự Động</h1>
@@ -131,7 +129,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Main columns
+\
 col_left, col_right = st.columns([1, 1.2])
 
 with col_left:
@@ -155,13 +153,13 @@ with col_left:
         ("Hóa đơn giao hàng ShopeeFood (Cam)", "delivery_shopeefood")
     ]
     
-    # Track last template to trigger brand-aligned regeneration
+    \
     if "last_template_key" not in st.session_state:
         st.session_state["last_template_key"] = None
         
     template_type = st.selectbox("Chọn mẫu hóa đơn:", TEMPLATES_OPTIONS, format_func=lambda x: x[0])
     
-    # Auto-generate brand data when template changes
+    \
     if st.session_state["last_template_key"] != template_type[1]:
         st.session_state["invoice_data"] = generate_random_invoice_data(template_type[1])
         st.session_state["last_template_key"] = template_type[1]
@@ -171,11 +169,10 @@ with col_left:
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.subheader("🛠️ Cấu hình dữ liệu Hóa đơn (LLM Output Mock)")
     
-    # Generate new random data button
+    \
     if st.button("🎲 Sinh dữ liệu Ngẫu nhiên", use_container_width=True):
         st.session_state["invoice_data"] = generate_random_invoice_data(template_type[1])
         
-    # Editable invoice properties
     data = st.session_state["invoice_data"]
     
     with st.expander("📷 Mô phỏng điều kiện chụp thực tế (Augmentation)", expanded=True):
@@ -196,7 +193,7 @@ with col_left:
         cashier = st.text_input("Nhân viên thu ngân", value=data["cashier"])
         payment_method = st.selectbox("Phương thức thanh toán", ["Tiền mặt", "Chuyển khoản (VietQR)", "Ví MoMo", "Thẻ Napas"], index=["Tiền mặt", "Chuyển khoản (VietQR)", "Ví MoMo", "Thẻ Napas"].index(data["payment_method"]))
         
-        # Cafe specific input fields
+        \
         table_no = data.get("table_no", "Bàn 01")
         discount_rate = data.get("discount_rate", 0)
         is_cafe_or_restaurant = template_type[1].startswith("cafe_") or template_type[1].startswith("restaurant_")
@@ -229,14 +226,13 @@ with col_left:
                 "amount": amount
             })
             
-    # Calculate totals
     subtotal = sum(item["amount"] for item in updated_items)
     discount_amount = int(subtotal * discount_rate / 100)
     vat_rate = st.number_input("Thuế suất VAT (%)", value=data["vat_rate"], min_value=0, max_value=20, step=1)
     vat_amount = int((subtotal - discount_amount) * vat_rate / 100)
     total_amount = subtotal - discount_amount + vat_amount
     
-    # Save edits to session state
+    \
     st.session_state["invoice_data"] = {
         "store_name": store_name,
         "store_type": data["store_type"],
@@ -266,16 +262,16 @@ with col_right:
     
     tab_preview, tab_output, tab_json = st.tabs(["👁️ Xem trước HTML", "📸 Ảnh Bounding Box (Nhãn LayoutLM)", "📄 Nhãn JSON Tọa độ"])
     
-    # Path settings
+    \
     output_dir = "streamlit_output"
     prefix = f"invoice_{st.session_state['invoice_data']['invoice_no']}"
     
-    # Render HTML in Preview Tab
+    \
     with tab_preview:
         html_rendered = render_html_with_data(st.session_state["invoice_data"], template_type[1])
         st.markdown("**Xem trước bố cục HTML:**")
         
-        # Display rendered HTML inside iframe
+        \
         is_a4 = template_type[1].startswith("einvoice_")
         height = 900 if is_a4 else 700
         st.components.v1.html(html_rendered, height=height, scrolling=True)
@@ -283,17 +279,16 @@ with col_right:
     with tab_output:
         st.markdown("**Trích xuất ảnh hóa đơn cùng Bounding Box tự động:**")
         
-        # Action button to trigger generation
+        \
         if st.button("🚀 Render Hóa đơn & Trích xuất Tọa độ", use_container_width=True):
             with st.spinner("Đang chạy Playwright để vẽ hóa đơn và tính toán tọa độ..."):
                 try:
-                    # Create temporary JSON file for invoice data
+                    \
                     os.makedirs(output_dir, exist_ok=True)
                     temp_json_path = os.path.join(output_dir, f"temp_{prefix}.json")
                     with open(temp_json_path, "w", encoding="utf-8") as f:
                         json.dump(st.session_state["invoice_data"], f, ensure_ascii=False, indent=2)
                         
-                    # Execute synthetic_generator.py in a clean subprocess to avoid thread/asyncio event loop conflicts in Streamlit
                     import subprocess
                     import sys
                     
@@ -312,14 +307,14 @@ with col_right:
                         "--streak", str(streak)
                     ]
                     
-                    # Set UTF-8 encoding in the environment
+                    \
                     env = os.environ.copy()
                     env["PYTHONIOENCODING"] = "utf-8"
                     
                     result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", env=env)
                     
                     if result.returncode == 0 and "SUCCESS" in result.stdout:
-                        # Extract the JSON block from output
+                        \
                         stdout_lines = result.stdout.strip().split("\n")
                         json_str = next(line for line in stdout_lines if line.startswith("{"))
                         assets = json.loads(json_str)
@@ -331,17 +326,16 @@ with col_right:
                 except Exception as e:
                     st.error(f"Lỗi hệ thống: {str(e)}")
                     
-        # If assets have been generated, display them
         if "assets" in st.session_state:
             assets = st.session_state["assets"]
             
-            # Generate annotated image showing bounding boxes
+            \
             with st.spinner("Đang gán nhãn Bounding Box lên ảnh..."):
                 bbox_image = draw_bboxes(assets["png_path"], assets["label_data"]["annotations"])
                 
             st.image(bbox_image, caption="Ảnh gán nhãn Bounding Box tự động (Nhiều màu, không text)", use_container_width=True)
             
-            # Khung hiển thị các giá trị trích xuất được
+            \
             st.markdown("### 📋 Kết quả trích xuất thông tin (Entities)")
             
             extracted_data = []
@@ -356,10 +350,10 @@ with col_right:
             
             st.markdown("---")
             
-            # Download actions
+            \
             dl_col1, dl_col2 = st.columns(2)
             with dl_col1:
-                # PDF Download
+                \
                 with open(assets["pdf_path"], "rb") as f:
                     st.download_button(
                         label="📥 Tải xuống file PDF Hóa đơn",
@@ -369,7 +363,7 @@ with col_right:
                         use_container_width=True
                     )
             with dl_col2:
-                # PNG Download
+                \
                 with open(assets["png_path"], "rb") as f:
                     st.download_button(
                         label="📥 Tải xuống ảnh PNG Hóa đơn",
@@ -386,7 +380,7 @@ with col_right:
         if "assets" in st.session_state:
             st.json(st.session_state["assets"]["label_data"])
             
-            # Download JSON Button
+            \
             st.download_button(
                 label="📥 Tải xuống file nhãn JSON (LayoutLM Annotation)",
                 data=json.dumps(st.session_state["assets"]["label_data"], ensure_ascii=False, indent=2),
@@ -399,14 +393,13 @@ with col_right:
 
     st.markdown('</div>', unsafe_allow_html=True)
     
-# Footer with KIE pipeline architecture
 st.markdown('<div class="section-card" style="text-align: center;">', unsafe_allow_html=True)
 st.markdown("""
 ### 🧠 Phân tích Quy trình Trích xuất Thông tin & Tạo Hóa đơn (AVIR-KIE)
 Sử dụng **Synthetic Data Pipeline** (Dữ liệu giả lập) giúp giải quyết các rào cản về dữ liệu trong huấn luyện LayoutLM:
 """)
 
-# Build standard architecture grid for the user to understand
+\
 arch_col1, arch_col2, arch_col3, arch_col4 = st.columns(4)
 with arch_col1:
     st.markdown("""

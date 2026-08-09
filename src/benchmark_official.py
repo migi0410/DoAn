@@ -19,18 +19,15 @@ try:
 except ImportError:
     from difflib import SequenceMatcher
     def levenshtein_distance(a, b):
-        # Approximate via SequenceMatcher
+        \
         sm = SequenceMatcher(None, a, b)
         return int((1 - sm.ratio()) * max(len(a), len(b)))
 
-# =============================================
-# CONFIG
-# =============================================
 HEADER_FIELDS = ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]
 ITEM_FIELDS   = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
 ALL_MODELS    = ["rule_based", "phobert", "layoutlmv3", "minicpm_v", "qwen2_vl"]
 
-# Field name aliases: model might output these instead of canonical names
+\
 FIELD_ALIASES = {
     "STORE_NAME":   "SELLER", "SHOP_NAME": "SELLER", "MERCHANT": "SELLER",
     "DATE":         "TIMESTAMP", "DATETIME": "TIMESTAMP", "TIME": "TIMESTAMP",
@@ -38,19 +35,18 @@ FIELD_ALIASES = {
     "ITEM_QUANTITY":"ITEM_QTY",  "QTY": "ITEM_QTY", "SL": "ITEM_QTY",
 }
 
-# =============================================
-# TEXT NORMALIZATION
-# =============================================
+\
+\
+\
 def normalize_text(text: str) -> str:
     if not text:
         return ""
     text = str(text).strip()
-    # Remove currency suffix (đ, VND...)
+    \
     text = re.sub(r'[\s]*(đ|vnd|VND)$', '', text, flags=re.IGNORECASE).strip()
-    # Normalize number separators: 210,600 or 210.600 -> 210600
+    \
     if re.match(r'^[\d\s,\.]+$', text):
         text = re.sub(r'[,\.\s]', '', text)
-    # Normalize whitespace, lowercase
     text = re.sub(r'\s+', ' ', text).strip().lower()
     return text
 
@@ -68,9 +64,6 @@ def ned(pred: str, gt: str) -> float:
 def exact_match(pred: str, gt: str) -> bool:
     return normalize_text(pred) == normalize_text(gt)
 
-# =============================================
-# NORMALIZE PREDICTION FIELD NAMES
-# =============================================
 def normalize_pred_keys(pred: dict) -> dict:
     """Rename aliased field names to canonical names."""
     result = {}
@@ -96,18 +89,15 @@ def flatten_items(pred: dict) -> dict:
         del pred["ITEMS"]
     return pred
 
-# =============================================
-# PARSE GROUND TRUTH FROM JSONL
-# =============================================
 def parse_gt_from_record(record: dict) -> dict:
     content = record["messages"][1]["content"]
 
-    # Format 1: ```json ... ``` (OFFICIAL_DATASET)
+    \
     m = re.search(r'```json\s*(.*?)\s*```', content, re.DOTALL)
     if m:
         json_str = m.group(1)
     else:
-        # Format 2: `json\n{...}\n` (MCOCR — single backtick, escaped newlines)
+        \
         content_unescaped = content.replace('\\n', '\n')
         m2 = re.search(r'`json\s*(.*?)\s*`', content_unescaped, re.DOTALL)
         if m2:
@@ -124,7 +114,7 @@ def parse_gt_from_record(record: dict) -> dict:
 
     data = normalize_pred_keys(data)
 
-    # MCOCR fields are arrays → take first element as string
+    \
     for field in HEADER_FIELDS:
         if isinstance(data.get(field), list):
             data[field] = data[field][0] if data[field] else ""
@@ -137,21 +127,17 @@ def get_image_path(record: dict, images_dirs: list) -> str:
     if not images:
         return ""
     img = images[0]
-    # Already absolute and exists
+    \
     if os.path.isabs(img) and os.path.exists(img):
         return img
     img_name = os.path.basename(img)
-    # Search in all provided dirs
+    \
     for base in images_dirs:
         candidate = os.path.join(base, img_name)
         if os.path.exists(candidate):
             return candidate
-    # Return best guess (first dir) even if not found, to report error correctly
     return os.path.join(images_dirs[0], img_name) if images_dirs else img_name
 
-# =============================================
-# CALL API
-# =============================================
 def call_api(api_base: str, img_path: str, model: str, timeout: int = 180) -> dict:
     url = f"{api_base}/api/predict"
     try:
@@ -170,9 +156,6 @@ def call_api(api_base: str, img_path: str, model: str, timeout: int = 180) -> di
     except Exception as e:
         return {}
 
-# =============================================
-# ITEM MATCHING (Name + Content)
-# =============================================
 def match_items(pred: dict, gt: dict) -> tuple:
     """
     Match items by ITEM_NAME (NED >= 0.6).
@@ -182,15 +165,14 @@ def match_items(pred: dict, gt: dict) -> tuple:
     gt_names   = [normalize_text(x) for x in gt.get("ITEM_NAME", [])]
     pred_names = [normalize_text(x) for x in pred.get("ITEM_NAME", [])]
 
-    # Case: both have no items (e.g. receipt with no item details)
+    \
     if not gt_names and not pred_names:
         return 1.0, 1.0, 1.0, 1.0
 
     if not gt_names or not pred_names:
         return 0.0, 0.0, 0.0, 0.0
 
-    # Greedy name matching
-    matched_pairs = []  # (pred_idx, gt_idx)
+    matched_pairs = []\
     matched_gt   = set()
     matched_pred = set()
     for i, pn in enumerate(pred_names):
@@ -212,7 +194,7 @@ def match_items(pred: dict, gt: dict) -> tuple:
     f1        = (2 * precision * recall / (precision + recall)
                  if (precision + recall) > 0 else 0.0)
 
-    # Content accuracy: for matched pairs, check QTY + PRICE + AMOUNT
+    \
     content_scores = []
     for pi, gi in matched_pairs:
         field_scores = []
@@ -221,7 +203,7 @@ def match_items(pred: dict, gt: dict) -> tuple:
             pred_arr = pred.get(field, [])
             gt_val   = gt_arr[gi]   if gi < len(gt_arr)   else ""
             pred_val = pred_arr[pi] if pi < len(pred_arr) else ""
-            if gt_val:  # only score if GT has this field
+            if gt_val:\
                 field_scores.append(ned(pred_val, gt_val))
         if field_scores:
             content_scores.append(sum(field_scores) / len(field_scores))
@@ -230,20 +212,16 @@ def match_items(pred: dict, gt: dict) -> tuple:
 
     return precision, recall, f1, content_acc
 
-# =============================================
-# EVALUATE ONE SAMPLE
-# =============================================
 def evaluate_sample(pred: dict, gt: dict) -> dict:
     result = {}
 
-    # Header NED + EM per field
+    \
     for field in HEADER_FIELDS:
         gt_val   = gt.get(field, "")
         pred_val = pred.get(field, "")
         result[f"{field}_ned"] = ned(pred_val, gt_val)
         result[f"{field}_em"]  = int(exact_match(pred_val, gt_val))
 
-    # Items
     gt_has_items   = bool(gt.get("ITEM_NAME"))
     pred_has_items = bool(pred.get("ITEM_NAME"))
     result["gt_has_items"] = int(gt_has_items)
@@ -254,20 +232,17 @@ def evaluate_sample(pred: dict, gt: dict) -> dict:
     result["item_f1"]           = f1
     result["item_content_acc"]  = content_acc
 
-    # Combined item score = 0.7*f1 + 0.3*content_acc
+    \
     item_combined = 0.7 * f1 + 0.3 * content_acc
     result["item_combined"] = item_combined
 
-    # Overall: 60% avg header NED + 40% item combined
+    \
     avg_ned = sum(result[f"{f}_ned"] for f in HEADER_FIELDS) / len(HEADER_FIELDS)
     result["avg_header_ned"] = avg_ned
     result["overall_score"]  = 0.6 * avg_ned + 0.4 * item_combined
 
     return result
 
-# =============================================
-# MAIN
-# =============================================
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--api",    default="http://localhost:8000")
@@ -283,7 +258,7 @@ def main():
 
     models = ALL_MODELS if args.models == "all" else args.models.split(",")
 
-    # Build dataset list: support multiple files
+    \
     dataset_specs = []
     for ds_spec in args.test.split(","):
         parts = ds_spec.strip().split(":")
@@ -291,7 +266,6 @@ def main():
         limit = int(parts[1]) if len(parts) > 1 else args.limit
         dataset_specs.append((path, limit))
 
-    # Load all samples, tagged by source
     all_samples = []
     for path, lim in dataset_specs:
         samples = []
@@ -349,7 +323,7 @@ def main():
         all_results[model]    = agg
         all_per_sample[model] = per_sample
 
-        # Print summary
+        \
         print(f"\n  Samples={n}  Errors={errors}")
         for field in HEADER_FIELDS:
             print(f"    {field:12s}  NED={agg[f'{field}_ned']:.3f}  EM={agg[f'{field}_em']:.3f}")
@@ -357,7 +331,6 @@ def main():
               f"F1={agg['item_f1']:.3f}  Content={agg['item_content_acc']:.3f}")
         print(f"    [OVERALL]   {agg['overall_score']:.3f}")
 
-    # ---- SUMMARY TABLE ----
     print(f"\n\n{'='*85}")
     print("  BENCHMARK RESULTS")
     print(f"{'='*85}")
@@ -381,14 +354,13 @@ def main():
     print(f"{'='*85}")
     print("Formula: OVERALL = 0.6×Avg.NED + 0.4×(0.7×Item.F1 + 0.3×Item.Content)")
 
-    # ---- SAVE ----
+    \
     os.makedirs(args.out, exist_ok=True)
 
-    # Summary JSON
+    \
     with open(f"{args.out}/summary.json", "w", encoding="utf-8") as f:
         json.dump(all_results, f, ensure_ascii=False, indent=2)
 
-    # Summary CSV
     if all_results:
         csv_rows = []
         for model, agg in all_results.items():
@@ -410,7 +382,6 @@ def main():
             writer.writeheader()
             writer.writerows(csv_rows)
 
-    # Per-sample CSV per model
     for model, samples_list in all_per_sample.items():
         if not samples_list:
             continue
