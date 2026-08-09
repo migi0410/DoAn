@@ -111,6 +111,7 @@ class PhoBertModel:
 class LayoutLMModel:
     def __init__(self, model_dir):
         import torch
+        from transformers import AutoProcessor, AutoModelForTokenClassification
         # Use GPU, but we will disable cudnn for the forward pass to avoid the 'GET was unable to find an engine' error
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
