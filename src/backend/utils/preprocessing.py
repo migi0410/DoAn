@@ -15,7 +15,12 @@ class ImagePreprocessor:
             
         angles = []
         for line in lines:
-            x1, y1, x2, y2 = line[0]
+            if line.ndim == 2:
+                x1, y1, x2, y2 = line[0]
+            elif line.ndim == 1 and len(line) == 4:
+                x1, y1, x2, y2 = line
+            else:
+                x1, y1, x2, y2 = line[0]
             angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
             if angle > 90: angle -= 180
             elif angle < -90: angle += 180
@@ -106,7 +111,16 @@ class TextPreprocessor:
             return []
         enriched_boxes = []
         for item in boxes:
-            x1, y1, x2, y2 = item['box']
+            box = item['box']
+            if len(box) == 4 and isinstance(box[0], (int, float)):
+                # Format: [x1, y1, x2, y2]
+                x1, y1, x2, y2 = box
+            else:
+                # Format: [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
+                xs = [p[0] for p in box]
+                ys = [p[1] for p in box]
+                x1, y1, x2, y2 = min(xs), min(ys), max(xs), max(ys)
+            
             cy = (y1 + y2) / 2
             cx = (x1 + x2) / 2
             h = y2 - y1
