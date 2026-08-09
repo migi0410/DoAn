@@ -149,7 +149,19 @@ def _parse_vlm_response(response: str) -> dict:
                 return m.group(0)
         response = re.sub(r'(\d+)\s*[\*xX]\s*(\d+)', eval_math, response)
         
-        data = json.loads(response)
+        def dict_with_duplicates(pairs):
+            d = {}
+            for k, v in pairs:
+                if k in d:
+                    if isinstance(d[k], list):
+                        d[k].append(v)
+                    else:
+                        d[k] = [d[k], v]
+                else:
+                    d[k] = v
+            return d
+            
+        data = json.loads(response, object_pairs_hook=dict_with_duplicates)
         data_upper = {k.upper(): v for k, v in data.items()}
 
         def unpack(v):

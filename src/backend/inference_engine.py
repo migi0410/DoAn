@@ -415,7 +415,19 @@ class Qwen2VLModelWrapper:
                     return m.group(0)
             response = re.sub(r'(\d+)\s*[\*xX]\s*(\d+)', eval_math, response)
             
-            parsed = json.loads(response)
+            def dict_with_duplicates(pairs):
+                d = {}
+                for k, v in pairs:
+                    if k in d:
+                        if isinstance(d[k], list):
+                            d[k].append(v)
+                        else:
+                            d[k] = [d[k], v]
+                    else:
+                        d[k] = v
+                return d
+            
+            parsed = json.loads(response, object_pairs_hook=dict_with_duplicates)
             parsed = {k.upper(): v for k, v in parsed.items()}
             
             for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
