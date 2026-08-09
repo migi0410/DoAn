@@ -541,25 +541,11 @@ class ModelRegistry:
         import torch
         print("Initializing Model Registry...")
         _gpu = torch.cuda.is_available()
-        print(f"Initializing OCR (gpu={_gpu})...")
+        self._gpu = _gpu
         self.ocr_paddle = None
         self._ocr_backend = None
-        # Try EasyOCR first (no C++ MKL-DNN issues)
-        try:
-            import easyocr
-            self.ocr_paddle = easyocr.Reader(['vi', 'en'], gpu=_gpu)
-            self._ocr_backend = 'easyocr'
-            print("EasyOCR initialized.")
-        except Exception as e:
-            print(f"EasyOCR unavailable ({e}), trying PaddleOCR...")
-            try:
-                from paddleocr import PaddleOCR
-                self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi",
-                                            device="gpu" if _gpu else "cpu")
-                self._ocr_backend = 'paddleocr'
-                print("PaddleOCR initialized.")
-            except Exception as e2:
-                print(f"PaddleOCR also unavailable ({e2}). OCR disabled.")
+        # OCR is lazy loaded when needed to avoid Paddle/Torch memory collisions on startup
+        
         self.rule_model = None
         self.phobert_model = None
         self.layoutlm_model = None
@@ -568,6 +554,26 @@ class ModelRegistry:
         
         self.craft = None
         self.vietocr_detector = None
+
+    def get_ocr(self):
+        if self.ocr_paddle is None:
+            print(f"Initializing OCR (gpu={self._gpu})...")
+            try:
+                import easyocr
+                self.ocr_paddle = easyocr.Reader(['vi', 'en'], gpu=self._gpu)
+                self._ocr_backend = 'easyocr'
+                print("EasyOCR initialized.")
+            except Exception as e:
+                print(f"EasyOCR unavailable ({e}), trying PaddleOCR...")
+                try:
+                    from paddleocr import PaddleOCR
+                    self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi",
+                                                device="gpu" if self._gpu else "cpu")
+                    self._ocr_backend = 'paddleocr'
+                    print("PaddleOCR initialized.")
+                except Exception as e2:
+                    print(f"PaddleOCR also unavailable ({e2}). OCR disabled.")
+        return self.ocr_paddle
         
         base_dir = os.path.dirname(os.path.dirname(__file__))
         if os.path.exists("/workspace"): 
@@ -679,24 +685,26 @@ class ModelRegistry:
     def run_paddle_ocr(self, img_path):
         print("Running OCR...")
         words, bboxes = [], []
-        if self.ocr_paddle is None:
+        ocr = self.get_ocr()
+        if ocr is None:
             print("OCR unavailable - returning empty.")
             return words, bboxes
+            
         if getattr(self, '_ocr_backend', 'paddleocr') == 'easyocr':
-            result = self.ocr_paddle.readtext(img_path)
+            result = ocr.readtext(img_path)
             for (box, text, conf) in result:
                 try:
                     words.append(text)
-                    # box is [[x1,y1],[x2,y1],[x2,y2],[x1,y2]]
                     bboxes.append([[int(p[0]), int(p[1])] for p in box])
                 except Exception:
                     pass
             return words, bboxes
+            
         # PaddleOCR fallback
         try:
-            result = self.ocr_paddle.ocr(img_path)
+            result = ocr.ocr(img_path)
         except TypeError:
-            result = self.ocr_paddle.ocr(img_path, cls=False)
+            result = ocr.ocr(img_path, cls=False)
         if not result:
             return words, bboxes
         page = result[0] if isinstance(result, list) else result
