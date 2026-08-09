@@ -496,23 +496,17 @@ class MiniCPMVModelWrapper:
             base_model_id = "openbmb/MiniCPM-Llama3-V-2_5"
 
         print(f"Loading MiniCPM-V Base: {base_model_id}")
-        # Patch transformers PreTrainedModel so MiniCPMV (trust_remote_code) doesn't crash
-        try:
-            from transformers.modeling_utils import PreTrainedModel
-            if not hasattr(PreTrainedModel, 'all_tied_weights_keys'):
-                PreTrainedModel.all_tied_weights_keys = property(
-                    lambda self: getattr(self, '_tied_weights_keys', None) or []
-                )
-        except Exception:
-            pass
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
         self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", dtype=torch.float16)
 
         if os.path.exists(model_dir):
             print(f"Loading MiniCPM-V LoRA: {model_dir}")
-            # Patch missing attribute required by newer PEFT versions
-            if not hasattr(self.model, 'all_tied_weights_keys'):
+            # Fix: 'all_tied_weights_keys' may be a read-only property on LlamaModel.
+            # Replace with a settable class-level attribute so PEFT can set it.
+            try:
                 self.model.all_tied_weights_keys = []
+            except AttributeError:
+                type(self.model).all_tied_weights_keys = []
             from peft import PeftModel
             try:
                 self.model = PeftModel.from_pretrained(self.model, model_dir)
