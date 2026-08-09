@@ -18,7 +18,7 @@ app = FastAPI(title="MiniCPM-V Server")
 
 MODEL_DIR    = os.environ.get("MINICPM_MODEL_DIR", "/workspace/minicpm_v_lora_official")
 # Use the official int4 model to bypass dynamic quantization bugs
-BASE_MODEL = "openbmb/MiniCPM-Llama3-V-2_5-int4"
+BASE_MODEL = "openbmb/MiniCPM-V-2_6-int4"
 UPLOAD_DIR   = "/tmp/minicpm_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
