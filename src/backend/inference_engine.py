@@ -671,9 +671,18 @@ class ModelRegistry:
                 for sp in search_paths:
                     matches.extend(glob.glob(sp, recursive=True))
                     
-                if matches:
-                    # Use the latest checkpoint found
-                    path = os.path.dirname(sorted(matches)[-1])
+                # Explicitly check for user's desired path first
+                target_path = os.path.join(self.models_dir, "minicpm_v_lora_official", "minicpm-v-v2_6-chat", "v3-20260809-021028", "checkpoint-582")
+                if os.path.exists(target_path):
+                    path = target_path
+                elif matches:
+                    # Sort by checkpoint number as integer to avoid 'checkpoint-9' > 'checkpoint-100'
+                    import re
+                    def get_cp_num(p):
+                        m = re.search(r'checkpoint-(\d+)', p)
+                        return int(m.group(1)) if m else 0
+                    matches.sort(key=lambda x: (os.path.dirname(os.path.dirname(x)), get_cp_num(x)))
+                    path = os.path.dirname(matches[-1])
                 else:
                     path = os.path.join(self.models_dir, "minicpm_v_lora_official")
                     
