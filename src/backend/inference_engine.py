@@ -509,13 +509,13 @@ class MiniCPMVModelWrapper:
         except Exception:
             pass
 
-        # Start server as subprocess
+        # Start server as subprocess and pipe logs to terminal
         env = {**os.environ, "MINICPM_MODEL_DIR": model_dir}
         self._proc = subprocess.Popen(
             [venv_python, server_script],
             env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
         )
         print("[MiniCPM] Starting subprocess server...")
         # Wait up to 600s for server to be ready
