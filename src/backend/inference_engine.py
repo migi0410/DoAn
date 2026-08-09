@@ -619,9 +619,9 @@ class ModelRegistry:
     def _initialize(self):
         print("Initializing Model Registry...")
         try:
-            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", device="gpu")
+            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", use_gpu=True)
         except Exception:
-            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi")
+            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", use_gpu=False)
         self.rule_model = None
         self.phobert_model = None
         self.layoutlm_model = None
@@ -698,33 +698,16 @@ class ModelRegistry:
 
     def run_paddle_ocr(self, img_path):
         print("Running PaddleOCR...")
-        try:
-            result = self.ocr_paddle.ocr(img_path)
-        except TypeError:
-            result = self.ocr_paddle.predict(img_path)
+        result = self.ocr_paddle.ocr(img_path, cls=False)
         words, bboxes = [], []
-        # Handle both old format (list of lines) and new format (list of dicts)
-        raw = result[0] if result and isinstance(result, list) else result
-        if isinstance(raw, dict):
-            # New PaddleOCR v4 format: dict with 'rec_texts', 'rec_boxes'
-            texts = raw.get("rec_texts", [])
-            boxes = raw.get("rec_boxes", raw.get("dt_boxes", []))
-            for text, box in zip(texts, boxes):
-                words.append(text)
-                bboxes.append(box.tolist() if hasattr(box, "tolist") else box)
-        elif isinstance(raw, list):
-            for item in raw:
+        if result and result[0]:
+            for line in result[0]:
                 try:
-                    if isinstance(item, dict):
-                        words.append(item.get("rec_text", ""))
-                        box = item.get("rec_box", item.get("dt_box", []))
-                        bboxes.append(box.tolist() if hasattr(box, "tolist") else box)
-                    else:
-                        box = item[0]
-                        text = item[1][0] if isinstance(item[1], (list, tuple)) else item[1]
-                        if isinstance(box, (list, tuple)) and not isinstance(box, str):
-                            bboxes.append(box)
-                            words.append(text)
+                    box = line[0]
+                    text = line[1][0]
+                    if isinstance(box, (list, tuple)) and not isinstance(box, str):
+                        bboxes.append(box)
+                        words.append(text)
                 except Exception:
                     pass
         return words, bboxes
