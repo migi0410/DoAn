@@ -619,12 +619,19 @@ class ModelRegistry:
     def _initialize(self):
         print("Initializing Model Registry...")
         import torch
-        _dev = "gpu" if torch.cuda.is_available() else "cpu"
+        _gpu = torch.cuda.is_available()
+        print(f"Initializing EasyOCR (gpu={_gpu})...")
         try:
-            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", device=_dev)
-        except TypeError:
-            # fallback for older paddleocr API
-            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", use_gpu=torch.cuda.is_available())
+            import easyocr
+            self.ocr_paddle = easyocr.Reader(['vi', 'en'], gpu=_gpu)
+            self._ocr_backend = 'easyocr'
+        except Exception as e:
+            print(f"EasyOCR failed ({e}), trying PaddleOCR...")
+            try:
+                self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", device="gpu" if _gpu else "cpu")
+            except Exception:
+                self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi")
+            self._ocr_backend = 'paddleocr'
         self.rule_model = None
         self.phobert_model = None
         self.layoutlm_model = None
@@ -700,15 +707,25 @@ class ModelRegistry:
         return None
 
     def run_paddle_ocr(self, img_path):
-        print("Running PaddleOCR...")
+        print("Running OCR...")
+        words, bboxes = [], []
+        if getattr(self, '_ocr_backend', 'paddleocr') == 'easyocr':
+            result = self.ocr_paddle.readtext(img_path)
+            for (box, text, conf) in result:
+                try:
+                    words.append(text)
+                    # box is [[x1,y1],[x2,y1],[x2,y2],[x1,y2]]
+                    bboxes.append([[int(p[0]), int(p[1])] for p in box])
+                except Exception:
+                    pass
+            return words, bboxes
+        # PaddleOCR fallback
         try:
             result = self.ocr_paddle.ocr(img_path)
         except TypeError:
             result = self.ocr_paddle.ocr(img_path, cls=False)
-        words, bboxes = [], []
         if not result:
             return words, bboxes
-        # v4 returns list of dicts; v2.7 returns [[line, ...]]
         page = result[0] if isinstance(result, list) else result
         if isinstance(page, dict):
             for text, box in zip(page.get("rec_texts", []), page.get("rec_boxes", [])):
