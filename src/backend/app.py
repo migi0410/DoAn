@@ -92,16 +92,16 @@ def draw_bboxes(image_path, annotations):
         "ADDRESS": "#ff7f0e",\
         "TIMESTAMP": "#2ca02c",\
         "TOTAL_COST": "#d62728",\
-        "ITEM_NAME": "#9467bd",\
-        "ITEM_PRICE": "#8c564b",\
-        "ITEM_QTY": "#e377c2",\
-        "ITEM_AMOUNT": "#7f7f7f"\
+        "ITEM_NAME": "#9467bd",
+        "ITEM_PRICE": "#8c564b",
+        "ITEM_QTY": "#e377c2",
+        "ITEM_AMOUNT": "#7f7f7f"
     }
     
     for ann in annotations:
-        box = ann["box"]\
+        box = ann["box"]
         label = ann["label"]
-        color = color_map.get(label, "#17becf")\
+        color = color_map.get(label, "#17becf")
         
         \
         draw.rectangle(box, outline=color, width=2)
@@ -110,7 +110,7 @@ def draw_bboxes(image_path, annotations):
 \
         h = color.lstrip('#')
         rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-        fill_color = rgb + (30,)\
+        fill_color = rgb + (30,)
         draw.rectangle(box, fill=fill_color)
         
     return img
