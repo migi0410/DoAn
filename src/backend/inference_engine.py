@@ -541,7 +541,8 @@ class MiniCPMVModelWrapper:
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
             )
-        r.raise_for_status()
+        if not r.ok:
+            raise RuntimeError(f"MiniCPM proxy error {r.status_code}: {r.text}")
         return r.json()
 
     def chat(self, img_path, question):
@@ -555,7 +556,8 @@ class MiniCPMVModelWrapper:
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
             )
-        r.raise_for_status()
+        if not r.ok:
+            raise RuntimeError(f"MiniCPM proxy error {r.status_code}: {r.text}")
         data = r.json()
         return str(data)
 
