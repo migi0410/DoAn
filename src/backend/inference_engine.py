@@ -498,7 +498,7 @@ class MiniCPMVModelWrapper:
 
         # Check if server already running
         try:
-            r = _req.get(f"{self.SERVER_URL}/health", timeout=2)
+            r = self._req.get(f"{self.SERVER_URL}/health", timeout=2, proxies={"http": None, "https": None})
             if r.ok:
                 print("[MiniCPM] Server already running.")
                 return
@@ -534,6 +534,7 @@ class MiniCPMVModelWrapper:
                 f"{self.SERVER_URL}/predict",
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
+                proxies={"http": None, "https": None}
             )
         r.raise_for_status()
         return r.json()
@@ -546,6 +547,7 @@ class MiniCPMVModelWrapper:
                 f"{self.SERVER_URL}/predict",
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
+                proxies={"http": None, "https": None}
             )
         r.raise_for_status()
         data = r.json()
