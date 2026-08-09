@@ -675,14 +675,14 @@ class ModelRegistry:
         elif model_name == "qwen2_vl":
             if self.qwen_model is None:
                 print("Lazy Loading Qwen2-VL...")
-                # Priority: official trained checkpoint > old checkpoints
-                path_official  = os.path.join(self.models_dir, "qwen2_vl_lora_official")
+                # Priority: official v7 checkpoint-582 (fully trained) > fallbacks
+                path_official  = os.path.join(self.models_dir, "qwen2_vl_lora_official", "v7-20260808-192851", "checkpoint-582")
+                path_official2 = os.path.join(self.models_dir, "qwen2_vl_lora_official")
                 path_legacy0   = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
-                path_legacy1   = os.path.join(self.models_dir, "qwen2_vl_lora_swift", "qwen2_vl_lora_swift", "v8-20260807-040045", "checkpoint-729")
-                path = (path_official if os.path.exists(path_official)
-                        else path_legacy0 if os.path.exists(path_legacy0)
-                        else path_legacy1 if os.path.exists(path_legacy1)
-                        else path_official)  # fallback will show clear error
+                path = (path_official  if os.path.exists(path_official)
+                        else path_official2 if os.path.exists(path_official2)
+                        else path_legacy0   if os.path.exists(path_legacy0)
+                        else path_official)
                 print(f"Qwen2-VL path: {path}")
                 self.qwen_model = Qwen2VLModelWrapper(path)
             return self.qwen_model
