@@ -609,8 +609,8 @@ class ModelRegistry:
             self.models_dir = os.path.join(base_dir, "trained_models")
             
         print(f"Models Directory configured to: {self.models_dir}")
-        print("Eager loading lightweight models to save VRAM...")
-        for model_name in ["rule_based"]:
+        print("Eager loading all models (4-bit MiniCPM reduces VRAM so all fit)...")
+        for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl", "minicpm_v"]:
             try:
                 self.get_model(model_name)
                 print(f"  ✓ {model_name} loaded")
