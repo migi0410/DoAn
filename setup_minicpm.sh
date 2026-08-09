@@ -15,7 +15,8 @@ pip install -q \
     "accelerate" \
     "sentencepiece" \
     "huggingface_hub" \
-    "numpy>=1.24,<2.0"
+    "numpy>=1.24,<2.0" \
+    "python-multipart"
 # Install torch (use pre-installed if available)
 python3 -c "import torch; print('torch already ok:', torch.__version__)" 2>/dev/null || \
     pip install -q torch --index-url https://download.pytorch.org/whl/cu121
