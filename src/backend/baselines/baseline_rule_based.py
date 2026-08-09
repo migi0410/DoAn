@@ -12,7 +12,8 @@ def run_paddleocr(image_path):
     lines = []
     if result and result[0]:
         for line in result[0]:
-            lines.append(line[1][0])return lines
+            lines.append(line[1][0])
+    return lines
 
 def run_easyocr(image_path):
     print("Extracting text using EasyOCR...")
@@ -22,7 +23,8 @@ def run_easyocr(image_path):
     
     lines = []
     for line in result:
-        lines.append(line[1])return lines
+        lines.append(line[1])
+    return lines
 
 def extract_kie_rules(lines):
     print("Applying Rule-based KIE...")
@@ -37,7 +39,6 @@ def extract_kie_rules(lines):
         "ITEM_AMOUNT": []
     }
     
-    \
     if len(lines) > 0:
         result["SELLER"] = lines[0]
         
@@ -45,7 +46,6 @@ def extract_kie_rules(lines):
     for line in lines:
         lower_line = line.lower()
         if any(kw in lower_line for kw in address_keywords):
-            \
             address = re.sub(r"^(đ/c|địa chỉ)[:\s\-]*", "", lower_line, flags=re.IGNORECASE)
             result["ADDRESS"] = address.title()
             break
@@ -61,13 +61,11 @@ def extract_kie_rules(lines):
     for i, line in enumerate(lines):
         lower_line = line.lower()
         if any(kw in lower_line for kw in cost_keywords):
-            \
             numbers = re.findall(r"\d{1,3}(?:[.,]\d{3})*", line)
             if numbers:
-                result["TOTAL_COST"] = numbers[-1]\
+                result["TOTAL_COST"] = numbers[-1]
                 break
             elif i + 1 < len(lines):
-                \
                 next_numbers = re.findall(r"\d{1,3}(?:[.,]\d{3})*", lines[i+1])
                 if next_numbers:
                     result["TOTAL_COST"] = next_numbers[-1]

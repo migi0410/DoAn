@@ -6,7 +6,7 @@ import google.generativeai as genai
 
 \
 API_KEY = "ĐIỀN_API_KEY_CỦA_BẠN_VÀO_ĐÂY"
-IMAGE_DIR = "đường_dẫn_tới_thư_mục_ảnh"\
+IMAGE_DIR = "đường_dẫn_tới_thư_mục_ảnh"
 OUTPUT_FILE = "gemini_labels.json"
 MAX_IMAGES = 100
 \

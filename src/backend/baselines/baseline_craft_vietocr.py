@@ -36,7 +36,7 @@ def get_vietocr_config():
     from vietocr.tool.config import Cfg
     config = Cfg.load_config_from_name('vgg_transformer')
     config['cnn']['pretrained']=False
-    config['device'] = 'cuda:0'\
+    config['device'] = 'cuda:0'
     return config
 
 def main():

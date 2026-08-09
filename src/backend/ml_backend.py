@@ -159,8 +159,8 @@ async def predict(request: Request):
 \
             if ocr_result and ocr_result[0]:
                 for line in ocr_result[0]:
-                    box = line[0]\
-                    text_info = line[1]\
+                    box = line[0]
+                    text_info = line[1]
                     text = text_info[0]
                     confidence = text_info[1]
                     
