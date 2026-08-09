@@ -13,6 +13,7 @@ import evaluate
 DATASET_PATH = "/workspace/DoAn/data/OFFICIAL_LAYOUTLM_DATASET"
 MODEL_NAME   = "vinai/phobert-base-v2"
 OUTPUT_DIR   = "/workspace/phobert_avir_official"
+WANDB_PROJECT = "avir-kie"
 BEST_DIR     = "/workspace/phobert_avir_official_best"
 MAX_SEQ_LEN  = 256
 BATCH_SIZE   = 16
@@ -99,7 +100,8 @@ args = TrainingArguments(
     metric_for_best_model="f1",
     logging_steps=50,
     fp16=True,
-    report_to="none",
+    report_to="wandb",
+    run_name="phobert-avir-official",
 )
 
 trainer = Trainer(
