@@ -10,7 +10,7 @@ for name in ["List", "Optional", "Dict", "Any", "Tuple", "Union", "Set", "Callab
     if not hasattr(builtins, name):
         setattr(builtins, name, getattr(typing, name))
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 import uvicorn
 
