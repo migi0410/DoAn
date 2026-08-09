@@ -368,7 +368,8 @@ class Qwen2VLModelWrapper:
         return output_text[0]
 
     def chat(self, img_path, question):
-        return self.generate_response(img_path, question)
+        prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn và chính xác: {question}"
+        return self.generate_response(img_path, prompt)
 
     def predict(self, img_path):
         prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON. TUYỆT ĐỐI CHỈ lấy thông tin có trong ảnh, KHÔNG ĐƯỢC tự bịa thêm dữ liệu, KHÔNG giải thích."

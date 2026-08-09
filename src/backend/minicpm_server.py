@@ -99,7 +99,8 @@ def chat(file: UploadFile = File(...), question: str = Form(...)):
         with open(tmp, "wb") as f:
             shutil.copyfileobj(file.file, f)
         image = Image.open(tmp).convert("RGB")
-        msgs = [{"role": "user", "content": [image, question]}]
+        prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn và chính xác: {question}"
+        msgs = [{"role": "user", "content": [image, prompt]}]
         res = _model.chat(image=None, msgs=msgs, tokenizer=_tokenizer,
                           sampling=False, max_new_tokens=1024)
         os.unlink(tmp)
