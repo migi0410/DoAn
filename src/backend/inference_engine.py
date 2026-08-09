@@ -748,17 +748,10 @@ class ModelRegistry:
             return self.qwen_model
         elif model_name == "minicpm_v":
             if self.minicpm_model is None:
-                print("Lazy Loading MiniCPM-V...")
-                \
-                path_official = os.path.join(self.models_dir, "minicpm_v_lora_official")
-                path_legacy0  = os.path.join(self.models_dir, "checkpoint-728")
-                path_legacy1  = os.path.join(self.models_dir, "minicpm_lora_swift")
-                path = (path_official if os.path.exists(path_official)
-                        else path_legacy0 if os.path.exists(path_legacy0)
-                        else path_legacy1 if os.path.exists(path_legacy1)
-                        else path_official)
-                print(f"MiniCPM-V path: {path}")
-                self.minicpm_model = MiniCPMVModelWrapper(path)
+                # MiniCPM-Llama3-V-2_5 requires transformers<=4.40 (trust_remote_code incompatible with newer versions)
+                # Disabled to avoid startup crash. Re-enable when environment is pinned.
+                print("MiniCPM-V: skipped (transformers version incompatible with MiniCPM remote code)")
+                return None
             return self.minicpm_model
         return None
 
