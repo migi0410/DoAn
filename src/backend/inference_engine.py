@@ -239,14 +239,8 @@ class Qwen2VLModelWrapper:
             
         print(f"Loading Qwen2-VL Base: {base_model_id}")
         import torch
-        from transformers import BitsAndBytesConfig
-        quant_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_quant_type="nf4",
-        )
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-            base_model_id, device_map="auto", quantization_config=quant_config
+            base_model_id, device_map="auto", torch_dtype=torch.float16
         )
         
         if os.path.exists(model_dir):
@@ -485,6 +479,28 @@ class MiniCPMVModelWrapper:
         self.session = _req.Session()
         self.session.trust_env = False
         
+    def shutdown(self):
+        """Kills the subprocess to free VRAM"""
+        if self._proc is not None:
+            print("Terminating MiniCPM-V server...")
+            try:
+                import psutil
+                parent = psutil.Process(self._proc.pid)
+                for child in parent.children(recursive=True):
+                    child.kill()
+                parent.kill()
+            except:
+                pass
+            self._proc.terminate()
+            self._proc = None
+        else:
+            # Maybe it was running from a previous instance, try to kill port 8005
+            import subprocess
+            try:
+                subprocess.run(["fuser", "-k", "8005/tcp"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+            except:
+                pass
+        
         venv_python = "/workspace/minicpm_env/bin/python3"
         server_script = os.path.join(os.path.dirname(__file__), "minicpm_server.py")
 
@@ -604,8 +620,8 @@ class ModelRegistry:
             self.models_dir = os.path.join(base_dir, "trained_models")
             
         print(f"Models Directory configured to: {self.models_dir}")
-        print("Eager loading all models (squeezing into 24GB)...")
-        for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl", "minicpm_v"]:
+        print("Eager loading default models...")
+        for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl"]:
             try:
                 self.get_model(model_name)
                 print(f"  ✓ {model_name} loaded")
@@ -617,6 +633,28 @@ class ModelRegistry:
         print("Model Registry ready!")
 
     def get_model(self, model_name):
+        import gc
+        import torch
+        if model_name in ["qwen2_vl", "minicpm_v"]:
+            # If requesting Qwen2-VL, unload MiniCPM-V if it exists
+            if model_name == "qwen2_vl" and self.minicpm_model is not None:
+                print("Lazy Unloading MiniCPM-V to save VRAM...")
+                try:
+                    self.minicpm_model.shutdown()
+                except: pass
+                del self.minicpm_model
+                self.minicpm_model = None
+                gc.collect()
+                if torch.cuda.is_available(): torch.cuda.empty_cache()
+                
+            # If requesting MiniCPM-V, unload Qwen2-VL if it exists
+            if model_name == "minicpm_v" and self.qwen_model is not None:
+                print("Lazy Unloading Qwen2-VL to save VRAM...")
+                del self.qwen_model
+                self.qwen_model = None
+                gc.collect()
+                if torch.cuda.is_available(): torch.cuda.empty_cache()
+                
         if model_name == "rule_based":
             if self.rule_model is None:
                 print("Lazy Loading Rule-based Model...")

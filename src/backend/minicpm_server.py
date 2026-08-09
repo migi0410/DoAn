@@ -16,9 +16,9 @@ import uvicorn
 
 app = FastAPI(title="MiniCPM-V Server")
 
-MODEL_DIR    = os.environ.get("MINICPM_MODEL_DIR", "/workspace/minicpm_v_lora_official")
 # Use the official int4 model to bypass dynamic quantization bugs
-BASE_MODEL = "openbmb/MiniCPM-V-2_6-int4"
+BASE_MODEL = "openbmb/MiniCPM-V-2_6"
+MODEL_DIR = os.environ.get("MINICPM_MODEL_DIR", "/workspace/DoAn/models/minicpm_v_lora_official")
 UPLOAD_DIR   = "/tmp/minicpm_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -29,31 +29,16 @@ _tokenizer = None
 async def startup():
     global _model, _tokenizer
     import torch
-    from transformers import AutoModel, AutoTokenizer, AutoConfig
+    from transformers import AutoModel, AutoTokenizer
 
     print(f"[MiniCPM-Server] Loading base: {BASE_MODEL}")
     _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
     
-    import sys
-    import transformers
-    import accelerate
-    
-    # 1. Trigger dynamic module import by creating a lightweight meta model
-    _config = AutoConfig.from_pretrained(BASE_MODEL, trust_remote_code=True)
-    with accelerate.init_empty_weights():
-        _ = AutoModel.from_config(_config, trust_remote_code=True)
-        
-    # 2. Now that the custom Siglip is loaded in sys.modules, patch it!
-    for name, module in sys.modules.items():
-        if hasattr(module, "SiglipVisionTransformer"):
-            module.SiglipVisionTransformer._no_split_modules = ["SiglipVisionEncoderLayer"]
-
-    # 3. Load the actual model with 'auto' mapping flawlessly
+    # Load the actual model with 'auto' mapping flawlessly
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
         torch_dtype=torch.float16,
-        device_map="auto",
-        max_memory={0: "23GiB"}
+        device_map="auto"
     )
     if os.path.exists(MODEL_DIR):
         print(f"[MiniCPM-Server] Loading LoRA: {MODEL_DIR}")
