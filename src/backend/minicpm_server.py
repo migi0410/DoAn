@@ -52,7 +52,8 @@ async def startup():
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
         torch_dtype=torch.float16,
-        device_map="auto"
+        device_map="auto",
+        max_memory={0: "23GiB"}
     )
     if os.path.exists(MODEL_DIR):
         print(f"[MiniCPM-Server] Loading LoRA: {MODEL_DIR}")
