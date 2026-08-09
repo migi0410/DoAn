@@ -100,9 +100,18 @@ def _parse_vlm_response(response: str) -> dict:
         start = response.find("{")
         end   = response.rfind("}")
         if start != -1 and end > start:
-            data = json.loads(response[start:end+1])
-        else:
-            data = json.loads(response)
+            response = response[start:end+1]
+        
+        # Pre-process JSON string to fix common VLM hallucinations (e.g. math expressions)
+        import re
+        def eval_math(m):
+            try:
+                return str(int(m.group(1)) * int(m.group(2)))
+            except:
+                return m.group(0)
+        response = re.sub(r'(\d+)\s*[\*xX]\s*(\d+)', eval_math, response)
+        
+        data = json.loads(response)
         data_upper = {k.upper(): v for k, v in data.items()}
 
         def unpack(v):

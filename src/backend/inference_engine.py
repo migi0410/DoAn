@@ -392,6 +392,15 @@ class Qwen2VLModelWrapper:
                 if end_idx > start_idx:
                     response = response[start_idx:end_idx+1]
             
+            # Pre-process JSON string to fix common VLM hallucinations (e.g. math expressions)
+            import re
+            def eval_math(m):
+                try:
+                    return str(int(m.group(1)) * int(m.group(2)))
+                except:
+                    return m.group(0)
+            response = re.sub(r'(\d+)\s*[\*xX]\s*(\d+)', eval_math, response)
+            
             parsed = json.loads(response)
             parsed = {k.upper(): v for k, v in parsed.items()}
             
