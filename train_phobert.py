@@ -33,33 +33,39 @@ LABELS = [
 LABEL2ID = {l: i for i, l in enumerate(LABELS)}
 ID2LABEL = {i: l for i, l in enumerate(LABELS)}
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, add_prefix_space=True)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, add_prefix_space=True, use_fast=False)
 seqeval   = evaluate.load("seqeval")
 
+BOS = tokenizer.bos_token_id or tokenizer.cls_token_id
+EOS = tokenizer.eos_token_id or tokenizer.sep_token_id
+PAD = tokenizer.pad_token_id
+
 def tokenize_and_align(examples):
-    tokenized = tokenizer(
-        examples["tokens"],
-        truncation=True,
-        padding="max_length",
-        max_length=MAX_SEQ_LEN,
-        is_split_into_words=True,
-    )
-    all_labels = []
-    for i, label_ids in enumerate(examples["ner_tags"]):
-        word_ids     = tokenized.word_ids(batch_index=i)
-        prev_word_id = None
-        labels       = []
-        for word_id in word_ids:
-            if word_id is None:
-                labels.append(-100)
-            elif word_id != prev_word_id:
-                labels.append(label_ids[word_id] if word_id < len(label_ids) else -100)
-            else:
-                labels.append(-100)
-            prev_word_id = word_id
+    all_input_ids, all_attention_mask, all_labels = [], [], []
+    for tokens, label_ids in zip(examples["tokens"], examples["ner_tags"]):
+        encoded_words = [tokenizer.encode(w, add_special_tokens=False) for w in tokens]
+        input_ids = [BOS]
+        labels    = [-100]
+        for word_tok, label in zip(encoded_words, label_ids):
+            if not word_tok:
+                continue
+            input_ids.extend(word_tok)
+            labels.extend([label] + [-100] * (len(word_tok) - 1))
+        input_ids.append(EOS)
+        labels.append(-100)
+
+        input_ids = input_ids[:MAX_SEQ_LEN]
+        labels    = labels[:MAX_SEQ_LEN]
+        attn_mask = [1] * len(input_ids)
+        pad_len   = MAX_SEQ_LEN - len(input_ids)
+        input_ids += [PAD] * pad_len
+        labels    += [-100] * pad_len
+        attn_mask += [0] * pad_len
+
+        all_input_ids.append(input_ids)
+        all_attention_mask.append(attn_mask)
         all_labels.append(labels)
-    tokenized["labels"] = all_labels
-    return tokenized
+    return {"input_ids": all_input_ids, "attention_mask": all_attention_mask, "labels": all_labels}
 
 def compute_metrics(p):
     preds, labels = p
