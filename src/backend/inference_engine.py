@@ -643,19 +643,21 @@ class ModelRegistry:
         elif model_name == "phobert":
             if self.phobert_model is None:
                 print("Lazy Loading PhoBERT...")
+                path0 = os.path.join(self.models_dir, "phobert_avir_official_best")
                 path1 = os.path.join(self.models_dir, "DoAn", "3_models_new", "phobert_best_model")
                 path2 = os.path.join(self.models_dir, "3_models_new", "phobert_best_model")
                 path3 = os.path.join(self.models_dir, "phobert_best_model")
-                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else os.path.join(self.models_dir, "phobert-base-kie")
+                path = path0 if os.path.exists(path0) else path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else os.path.join(self.models_dir, "phobert-base-kie")
                 self.phobert_model = PhoBertModel(path)
             return self.phobert_model
         elif model_name == "layoutlmv3":
             if self.layoutlm_model is None:
                 print("Lazy Loading LayoutLMv3...")
+                path0 = os.path.join(self.models_dir, "layoutlmv3_avir_official_best")
                 path1 = os.path.join(self.models_dir, "DoAn", "3_models_new", "layoutlmv3_best_model")
                 path2 = os.path.join(self.models_dir, "3_models_new", "layoutlmv3_best_model")
                 path3 = os.path.join(self.models_dir, "layoutlmv3_best_model")
-                path = path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else os.path.join(self.models_dir, "layoutlm-avir-kie-best-10k")
+                path = path0 if os.path.exists(path0) else path1 if os.path.exists(path1) else path2 if os.path.exists(path2) else path3 if os.path.exists(path3) else os.path.join(self.models_dir, "layoutlm-avir-kie-best-10k")
                 self.layoutlm_model = LayoutLMModel(path)
             return self.layoutlm_model
         elif model_name == "qwen2_vl":
