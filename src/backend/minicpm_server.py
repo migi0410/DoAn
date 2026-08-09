@@ -92,15 +92,35 @@ async def predict(file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"error": str(e), "traceback": traceback.format_exc()})
 
 @app.post("/chat")
-def chat(file: UploadFile = File(...), question: str = Form(...)):
+def chat(file: UploadFile = File(...), question: str = Form(...), history: str = Form("[]")):
     try:
+        import json
         from PIL import Image
+        
         tmp = f"/tmp/{uuid.uuid4()}.jpg"
         with open(tmp, "wb") as f:
             shutil.copyfileobj(file.file, f)
         image = Image.open(tmp).convert("RGB")
-        prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn, chính xác. LUÔN LUÔN trả lời bằng Tiếng Việt: {question}"
-        msgs = [{"role": "user", "content": [image, prompt]}]
+        
+        history_arr = json.loads(history)
+        msgs = []
+        if len(history_arr) > 0:
+            first_msg = True
+            for h in history_arr:
+                role = "assistant" if h["role"] == "bot" else "user"
+                content = h["content"]
+                if first_msg and role == "user":
+                    msgs.append({"role": role, "content": [image, content]})
+                    first_msg = False
+                else:
+                    msgs.append({"role": role, "content": [content]})
+                    
+            prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. LUÔN LUÔN trả lời bằng Tiếng Việt. Câu hỏi: {question}"
+            msgs.append({"role": "user", "content": [prompt]})
+        else:
+            prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn, chính xác. LUÔN LUÔN trả lời bằng Tiếng Việt: {question}"
+            msgs = [{"role": "user", "content": [image, prompt]}]
+            
         res = _model.chat(image=None, msgs=msgs, tokenizer=_tokenizer,
                           sampling=False, max_new_tokens=1024)
         os.unlink(tmp)

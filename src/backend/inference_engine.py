@@ -329,19 +329,32 @@ class Qwen2VLModelWrapper:
         self.processor = AutoProcessor.from_pretrained(base_model_id)
         self.model.eval()
 
-    def generate_response(self, img_path, prompt):
+    def generate_response(self, img_path, prompt, history=[]):
         import torch
         from qwen_vl_utils import process_vision_info
         
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image", "image": img_path},
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ]
+        messages = []
+        if len(history) > 0:
+            first = True
+            for h in history:
+                role = "assistant" if h["role"] == "bot" else "user"
+                content = []
+                if first and role == "user":
+                    content.append({"type": "image", "image": img_path})
+                    first = False
+                content.append({"type": "text", "text": h["content"]})
+                messages.append({"role": role, "content": content})
+            messages.append({"role": "user", "content": [{"type": "text", "text": prompt}]})
+        else:
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "image": img_path},
+                        {"type": "text", "text": prompt},
+                    ],
+                }
+            ]
         
         text = self.processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
@@ -367,9 +380,9 @@ class Qwen2VLModelWrapper:
             
         return output_text[0]
 
-    def chat(self, img_path, question):
+    def chat(self, img_path, question, history=[]):
         prompt = f"Bạn là trợ lý ảo phân tích hóa đơn. Dựa vào hình ảnh, hãy trả lời câu hỏi sau một cách ngắn gọn, chính xác. LUÔN LUÔN trả lời bằng Tiếng Việt: {question}"
-        return self.generate_response(img_path, prompt)
+        return self.generate_response(img_path, prompt, history=history)
 
     def predict(self, img_path):
         prompt = "Trích xuất các trường thông tin: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT từ hóa đơn này dưới dạng JSON. TUYỆT ĐỐI CHỈ lấy thông tin có trong ảnh, KHÔNG ĐƯỢC tự bịa thêm dữ liệu, KHÔNG giải thích."
@@ -522,15 +535,15 @@ class MiniCPMVModelWrapper:
             raise RuntimeError(f"MiniCPM proxy error {r.status_code}: {r.text}")
         return r.json()
 
-    def chat(self, img_path, question):
-        import requests, os
+    def chat(self, img_path, question, history=[]):
+        import requests, os, json
         session = requests.Session()
         session.trust_env = False
         with open(img_path, "rb") as f:
             fname = os.path.basename(img_path)
             r = session.post(
                 f"{self.SERVER_URL}/chat",
-                data={"question": question},
+                data={"question": question, "history": json.dumps(history)},
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
             )
@@ -864,11 +877,11 @@ class ModelRegistry:
                 
         return result, words, bboxes
 
-    def chat(self, model_name, img_path, question):
+    def chat(self, model_name, img_path, question, history=[]):
         model = self.get_model(model_name)
         if model:
             if hasattr(model, "chat"):
-                return model.chat(img_path, question)
+                return model.chat(img_path, question, history=history)
             else:
                 return f"Model {model_name} does not support Chat/VQA."
         return "Model not supported or not loaded."

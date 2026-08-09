@@ -110,6 +110,7 @@ async def chat(
     file: UploadFile = File(...),
     model: str = Form(...),
     question: str = Form(...),
+    history: str = Form("[]"),
 ):
     """VLM Q&A: Ask anything about the invoice image."""
     try:
@@ -119,7 +120,9 @@ async def chat(
         with open(img_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        answer = registry.chat(model, img_path, question)
+        import json
+        history_arr = json.loads(history)
+        answer = registry.chat(model, img_path, question, history=history_arr)
         return JSONResponse(content={"success": True, "answer": answer})
 
     except Exception as e:

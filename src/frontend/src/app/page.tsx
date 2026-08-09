@@ -205,6 +205,7 @@ export default function Home() {
     formData.append("file", doc.file);
     formData.append("model", baseline);
     formData.append("question", q);
+    formData.append("history", JSON.stringify(doc.chatHistory));
 
     try {
       const res = await axios.post(`${apiUrl}/api/chat`, formData, {
