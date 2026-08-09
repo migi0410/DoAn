@@ -33,30 +33,10 @@ async def startup():
     print(f"[MiniCPM-Server] Loading base: {BASE_MODEL}")
     _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
     
-    # Try 4-bit quantization if bitsandbytes is available
-    quantization_kwargs = {}
-    try:
-        import bitsandbytes
-        from transformers import BitsAndBytesConfig
-        quantization_kwargs["quantization_config"] = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4"
-        )
-        print("[MiniCPM-Server] Enabling 4-bit quantization to save VRAM...")
-    except ImportError:
-        print("[MiniCPM-Server] bitsandbytes not found. Loading in full fp16 precision...")
-        
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
-        torch_dtype=torch.float16,
-        device_map="auto",
-        **quantization_kwargs
-    )
-    # Only use .to("cuda") if we are NOT using 4-bit
-    if "quantization_config" not in quantization_kwargs:
-        _model = _model.to("cuda")
+        torch_dtype=torch.float16
+    ).to("cuda")
     if os.path.exists(MODEL_DIR):
         print(f"[MiniCPM-Server] Loading LoRA: {MODEL_DIR}")
         try:

@@ -609,11 +609,14 @@ class ModelRegistry:
             self.models_dir = os.path.join(base_dir, "trained_models")
             
         print(f"Models Directory configured to: {self.models_dir}")
-        print("Eager loading all models (4-bit MiniCPM reduces VRAM so all fit)...")
+        print("Eager loading all models (squeezing into 24GB)...")
         for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl", "minicpm_v"]:
             try:
                 self.get_model(model_name)
                 print(f"  ✓ {model_name} loaded")
+                import torch
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
             except Exception as e:
                 print(f"  ✗ {model_name} failed to load: {e}")
         print("Model Registry ready!")
