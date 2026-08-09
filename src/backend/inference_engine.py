@@ -487,6 +487,10 @@ class MiniCPMVModelWrapper:
     def __init__(self, model_dir):
         import subprocess, sys, time, requests as _req
         self._proc = None
+        
+        self.session = _req.Session()
+        self.session.trust_env = False
+        
         venv_python = "/workspace/minicpm_env/bin/python3"
         server_script = os.path.join(os.path.dirname(__file__), "minicpm_server.py")
 
@@ -498,7 +502,7 @@ class MiniCPMVModelWrapper:
 
         # Check if server already running
         try:
-            r = self._req.get(f"{self.SERVER_URL}/health", timeout=2, proxies={"http": None, "https": None})
+            r = self.session.get(f"{self.SERVER_URL}/health", timeout=2)
             if r.ok:
                 print("[MiniCPM] Server already running.")
                 return
@@ -518,7 +522,7 @@ class MiniCPMVModelWrapper:
         for _ in range(90):
             time.sleep(2)
             try:
-                r = _req.get(f"{self.SERVER_URL}/health", timeout=2)
+                r = self.session.get(f"{self.SERVER_URL}/health", timeout=2)
                 if r.ok:
                     print("[MiniCPM] Subprocess server ready!")
                     return
@@ -528,26 +532,28 @@ class MiniCPMVModelWrapper:
 
     def predict(self, img_path):
         import requests
+        session = requests.Session()
+        session.trust_env = False
         with open(img_path, "rb") as f:
             fname = os.path.basename(img_path)
-            r = requests.post(
+            r = session.post(
                 f"{self.SERVER_URL}/predict",
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
-                proxies={"http": None, "https": None}
             )
         r.raise_for_status()
         return r.json()
 
     def chat(self, img_path, question):
         import requests
+        session = requests.Session()
+        session.trust_env = False
         with open(img_path, "rb") as f:
             fname = os.path.basename(img_path)
-            r = requests.post(
+            r = session.post(
                 f"{self.SERVER_URL}/predict",
                 files={"file": (fname, f, "image/jpeg")},
                 timeout=300,
-                proxies={"http": None, "https": None}
             )
         r.raise_for_status()
         data = r.json()
