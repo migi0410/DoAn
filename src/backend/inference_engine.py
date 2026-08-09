@@ -794,7 +794,13 @@ class ModelRegistry:
         image_cv = cv2.imread(img_path)
         image_rgb = cv2.cvtColor(image_cv, cv2.COLOR_BGR2RGB)
         
-        prediction_result = self.craft.detect_text(img_path)
+        try:
+            prediction_result = self.craft.detect_text(img_path)
+        except ValueError as e:
+            print(f"CRAFT crashed with ValueError (numpy inhomogeneous shape issue): {e}")
+            print("Falling back to PaddleOCR...")
+            return self.run_paddle_ocr(img_path)
+            
         boxes = prediction_result["boxes"]
         
         words, bboxes = [], []
