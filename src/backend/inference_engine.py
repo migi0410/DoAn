@@ -496,6 +496,15 @@ class MiniCPMVModelWrapper:
             base_model_id = "openbmb/MiniCPM-Llama3-V-2_5"
 
         print(f"Loading MiniCPM-V Base: {base_model_id}")
+        # Patch transformers PreTrainedModel so MiniCPMV (trust_remote_code) doesn't crash
+        try:
+            from transformers.modeling_utils import PreTrainedModel
+            if not hasattr(PreTrainedModel, 'all_tied_weights_keys'):
+                PreTrainedModel.all_tied_weights_keys = property(
+                    lambda self: getattr(self, '_tied_weights_keys', None) or []
+                )
+        except Exception:
+            pass
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
         self.model = AutoModel.from_pretrained(base_model_id, trust_remote_code=True, device_map="auto", dtype=torch.float16)
 
