@@ -127,7 +127,15 @@ trainer = Trainer(
 )
 
 print("Training LayoutLMv3...")
-trainer.train(resume_from_checkpoint=True)
+import os as _os
+_ckpt = OUTPUT_DIR
+_resume = False
+if _os.path.isdir(_ckpt):
+    _checkpoints = [d for d in _os.listdir(_ckpt) if d.startswith("checkpoint")]
+    if _checkpoints:
+        _resume = True
+        print(f"Resuming from checkpoint in {_ckpt}")
+trainer.train(resume_from_checkpoint=_resume if _resume else None)
 trainer.save_model(BEST_DIR)
 print(f"Best model saved to {BEST_DIR}")
 
