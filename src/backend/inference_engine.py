@@ -618,7 +618,10 @@ class ModelRegistry:
         
     def _initialize(self):
         print("Initializing Model Registry...")
-        self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", enable_mkldnn=False, ocr_version="PP-OCRv3", use_gpu=False)
+        try:
+            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", device="gpu")
+        except Exception:
+            self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi")
         self.rule_model = None
         self.phobert_model = None
         self.layoutlm_model = None
