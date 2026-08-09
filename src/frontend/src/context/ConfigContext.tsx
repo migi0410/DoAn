@@ -11,7 +11,8 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   // Default to env variable or localhost, will be overridden by localStorage in useEffect
-  const [apiUrl, setApiUrlState] = useState(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+  const initialUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+  const [apiUrl, setApiUrlState] = useState(initialUrl);
 
   useEffect(() => {
     const savedUrl = localStorage.getItem("API_URL");
