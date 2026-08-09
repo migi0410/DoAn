@@ -34,8 +34,8 @@ async def startup():
     _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
-        device_map="auto", torch_dtype=torch.float16
-    )
+        torch_dtype=torch.float16
+    ).to("cuda")
     if os.path.exists(MODEL_DIR):
         print(f"[MiniCPM-Server] Loading LoRA: {MODEL_DIR}")
         try:
