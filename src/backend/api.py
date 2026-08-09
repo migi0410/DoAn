@@ -68,21 +68,27 @@ async def predict(
             
         result, words, bboxes = registry.predict(baseline, img_path, preprocess=preprocess)
         print(f"===== FINAL RESULT TO FRONTEND =====\n{result}\n=====================================")
-        
-        \
-        import cv2
-        img = cv2.imread(img_path)
-        for box in bboxes:
-            try:
-                box = [(int(p[0]), int(p[1])) for p in box]
-            except Exception:
-                continue
-            cv2.polylines(img, [__import__("numpy").array(box)], isClosed=True, color=(0, 255, 0), thickness=2)
-        
+
+        # Draw bboxes on image
         result_filename = f"result_{file_id}.{ext}"
         result_path = os.path.join(UPLOAD_DIR, result_filename)
-        cv2.imwrite(result_path, img)
-        
+        try:
+            import cv2, numpy as np
+            img = cv2.imread(img_path)
+            if img is not None and bboxes:
+                for box in bboxes:
+                    try:
+                        pts = np.array([[int(p[0]), int(p[1])] for p in box], dtype=np.int32)
+                        cv2.polylines(img, [pts], isClosed=True, color=(0, 255, 0), thickness=2)
+                    except Exception:
+                        continue
+                cv2.imwrite(result_path, img)
+            else:
+                shutil.copy(img_path, result_path)
+        except Exception as e:
+            print("BBox drawing error:", e)
+            shutil.copy(img_path, result_path)
+
         return JSONResponse(content={
             "success": True,
             "extraction": result,

@@ -730,6 +730,9 @@ class ModelRegistry:
     def run_paddle_ocr(self, img_path):
         print("Running OCR...")
         words, bboxes = [], []
+        if self.ocr_paddle is None:
+            print("OCR unavailable - returning empty.")
+            return words, bboxes
         if getattr(self, '_ocr_backend', 'paddleocr') == 'easyocr':
             result = self.ocr_paddle.readtext(img_path)
             for (box, text, conf) in result:
@@ -836,12 +839,12 @@ class ModelRegistry:
         words, bboxes = [], []
         result = {}
         
-        \
         if baseline in ["qwen2_vl", "minicpm_v"]:
             pass
         elif baseline in ["phobert_paddle", "layoutlmv3", "rule_based"]:
             words, bboxes = self.run_paddle_ocr(img_path)
         elif baseline in ["phobert", "layoutlmv3_craft"]:
+            # Try CRAFT first, falls back to PaddleOCR/EasyOCR
             words, bboxes = self.run_craft_vietocr(img_path)
         else:
             words, bboxes = self.run_paddle_ocr(img_path)
