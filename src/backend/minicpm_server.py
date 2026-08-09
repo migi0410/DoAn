@@ -16,8 +16,14 @@ import uvicorn
 
 app = FastAPI(title="MiniCPM-V Server")
 
-# Use the original model as requested
-BASE_MODEL = "openbmb/MiniCPM-V-2_6"
+# Use local model if it exists, otherwise use HF Hub
+if os.path.exists("/workspace/MiniCPM-V-2_6"):
+    BASE_MODEL = "/workspace/MiniCPM-V-2_6"
+elif os.path.exists("/workspace/MiniCPM-V-2_6-int4"):
+    BASE_MODEL = "/workspace/MiniCPM-V-2_6-int4"
+else:
+    BASE_MODEL = "openbmb/MiniCPM-V-2_6"
+    
 MODEL_DIR = os.environ.get("MINICPM_MODEL_DIR", "/workspace/DoAn/models/minicpm_v_lora_official")
 UPLOAD_DIR   = "/tmp/minicpm_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
