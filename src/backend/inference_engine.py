@@ -1,11 +1,20 @@
 import os
-import torch
-import cv2
 import warnings
+
+try:
+    import torch
+except ImportError:
+    torch = None
+
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 from baselines.baseline_rule_based import extract_kie_rules
 from utils.preprocessing import ImagePreprocessor, TextPreprocessor
-from paddleocr import PaddleOCR
+
+# PaddleOCR is imported lazily inside _initialize() to prevent module crash
 
 warnings.filterwarnings("ignore")
 
@@ -618,20 +627,26 @@ class ModelRegistry:
         
     def _initialize(self):
         print("Initializing Model Registry...")
-        import torch
-        _gpu = torch.cuda.is_available()
-        print(f"Initializing EasyOCR (gpu={_gpu})...")
+        _gpu = torch is not None and torch.cuda.is_available()
+        print(f"Initializing OCR (gpu={_gpu})...")
+        self.ocr_paddle = None
+        self._ocr_backend = None
+        # Try EasyOCR first (no C++ MKL-DNN issues)
         try:
             import easyocr
             self.ocr_paddle = easyocr.Reader(['vi', 'en'], gpu=_gpu)
             self._ocr_backend = 'easyocr'
+            print("EasyOCR initialized.")
         except Exception as e:
-            print(f"EasyOCR failed ({e}), trying PaddleOCR...")
+            print(f"EasyOCR unavailable ({e}), trying PaddleOCR...")
             try:
-                self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi", device="gpu" if _gpu else "cpu")
-            except Exception:
-                self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi")
-            self._ocr_backend = 'paddleocr'
+                from paddleocr import PaddleOCR
+                self.ocr_paddle = PaddleOCR(use_angle_cls=False, lang="vi",
+                                            device="gpu" if _gpu else "cpu")
+                self._ocr_backend = 'paddleocr'
+                print("PaddleOCR initialized.")
+            except Exception as e2:
+                print(f"PaddleOCR also unavailable ({e2}). OCR disabled.")
         self.rule_model = None
         self.phobert_model = None
         self.layoutlm_model = None
