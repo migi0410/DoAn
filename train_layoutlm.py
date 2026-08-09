@@ -1,6 +1,8 @@
 import os
 import numpy as np
 from PIL import Image
+os.environ["WANDB_PROJECT"] = "avir-kie-vlm"
+os.environ["WANDB_ENTITY"]  = "haminhdung0410-fpt-university"
 from datasets import load_from_disk
 from transformers import (
     LayoutLMv3Processor,
@@ -17,7 +19,8 @@ DATASET_PATH = "/workspace/DoAn/data/OFFICIAL_LAYOUTLM_DATASET"
 IMAGE_DIR    = "/workspace/FINAL_RUNPOD_DATASET/images"
 MODEL_NAME   = "microsoft/layoutlmv3-base"
 OUTPUT_DIR   = "/workspace/layoutlmv3_avir_official"
-WANDB_PROJECT = "avir-kie"
+WANDB_PROJECT = "avir-kie-vlm"
+WANDB_ENTITY  = "haminhdung0410-fpt-university"
 BEST_DIR     = "/workspace/layoutlmv3_avir_official_best"
 MAX_SEQ_LEN  = 512
 BATCH_SIZE   = 8

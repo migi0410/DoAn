@@ -1,5 +1,7 @@
 import os
 import numpy as np
+os.environ["WANDB_PROJECT"] = "avir-kie-vlm"
+os.environ["WANDB_ENTITY"]  = "haminhdung0410-fpt-university"
 from datasets import load_from_disk
 from transformers import (
     AutoTokenizer,
@@ -13,7 +15,8 @@ import evaluate
 DATASET_PATH = "/workspace/DoAn/data/OFFICIAL_LAYOUTLM_DATASET"
 MODEL_NAME   = "vinai/phobert-base-v2"
 OUTPUT_DIR   = "/workspace/phobert_avir_official"
-WANDB_PROJECT = "avir-kie"
+WANDB_PROJECT = "avir-kie-vlm"
+WANDB_ENTITY  = "haminhdung0410-fpt-university"
 BEST_DIR     = "/workspace/phobert_avir_official_best"
 MAX_SEQ_LEN  = 256
 BATCH_SIZE   = 16
