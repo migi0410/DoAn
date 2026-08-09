@@ -100,6 +100,7 @@ args = TrainingArguments(
     evaluation_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
+    save_total_limit=1,
     metric_for_best_model="f1",
     logging_steps=50,
     fp16=True,
