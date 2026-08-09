@@ -1,5 +1,8 @@
 import os
 import sys
+# Thêm đường dẫn tuyệt đối của thư mục chứa api.py vào sys.path để import cục bộ không bị lỗi
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import json
 import uuid
 import subprocess
