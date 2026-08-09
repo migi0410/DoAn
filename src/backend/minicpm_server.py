@@ -51,7 +51,7 @@ async def startup():
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
         torch_dtype=torch.float16,
-        device_map={"": 0} if "quantization_config" in quantization_kwargs else None,
+        device_map="auto",
         **quantization_kwargs
     )
     # Only use .to("cuda") if we are NOT using 4-bit
