@@ -555,6 +555,25 @@ class ModelRegistry:
         self.craft = None
         self.vietocr_detector = None
 
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        if os.path.exists("/workspace"): 
+            self.models_dir = "/workspace"
+        else:
+            self.models_dir = os.path.join(base_dir, "trained_models")
+            
+        print(f"Models Directory configured to: {self.models_dir}")
+        print("Eager loading default models...")
+        for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl"]:
+            try:
+                self.get_model(model_name)
+                print(f"  ✓ {model_name} loaded")
+                import torch
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            except Exception as e:
+                print(f"  ✗ {model_name} failed to load: {e}")
+        print("Model Registry ready!")
+
     def get_ocr(self):
         if self.ocr_paddle is None:
             print(f"Initializing OCR (gpu={self._gpu})...")
@@ -574,25 +593,6 @@ class ModelRegistry:
                 except Exception as e2:
                     print(f"PaddleOCR also unavailable ({e2}). OCR disabled.")
         return self.ocr_paddle
-        
-        base_dir = os.path.dirname(os.path.dirname(__file__))
-        if os.path.exists("/workspace"): 
-            self.models_dir = "/workspace"
-        else:
-            self.models_dir = os.path.join(base_dir, "trained_models")
-            
-        print(f"Models Directory configured to: {self.models_dir}")
-        print("Eager loading default models...")
-        for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl"]:
-            try:
-                self.get_model(model_name)
-                print(f"  ✓ {model_name} loaded")
-                import torch
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-            except Exception as e:
-                print(f"  ✗ {model_name} failed to load: {e}")
-        print("Model Registry ready!")
 
     def get_model(self, model_name):
         import gc
