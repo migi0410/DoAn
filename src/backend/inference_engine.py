@@ -425,66 +425,6 @@ class Qwen2VLModelWrapper:
             print(f"Failed to parse VLM response: {e}")
             return {}, [], []
 
-    def unpack_val(val):
-                if isinstance(val, list) and len(val) > 0:
-                    return str(val[0])
-                return str(val) if val is not None else ""
-                
-            item_keys = ["ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]
-            items = []
-            
-            \
-            for k in item_keys:
-                if k in data_upper and not isinstance(data_upper[k], list):
-                    if isinstance(data_upper[k], str) and data_upper[k] != "":
-                        \
-                        data_upper[k] = [data_upper[k]]
-                    else:
-                        data_upper[k] = []
-            
-            max_len = 0
-            for k in item_keys:
-                if k in data_upper and isinstance(data_upper[k], list):
-                    max_len = max(max_len, len(data_upper[k]))
-            
-            if max_len > 0:
-                for i in range(max_len):
-                    item = {}
-                    for k in item_keys:
-                        if k in data_upper and isinstance(data_upper[k], list) and i < len(data_upper[k]):
-                            \
-                            item[k] = unpack_val(data_upper[k][i])
-                        else:
-                            item[k] = ""
-                    items.append(item)
-                    
-            clean_data = {}
-            for k, v in data_upper.items():
-                if k in item_keys:
-                    continue
-                elif k == "ITEMS" and isinstance(v, list):
-                    clean_items = []
-                    for item in v:
-                        clean_item = {}
-                        for ik, iv in item.items():
-                            ik_upper = ik.upper()
-                            if ik_upper == "SL":
-                                ik_upper = "ITEM_QTY"
-                            clean_item[ik_upper] = unpack_val(iv)
-                        clean_items.append(clean_item)
-                    clean_data[k] = clean_items
-                else:
-                    clean_data[k] = unpack_val(v)
-                        
-            if items:
-                clean_data["ITEMS"] = items
-            
-            print(f"===== PARSED CLEAN DATA =====\n{clean_data}\n==============================")
-            return clean_data
-        except Exception as e:
-            print(f"===== PARSER ERROR =====\n{e}\nRESPONSE WAS:\n{response}\n========================")
-            return {"OTHER": response}
-
 class MiniCPMVModelWrapper:
     """Wrapper to communicate with the isolated MiniCPM-V server"""
     SERVER_URL = "http://127.0.0.1:8005"
