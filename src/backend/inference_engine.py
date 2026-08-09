@@ -664,12 +664,13 @@ class ModelRegistry:
             
         print(f"Models Directory configured to: {self.models_dir}")
         print("Eager loading all models...")
-        self.get_model("rule_based")
-        self.get_model("phobert")
-        self.get_model("layoutlmv3")
-        self.get_model("qwen2_vl")
-        self.get_model("minicpm_v")
-        print("All models loaded and ready!")
+        for model_name in ["rule_based", "phobert", "layoutlmv3", "qwen2_vl", "minicpm_v"]:
+            try:
+                self.get_model(model_name)
+                print(f"  ✓ {model_name} loaded")
+            except Exception as e:
+                print(f"  ✗ {model_name} failed to load: {e}")
+        print("Model Registry ready!")
 
     def get_model(self, model_name):
         if model_name == "rule_based":
