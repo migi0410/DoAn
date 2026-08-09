@@ -30,6 +30,13 @@ class ImagePreprocessor:
         max_bin = np.argmax(counts)
         dominant_angle = (bins[max_bin] + bins[max_bin + 1]) / 2
         
+        # Hough lines cannot determine text orientation (0 vs 180, 90 vs -90).
+        # We only want to fix slight skews, not flip the image randomly by 90 degrees.
+        if dominant_angle > 45:
+            dominant_angle -= 90
+        elif dominant_angle < -45:
+            dominant_angle += 90
+            
         if abs(dominant_angle) < 0.5:
             return image
             
