@@ -9,26 +9,37 @@ class ImagePreprocessor:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if len(image.shape) == 3 else image
         edges = cv2.Canny(gray, 50, 150, apertureSize=3)
         lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 100, minLineLength=100, maxLineGap=10)
+        
+        if lines is None:
+            return image
+            
         angles = []
-        if lines is not None:
-            for line in lines:
-                x1, y1, x2, y2 = line[0]
-                angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
-                if -45 < angle < 45:
-                    angles.append(angle)
-                elif angle > 45:
-                    angles.append(angle - 90)
-                elif angle < -45:
-                    angles.append(angle + 90)
-        if not angles:
+        for line in lines:
+            x1, y1, x2, y2 = line[0]
+            angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
+            if angle > 90: angle -= 180
+            elif angle < -90: angle += 180
+            angles.append(angle)
+            
+        counts, bins = np.histogram(angles, bins=180, range=(-90, 90))
+        max_bin = np.argmax(counts)
+        dominant_angle = (bins[max_bin] + bins[max_bin + 1]) / 2
+        
+        if abs(dominant_angle) < 0.5:
             return image
-        median_angle = np.median(angles)
-        if abs(median_angle) < 0.5:
-            return image
+            
         h, w = image.shape[:2]
         center = (w // 2, h // 2)
-        M = cv2.getRotationMatrix2D(center, median_angle, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        
+        M = cv2.getRotationMatrix2D(center, dominant_angle, 1.0)
+        cos = np.abs(M[0, 0])
+        sin = np.abs(M[0, 1])
+        new_w = int((h * sin) + (w * cos))
+        new_h = int((h * cos) + (w * sin))
+        M[0, 2] += (new_w / 2) - center[0]
+        M[1, 2] += (new_h / 2) - center[1]
+        
+        rotated = cv2.warpAffine(image, M, (new_w, new_h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
         return rotated
 
     @staticmethod
