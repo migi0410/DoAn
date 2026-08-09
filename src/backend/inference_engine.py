@@ -790,18 +790,22 @@ class ModelRegistry:
             print("Warning: CRAFT + VietOCR not installed. Falling back to PaddleOCR.")
             return self.run_paddle_ocr(img_path)
             
-        print("Running CRAFT + VietOCR...")
+        print("Running Paddle Detector + VietOCR...")
         image_cv = cv2.imread(img_path)
         image_rgb = cv2.cvtColor(image_cv, cv2.COLOR_BGR2RGB)
         
         try:
-            prediction_result = self.craft.detect_text(img_path)
-        except ValueError as e:
-            print(f"CRAFT crashed with ValueError (numpy inhomogeneous shape issue): {e}")
-            print("Falling back to PaddleOCR...")
+            ocr = self.get_ocr()
+            if ocr is None:
+                return [], []
+            result = ocr.ocr(img_path, rec=False)
+            if not result or result[0] is None:
+                return [], []
+            boxes = np.array(result[0])
+        except Exception as e:
+            print(f"Detection crashed: {e}")
+            print("Falling back to pure PaddleOCR...")
             return self.run_paddle_ocr(img_path)
-            
-        boxes = prediction_result["boxes"]
         
         words, bboxes = [], []
         
