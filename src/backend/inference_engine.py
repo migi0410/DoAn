@@ -238,22 +238,9 @@ class Qwen2VLModelWrapper:
             base_model_id = "Qwen/Qwen2-VL-2B-Instruct"
             
         print(f"Loading Qwen2-VL Base: {base_model_id}")
-        try:
-            from transformers import BitsAndBytesConfig
-            quantization_config = BitsAndBytesConfig(
-                load_in_8bit=True,
-                llm_int8_enable_fp32_cpu_offload=True
-            )
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-                base_model_id, 
-                device_map="auto",
-                quantization_config=quantization_config
-            )
-        except Exception as e:
-            print(f"Failed to load with custom quantization config: {e}")
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-                base_model_id, device_map="auto"
-            )
+        self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+            base_model_id, device_map="auto"
+        )
         
         if os.path.exists(model_dir):
             print(f"Loading Qwen2-VL LoRA: {model_dir}")

@@ -17,7 +17,8 @@ import uvicorn
 app = FastAPI(title="MiniCPM-V Server")
 
 MODEL_DIR    = os.environ.get("MINICPM_MODEL_DIR", "/workspace/minicpm_v_lora_official")
-BASE_MODEL   = "openbmb/MiniCPM-Llama3-V-2_5"
+# Use the official int4 model to bypass dynamic quantization bugs
+BASE_MODEL = "openbmb/MiniCPM-Llama3-V-2_5-int4"
 UPLOAD_DIR   = "/tmp/minicpm_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -35,8 +36,9 @@ async def startup():
     
     _model = AutoModel.from_pretrained(
         BASE_MODEL, trust_remote_code=True,
-        torch_dtype=torch.float16
-    ).to("cuda")
+        torch_dtype=torch.float16,
+        device_map="auto"
+    )
     if os.path.exists(MODEL_DIR):
         print(f"[MiniCPM-Server] Loading LoRA: {MODEL_DIR}")
         try:
