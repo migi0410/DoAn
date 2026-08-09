@@ -420,10 +420,10 @@ class Qwen2VLModelWrapper:
                         "ITEM_AMOUNT": item_amounts[i] if i < len(item_amounts) else "",
                     })
                 parsed["ITEMS"] = items
-            return parsed, [], []
+            return parsed
         except Exception as e:
             print(f"Failed to parse VLM response: {e}")
-            return {}, [], []
+            return {}
 
 class MiniCPMVModelWrapper:
     """Wrapper to communicate with the isolated MiniCPM-V server"""
