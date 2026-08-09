@@ -29,7 +29,7 @@ _tokenizer = None
 async def startup():
     global _model, _tokenizer
     import torch
-    from transformers import AutoModel, AutoTokenizer
+    from transformers import AutoModel, AutoTokenizer, AutoConfig
 
     print(f"[MiniCPM-Server] Loading base: {BASE_MODEL}")
     _tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
