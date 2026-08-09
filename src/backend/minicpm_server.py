@@ -17,7 +17,7 @@ import uvicorn
 app = FastAPI(title="MiniCPM-V Server")
 
 # Use the official int4 model to bypass dynamic quantization bugs
-BASE_MODEL = "openbmb/MiniCPM-V-2_6"
+BASE_MODEL = "openbmb/MiniCPM-V-2_6-int4"
 MODEL_DIR = os.environ.get("MINICPM_MODEL_DIR", "/workspace/DoAn/models/minicpm_v_lora_official")
 UPLOAD_DIR   = "/tmp/minicpm_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
