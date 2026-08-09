@@ -572,8 +572,9 @@ class ModelRegistry:
         return cls._instance
         
     def _initialize(self):
+        import torch
         print("Initializing Model Registry...")
-        _gpu = torch is not None and torch.cuda.is_available()
+        _gpu = torch.cuda.is_available()
         print(f"Initializing OCR (gpu={_gpu})...")
         self.ocr_paddle = None
         self._ocr_backend = None
