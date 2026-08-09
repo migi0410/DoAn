@@ -127,7 +127,7 @@ trainer = Trainer(
 )
 
 print("Training LayoutLMv3...")
-trainer.train()
+trainer.train(resume_from_checkpoint=True)
 trainer.save_model(BEST_DIR)
 print(f"Best model saved to {BEST_DIR}")
 
