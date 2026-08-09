@@ -82,3 +82,4 @@ diff_results.txt
 *_SCORE.txt
 strip_comments.py
 mcocr_label/
+src/backend/temp_uploads/
