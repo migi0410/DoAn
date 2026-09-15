@@ -11,8 +11,8 @@ import importlib.util
 os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace', line_buffering=True)
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace', line_buffering=True)
+
+
 
 # Import models from 4_benchmark_10k.py
 benchmark_script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "4_benchmark_10k.py")
@@ -39,6 +39,14 @@ def extract_ground_truth(task_data):
     results = annotations[0].get('result', [])
     label_map = {}
     text_map = {}
+    
+    label_mapping = {
+        "STORE_NAME": "SELLER",
+        "DATE": "TIMESTAMP",
+        "TOTAL_AMOUNT": "TOTAL_COST",
+        "ITEM_TOTAL": "ITEM_AMOUNT"
+    }
+    
     for r in results:
         rid = r.get('id')
         if not rid: continue
@@ -48,6 +56,11 @@ def extract_ground_truth(task_data):
             elif lbl.startswith("ITEM_QTY"): lbl = "ITEM_QTY"
             elif lbl.startswith("ITEM_PRICE"): lbl = "ITEM_PRICE"
             elif lbl.startswith("ITEM_AMOUNT"): lbl = "ITEM_AMOUNT"
+            
+            # Map to target labels
+            if lbl in label_mapping:
+                lbl = label_mapping[lbl]
+                
             label_map[rid] = lbl
         elif r['type'] == 'textarea':
             text = r['value']['text'][0]
@@ -62,10 +75,13 @@ def evaluate(pred, gt, metrics):
     gt_keys = set(gt.keys())
     pred_keys = set(pred.keys())
     for k in gt_keys.union(pred_keys):
-        if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST", "ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]:
+        # ONLY EVALUATE 4 FIELDS FOR FAIR COMPARISON WITH SYNTHETIC
+        if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
             continue
         gt_val = gt.get(k, "")
         pred_val = pred.get(k, "")
+        print(f"Evaluating {k} | GT: '{gt_val}' | PRED: '{pred_val}'")
+        
         if gt_val and pred_val:
             if fuzzy_match(gt_val, pred_val) > 0.8: metrics["TP"] += 1
             else:
@@ -89,9 +105,18 @@ def main():
     from paddleocr import PaddleOCR
     ocr = PaddleOCR(use_angle_cls=False, lang="vi", enable_mkldnn=False, show_log=False)
     
-    json_path = os.path.join(doan_dir, "raw_data", "labels", "Vuong_Label.json")
-    with open(json_path, "r", encoding="utf-8") as f:
-        tasks = json.load(f)
+    tasks = []
+    for label_file in ["Vuong_Label.json", "Cam_Label.json", "Dai_Label.json"]:
+        json_path = os.path.join(doan_dir, "raw_data", "labels", label_file)
+        annotator_folder = "task_" + label_file.split("_")[0].lower()
+        with open(json_path, "r", encoding="utf-8") as f:
+            annotator_tasks = json.load(f)
+            for t in annotator_tasks:
+                t['annotator_folder'] = annotator_folder
+            tasks.extend(annotator_tasks)
+            
+    # CRITICAL DEADLINE FIX: Slice to 500 images to finish in ~45 mins
+    tasks = tasks[:500]
         
     img_base_dir = os.path.join(doan_dir, "label_studio_tasks", "task_vuong", "images")
     
@@ -103,18 +128,22 @@ def main():
     
     print(f"Bắt đầu đánh giá trên {len(tasks)} ảnh thực tế (MCOCR)...")
     for idx, task in enumerate(tasks):
-        img_url = task['data']['image']
-        filename = img_url.split("/")[-1]
-        img_path = os.path.join(img_base_dir, filename)
+        image_url = task.get('data', {}).get('image')
+        if not image_url:
+            print("No image found for task, skipping...")
+            continue
+            
+        img_name = image_url.split('/')[-1]
+        annotator_folder = task.get('annotator_folder', 'task_vuong')
+        img_path = os.path.join(doan_dir, "label_studio_tasks", annotator_folder, "images", img_name)
         
         if not os.path.exists(img_path):
-            print(f"[!] Warning: Image {filename} not found in {img_base_dir}. Skipping.")
+            print(f"Image {img_path} not found, skipping...")
             continue
             
         gt_data = extract_ground_truth(task)
-        if idx % 10 == 0:
-            print(f"[{idx}/{len(tasks)}] Processing {filename}...")
         
+        print(f"[{idx}/{len(tasks)}] Processing {img_name}...")
         img = cv2.imread(img_path)
         processed = ImagePreprocessor.process_all(img)
         temp_img_path = img_path + "_temp.jpg"

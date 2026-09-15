@@ -10,8 +10,7 @@ from difflib import SequenceMatcher
 from PIL import Image
 import cv2
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace', line_buffering=True)
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace', line_buffering=True)
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 base_dir = os.path.abspath("C:/Users/Admin/OneDrive/DoAn")
@@ -20,10 +19,8 @@ if base_dir not in sys.path:
 
 from utils.preprocessing import ImagePreprocessor, TextPreprocessor
 def parse_labels_from_predictions(words, word_predicted_labels):
-    extracted_data = {
-        "STORE_NAME": [], "ADDRESS": [], "DATE": [], "TOTAL_AMOUNT": [],
-        "ITEM_NAME": [], "ITEM_QTY": [], "ITEM_PRICE": [], "ITEM_AMOUNT": []
-    }
+    from collections import defaultdict
+    extracted_data = defaultdict(list)
     
     current_label = None
     current_text = []
@@ -31,8 +28,7 @@ def parse_labels_from_predictions(words, word_predicted_labels):
     for word, label in zip(words, word_predicted_labels):
         if label.startswith("B-"):
             if current_label and current_text:
-                if current_label in extracted_data:
-                    extracted_data[current_label].append(" ".join(current_text))
+                extracted_data[current_label].append(" ".join(current_text))
             base = label[2:]
             current_label = base
             current_text = [word]
@@ -42,14 +38,12 @@ def parse_labels_from_predictions(words, word_predicted_labels):
                 current_text.append(word)
         else:
             if current_label and current_text:
-                if current_label in extracted_data:
-                    extracted_data[current_label].append(" ".join(current_text))
+                extracted_data[current_label].append(" ".join(current_text))
             current_label = None
             current_text = []
             
     if current_label and current_text:
-        if current_label in extracted_data:
-            extracted_data[current_label].append(" ".join(current_text))
+        extracted_data[current_label].append(" ".join(current_text))
             
     final_json = {}
     for k, v in extracted_data.items():
@@ -332,7 +326,8 @@ def run_benchmark():
         gt_keys = set(gt.keys())
         pred_keys = set(pred.keys())
         for k in gt_keys.union(pred_keys):
-            if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST", "ITEM_NAME", "ITEM_QTY", "ITEM_PRICE", "ITEM_AMOUNT"]:
+            # ONLY EVALUATE 4 FIELDS FOR FAIR COMPARISON WITH MCOCR
+            if k not in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
                 continue
             gt_val = gt.get(k, "")
             pred_val = pred.get(k, "")

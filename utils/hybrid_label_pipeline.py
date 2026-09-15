@@ -13,7 +13,7 @@ from supabase import create_client
 # ================= CẤU HÌNH =================
 GEMINI_API_KEY = "YOUR_GEMINI_KEY"
 SUPABASE_URL = "https://gmefyvajylsqsyfpuahk.supabase.co"
-SUPABASE_KEY = "YOUR_SUPABASE_KEY"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtZWZ5dmFqeWxzcXN5ZnB1YWhrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjQyNDk4OCwiZXhwIjoyMDk4MDAwOTg4fQ.7WYgcI-s1UyORJULDHTp_okiyNiCFNEVbIjTgSEazUc"
 BUCKET_NAME = "raw_images"
 FOLDERS_TO_PROCESS = [
     "cafe_starbucks", 
@@ -188,7 +188,7 @@ def process_images():
             except:
                 pass
                 
-        files = supabase.storage.from_(BUCKET_NAME).list(folder)
+        files = supabase.storage.from_(BUCKET_NAME).list(folder, {'limit': 1000})
         image_files = [f['name'] for f in files if f['name'].endswith(('.png', '.jpg', '.jpeg'))][:MAX_IMAGES]
         
         for i, filename in enumerate(image_files):

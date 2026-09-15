@@ -1,14 +1,12 @@
 import os
-import sys
 import torch
 import cv2
 import warnings
 
 # Thêm đường dẫn tới pipeline để import các lớp model đã có sẵn nếu cần.
 # Hoặc ta sẽ sao chép logic import ở đây.
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from pipelines_and_training.baselines.baseline_rule_based import extract_kie_rules
+from baselines.baseline_rule_based import extract_kie_rules
 from utils.preprocessing import ImagePreprocessor, TextPreprocessor
 from paddleocr import PaddleOCR
 
@@ -166,6 +164,99 @@ class LayoutLMModel:
 
         return parse_labels_from_predictions(words, word_predicted_labels)
 
+class Qwen2VLModelWrapper:
+    def __init__(self, model_dir):
+        import torch
+        from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+        
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        try:
+            import json
+            with open(os.path.join(model_dir, "adapter_config.json")) as f:
+                adapter_config = json.load(f)
+                base_model_id = adapter_config.get("base_model_name_or_path", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit")
+        except:
+            base_model_id = "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit"
+            
+        print(f"Loading Qwen2-VL Base: {base_model_id}")
+        try:
+            from transformers import BitsAndBytesConfig
+            quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                llm_int8_enable_fp32_cpu_offload=True
+            )
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+                base_model_id, 
+                device_map="auto",
+                quantization_config=quantization_config
+            )
+        except Exception as e:
+            print(f"Failed to load with custom quantization config: {e}")
+            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+                base_model_id, device_map="auto"
+            )
+        
+        if os.path.exists(model_dir):
+            print(f"Loading Qwen2-VL LoRA: {model_dir}")
+            from peft import PeftModel
+            self.model = PeftModel.from_pretrained(self.model, model_dir)
+            
+        self.processor = AutoProcessor.from_pretrained(base_model_id)
+        self.model.eval()
+
+    def generate_response(self, img_path, prompt):
+        import torch
+        from qwen_vl_utils import process_vision_info
+        
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "image": img_path},
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ]
+        
+        text = self.processor.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        image_inputs, video_inputs = process_vision_info(messages)
+        inputs = self.processor(
+            text=[text],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+        )
+        inputs = inputs.to(self.device)
+        
+        with torch.no_grad():
+            generated_ids = self.model.generate(**inputs, max_new_tokens=256)
+            generated_ids_trimmed = [
+                out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+            ]
+            output_text = self.processor.batch_decode(
+                generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+            )
+            
+        return output_text[0]
+
+    def chat(self, img_path, question):
+        return self.generate_response(img_path, question)
+
+    def predict(self, img_path):
+        prompt = "Trích xuất thông tin hóa đơn dưới dạng JSON với các trường: SELLER, ADDRESS, TIMESTAMP, TOTAL_COST, ITEM_NAME, ITEM_QTY, ITEM_PRICE, ITEM_AMOUNT, OTHER."
+        import json
+        response = self.generate_response(img_path, prompt)
+        try:
+            return json.loads(response)
+        except Exception:
+            return {"OTHER": response}
+            
+    def chat(self, img_path, question):
+        return self.generate_response(img_path, question)
 
 class ModelRegistry:
     _instance = None
@@ -178,37 +269,52 @@ class ModelRegistry:
         
     def _initialize(self):
         print("Initializing Model Registry...")
-        self.ocr = PaddleOCR(use_angle_cls=False, lang="vi", enable_mkldnn=False, ocr_version="PP-OCRv4")
-        
-        models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "trained_models"))
-        
-        self.rule_model = RuleModel()
-        
-        try:
-            print("Loading PhoBERT...")
-            self.phobert_model = PhoBertModel(os.path.join(models_dir, "phobert-avir-kie-best-10k"))
-        except Exception as e:
-            print(f"Error loading PhoBERT: {e}")
-            self.phobert_model = None
-            
-        try:
-            print("Loading LayoutLM...")
-            self.layoutlm_model = LayoutLMModel(os.path.join(models_dir, "layoutlm-avir-kie-best-10k"))
-        except Exception as e:
-            print(f"Error loading LayoutLM: {e}")
-            self.layoutlm_model = None
+        self.ocr = PaddleOCR(use_angle_cls=False, lang="vi", enable_mkldnn=False, ocr_version="PP-OCRv3")
+        self.rule_model = None
+        self.phobert_model = None
+        self.layoutlm_model = None
+        self.qwen_model = None
+        self.models_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "trained_models")
+        if not os.path.exists(self.models_dir):
+            self.models_dir = os.path.dirname(os.path.dirname(__file__)) # For RunPod workspace)
+        print("Model Registry Initialized (Lazy Loading mode)...")
 
-        print("Model Registry Initialized Successfully!")
+    def get_model(self, baseline):
+        if baseline == "rule_based":
+            if self.rule_model is None:
+                print("Lazy Loading Rule-based Model...")
+                self.rule_model = RuleModel()
+            return self.rule_model
+        elif baseline == "phobert":
+            if self.phobert_model is None:
+                print("Lazy Loading PhoBERT...")
+                self.phobert_model = PhoBertModel(os.path.join(self.models_dir, "phobert-base-kie"))
+            return self.phobert_model
+        elif baseline == "layoutlmv1":
+            if self.layoutlm_model is None:
+                print("Lazy Loading LayoutLM...")
+                self.layoutlm_model = LayoutLMModel(os.path.join(self.models_dir, "layoutlm-avir-kie-best-10k"))
+            return self.layoutlm_model
+        elif baseline == "qwen2_vl":
+            if self.qwen_model is None:
+                print("Lazy Loading Qwen2-VL...")
+                self.qwen_model = Qwen2VLModelWrapper(os.path.join(self.models_dir, "qwen2-vl-finetuned-lora"))
+            return self.qwen_model
+        return None
 
     def run_paddle_ocr(self, img_path):
         result = self.ocr.ocr(img_path, cls=False)
         words, bboxes = [], []
         if result and result[0]:
             for line in result[0]:
-                box = line[0]
-                text = line[1][0]
-                bboxes.append(box)
-                words.append(text)
+                try:
+                    box = line[0]
+                    text = line[1][0]
+                    if isinstance(box, (list, tuple)) and not isinstance(box, str):
+                        bboxes.append(box)
+                        words.append(text)
+                except:
+                    pass
         return words, bboxes
 
     def predict(self, baseline, img_path, preprocess=False):
@@ -217,14 +323,22 @@ class ModelRegistry:
         
         # 2. Select Model & Run Inference
         result = {}
-        if baseline == "rule_paddle":
-            result = self.rule_model.predict(words, bboxes, img_path)
+        if baseline == "rule_based":
+            model = self.get_model("rule_based")
+            if model:
+                result = model.predict(words, bboxes, img_path)
         elif baseline == "phobert":
-            if self.phobert_model:
-                result = self.phobert_model.predict(words, bboxes, img_path, preprocess_text=preprocess)
+            model = self.get_model("phobert")
+            if model:
+                result = model.predict(words, bboxes, img_path, preprocess_text=preprocess)
         elif baseline == "layoutlmv1":
-            if self.layoutlm_model:
-                result = self.layoutlm_model.predict(words, bboxes, img_path, preprocess_text=preprocess)
+            model = self.get_model("layoutlmv1")
+            if model:
+                result = model.predict(words, bboxes, img_path, preprocess_text=preprocess)
+        elif baseline == "qwen2_vl":
+            model = self.get_model("qwen2_vl")
+            if model:
+                result = model.predict(img_path)
                 
         # Fill missing keys if any
         for key in ["SELLER", "ADDRESS", "TIMESTAMP", "TOTAL_COST"]:
@@ -232,3 +346,10 @@ class ModelRegistry:
                 result[key] = ""
                 
         return result, words, bboxes
+
+    def chat(self, model_name, img_path, question):
+        if model_name == "qwen2_vl":
+            model = self.get_model("qwen2_vl")
+            if model:
+                return model.chat(img_path, question)
+        return "Model not supported or not loaded."
