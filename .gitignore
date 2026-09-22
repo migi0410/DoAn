@@ -57,3 +57,34 @@ node_modules/
 # Mac/Windows
 .DS_Store
 Thumbs.db
+
+# Archives & Large Datasets
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.db
+*.sqlite
+*.sqlite3
+*.jsonl
+*.docx
+*.docx.bak
+*.pptx
+FINAL_*
+MASTER_*
+GOOGLE_DRIVE_*
+AVIR_KIE_*
+scratch/
+Dataset_Reports_And_Scripts/
+popos_qwen3_vl/
+popos_qwen3_vl_v2/
+test_runpod/
+mcocr_benchmark/
+temp_uploads/
+backend/temp_uploads/
+backend/receipts_history.db
+backend/baselines/
+database/
+report_assets/
+docs/CapstoneProject_AIP491_Report_Final/
+docs/overleaf_report/

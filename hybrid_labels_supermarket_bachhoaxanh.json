@@ -1530,7 +1530,49 @@
         }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-13-641Z_8mt8j8.jpeg": {
-        "error": "could not create a primitive"
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH QUẢNG 12",
+            "box_2d": [
+                384,
+                70,
+                574,
+                78,
+                572,
+                100,
+                382,
+                92
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachnoaxanh.com",
+            "box_2d": [
+                394,
+                89,
+                568,
+                96,
+                567,
+                114,
+                393,
+                108
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIEU THANH TOAN",
+            "box_2d": [
+                271,
+                156,
+                310,
+                158,
+                308,
+                171,
+                269,
+                168
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "586.900",
+            "box_2d": null
+        }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-15-111Z_t46o9b.jpeg": {
         "SELLER": {
@@ -1632,16 +1674,220 @@
         }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-17-849Z_d4zjcd.jpeg": {
-        "error": "could not create a primitive"
+        "SELLER": {
+            "text": "BACH HOA XANH LE DUC THQ",
+            "box_2d": [
+                333,
+                36,
+                564,
+                39,
+                563,
+                54,
+                333,
+                50
+            ]
+        },
+        "ADDRESS": {
+            "text": "Nguyễn Trãi, Quan 1, Binh Dương",
+            "box_2d": [
+                268,
+                66,
+                632,
+                70,
+                631,
+                88,
+                268,
+                84
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "18/06/2026 12.41",
+            "box_2d": [
+                331,
+                129,
+                413,
+                132,
+                412,
+                148,
+                330,
+                145
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "660,000",
+            "box_2d": [
+                644,
+                562,
+                727,
+                562,
+                727,
+                580,
+                644,
+                580
+            ]
+        }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-19-304Z_6ax7pc.jpeg": {
-        "error": "could not create a primitive"
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH LÊ ÚC THỌ",
+            "box_2d": [
+                322,
+                91,
+                570,
+                90,
+                571,
+                112,
+                322,
+                113
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 379 Cáç Mang Thám Tàm, Quán Đõng Da, Hà Mõi",
+            "box_2d": [
+                349,
+                115,
+                545,
+                115,
+                545,
+                130,
+                349,
+                130
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIẾU THANH TOÀN",
+            "box_2d": [
+                365,
+                186,
+                534,
+                185,
+                534,
+                204,
+                365,
+                205
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "Tổng tiền: 112.000",
+            "box_2d": [
+                488,
+                397,
+                546,
+                397,
+                546,
+                413,
+                488,
+                413
+            ]
+        }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-20-667Z_mpz51d.jpeg": {
-        "error": "could not create a primitive"
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH LÊ ÚC THỌ",
+            "box_2d": [
+                306,
+                101,
+                527,
+                94,
+                528,
+                115,
+                307,
+                122
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 170 Hải Ba Bàu, Quận 1, Hải Phòng",
+            "box_2d": [
+                332,
+                121,
+                504,
+                115,
+                505,
+                129,
+                333,
+                135
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "HĐ611559",
+            "box_2d": [
+                208,
+                179,
+                254,
+                179,
+                254,
+                193,
+                208,
+                193
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "282.960",
+            "box_2d": [
+                310,
+                178,
+                392,
+                182,
+                391,
+                197,
+                309,
+                193
+            ]
+        }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-22-115Z_yhd00l.jpeg": {
-        "error": "could not create a primitive"
+        "SELLER": {
+            "text": "BACH HOA XANH NGUYEN TRAI",
+            "box_2d": [
+                336,
+                114,
+                561,
+                114,
+                561,
+                129,
+                336,
+                129
+            ]
+        },
+        "ADDRESS": {
+            "text": "Trần Hưng Đạo, Quận 1, Hải Phòng",
+            "box_2d": [
+                359,
+                133,
+                538,
+                133,
+                538,
+                146,
+                359,
+                146
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "23/05/2026 21:46",
+            "box_2d": [
+                338,
+                214,
+                491,
+                220,
+                490,
+                235,
+                337,
+                228
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "291,500",
+            "box_2d": [
+                218,
+                568,
+                337,
+                568,
+                337,
+                586,
+                218,
+                586
+            ]
+        }
     },
     "supermarket_bachhoaxanh_2026-06-28T08-18-23-495Z_hmzut9.jpeg": {
         "SELLER": {
@@ -2657,6 +2903,4101 @@
                 609,
                 656,
                 609
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-18-53-565Z_47rji4.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH NGUYÊN TRFIELDS",
+            "box_2d": [
+                346,
+                102,
+                569,
+                99,
+                569,
+                117,
+                346,
+                119
+            ]
+        },
+        "ADDRESS": {
+            "text": "127 BIẾT THƯ XUÂN QUẢNG, QUẢNG 1, CẦN THƠ",
+            "box_2d": [
+                370,
+                120,
+                545,
+                120,
+                545,
+                134,
+                370,
+                134
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "07/06/2026 11:53",
+            "box_2d": [
+                348,
+                188,
+                424,
+                190,
+                423,
+                206,
+                347,
+                203
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "75.008",
+            "box_2d": [
+                271,
+                298,
+                283,
+                296,
+                288,
+                306,
+                276,
+                309
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-18-55-077Z_ymjwp.jpeg": {
+        "SELLER": {
+            "text": "PHIEU THANH TOAN",
+            "box_2d": [
+                361,
+                176,
+                531,
+                181,
+                530,
+                202,
+                360,
+                197
+            ]
+        },
+        "ADDRESS": {
+            "text": "",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "12/06/2@26 07:52",
+            "box_2d": [
+                317,
+                223,
+                485,
+                234,
+                482,
+                253,
+                314,
+                242
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "136,000",
+            "box_2d": [
+                186,
+                425,
+                301,
+                432,
+                299,
+                454,
+                183,
+                447
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-18-57-110Z_x19tlr.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH NGUYEN TRAI",
+            "box_2d": [
+                324,
+                112,
+                564,
+                103,
+                565,
+                127,
+                326,
+                136
+            ]
+        },
+        "ADDRESS": {
+            "text": "Nguyen Trai, Quan 1, Hai Phong",
+            "box_2d": [
+                351,
+                132,
+                539,
+                127,
+                540,
+                146,
+                352,
+                151
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "29/05/2036 16:43",
+            "box_2d": [
+                226,
+                195,
+                270,
+                199,
+                267,
+                215,
+                223,
+                211
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "183.600",
+            "box_2d": [
+                208,
+                535,
+                305,
+                538,
+                304,
+                556,
+                207,
+                552
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-18-58-505Z_l5inbn.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH QUAN 12",
+            "box_2d": [
+                407,
+                101,
+                588,
+                96,
+                589,
+                111,
+                408,
+                115
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 426 Nguyễn Trãi, Quận 1, Đồng Nai",
+            "box_2d": [
+                414,
+                117,
+                582,
+                114,
+                582,
+                128,
+                415,
+                132
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "08/06/2026 19:54",
+            "box_2d": [
+                293,
+                178,
+                339,
+                181,
+                338,
+                196,
+                291,
+                193
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "52.000",
+            "box_2d": [
+                290,
+                268,
+                541,
+                275,
+                540,
+                292,
+                289,
+                286
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-00-635Z_tq61h.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH QUAN 12",
+            "box_2d": [
+                378,
+                96,
+                580,
+                104,
+                578,
+                121,
+                377,
+                113
+            ]
+        },
+        "ADDRESS": {
+            "text": "Cäch Mâng Tháng Tam, Quan 3, TP. Hồ Chí Minh",
+            "box_2d": [
+                386,
+                117,
+                572,
+                123,
+                572,
+                136,
+                386,
+                130
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIẾU THANH TOÀN",
+            "box_2d": [
+                454,
+                156,
+                504,
+                156,
+                504,
+                170,
+                454,
+                170
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "Tổng tiền: 146,800",
+            "box_2d": [
+                642,
+                478,
+                720,
+                478,
+                720,
+                495,
+                642,
+                495
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-02-434Z_w7x83b.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XAI LEUCTHO",
+            "box_2d": [
+                346,
+                124,
+                565,
+                121,
+                565,
+                136,
+                346,
+                138
+            ]
+        },
+        "ADDRESS": {
+            "text": "S810 1e Loi, Quan 1,06ng Nai",
+            "box_2d": [
+                318,
+                153,
+                593,
+                152,
+                593,
+                172,
+                318,
+                174
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "29/05/2026 19:08",
+            "box_2d": [
+                345,
+                231,
+                495,
+                231,
+                495,
+                245,
+                345,
+                245
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "598.320",
+            "box_2d": [
+                228,
+                602,
+                378,
+                599,
+                379,
+                617,
+                229,
+                620
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-04-244Z_k9la1i.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HỌA XÃ NHÌN",
+            "box_2d": [
+                355,
+                135,
+                490,
+                137,
+                489,
+                155,
+                354,
+                153
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 432 Lý Thuòng Kiệt, Quận 1, Hải Phòng",
+            "box_2d": [
+                215,
+                173,
+                626,
+                175,
+                626,
+                192,
+                215,
+                191
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "16/06/2026 13:14",
+            "box_2d": [
+                291,
+                256,
+                463,
+                252,
+                464,
+                270,
+                291,
+                274
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "261.800",
+            "box_2d": [
+                176,
+                595,
+                275,
+                598,
+                275,
+                616,
+                175,
+                614
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-05-919Z_iy22ki.jpeg": {
+        "SELLER": {
+            "text": "PHIEU YHÀM T.$.GÁN",
+            "box_2d": [
+                399,
+                130,
+                545,
+                135,
+                544,
+                154,
+                398,
+                149
+            ]
+        },
+        "ADDRESS": {
+            "text": "BÁCH HÒA XÃM QUẢNG QUÁT 12, SỐ 345 NGUYÊN TRÌI, QUẢD. 1, ĐÔNG NAi",
+            "box_2d": [
+                268,
+                145,
+                307,
+                148,
+                305,
+                160,
+                266,
+                157
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "HĐ766981     01/06/2026   12:48",
+            "box_2d": [
+                365,
+                148,
+                441,
+                154,
+                438,
+                169,
+                362,
+                162
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "527,040",
+            "box_2d": [
+                265,
+                162,
+                321,
+                162,
+                321,
+                177,
+                265,
+                177
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-07-624Z_dcj6nn.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH HƯÚGUYÊN TRẢI",
+            "box_2d": [
+                336,
+                78,
+                568,
+                77,
+                568,
+                91,
+                336,
+                92
+            ]
+        },
+        "ADDRESS": {
+            "text": "S8 338 Hai Ba Trung, Quan 1, Đống Đa",
+            "box_2d": [
+                281,
+                112,
+                627,
+                109,
+                627,
+                126,
+                281,
+                130
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "12/05/2026 14:23",
+            "box_2d": [
+                345,
+                180,
+                493,
+                193,
+                491,
+                207,
+                342,
+                195
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "328,000",
+            "box_2d": [
+                630,
+                460,
+                708,
+                460,
+                708,
+                474,
+                630,
+                474
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-09-179Z_kbvj1.jpeg": {
+        "SELLER": {
+            "text": "BACH HÓA XANH",
+            "box_2d": [
+                368,
+                99,
+                497,
+                102,
+                496,
+                119,
+                367,
+                117
+            ]
+        },
+        "ADDRESS": {
+            "text": "s8 404 Ng¼y H¼v£, Qu¾n ThãY Kh¼i, Da NÃM",
+            "box_2d": [
+                339,
+                117,
+                527,
+                121,
+                526,
+                135,
+                339,
+                132
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIẾU THANH TOÀN",
+            "box_2d": [
+                355,
+                164,
+                517,
+                168,
+                516,
+                186,
+                354,
+                182
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "379.500",
+            "box_2d": [
+                628,
+                471,
+                714,
+                466,
+                716,
+                486,
+                630,
+                491
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-10-824Z_rjbsse.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NHÌN",
+            "box_2d": [
+                388,
+                111,
+                567,
+                119,
+                565,
+                135,
+                387,
+                127
+            ]
+        },
+        "ADDRESS": {
+            "text": "76 BƯỚC THỊ KHU, QUẢN 1, CẦN THƠ",
+            "box_2d": [
+                403,
+                157,
+                557,
+                164,
+                555,
+                182,
+                401,
+                175
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "18/06/2026 22:23",
+            "box_2d": [
+                364,
+                182,
+                446,
+                186,
+                444,
+                202,
+                363,
+                197
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "5.000",
+            "box_2d": [
+                260,
+                211,
+                334,
+                219,
+                332,
+                233,
+                257,
+                226
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-12-304Z_6xtx3k.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                374,
+                111,
+                557,
+                114,
+                556,
+                135,
+                373,
+                132
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                379,
+                130,
+                551,
+                132,
+                550,
+                149,
+                378,
+                146
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "26/05/202614:06",
+            "box_2d": [
+                357,
+                209,
+                501,
+                216,
+                500,
+                233,
+                356,
+                226
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "Tien mat: 733,700",
+            "box_2d": [
+                619,
+                581,
+                693,
+                578,
+                695,
+                596,
+                620,
+                599
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-13-797Z_jqkyxh.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH LE OÜC THO",
+            "box_2d": [
+                362,
+                122,
+                564,
+                126,
+                563,
+                144,
+                362,
+                141
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                386,
+                141,
+                543,
+                141,
+                543,
+                155,
+                386,
+                155
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "27/05/2026 22:10",
+            "box_2d": [
+                276,
+                215,
+                328,
+                222,
+                324,
+                237,
+                272,
+                230
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "466,569",
+            "box_2d": [
+                290,
+                793,
+                515,
+                781,
+                517,
+                799,
+                292,
+                810
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-15-127Z_mg9u.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH LÊUC THỌ",
+            "box_2d": [
+                342,
+                91,
+                563,
+                80,
+                566,
+                104,
+                345,
+                115
+            ]
+        },
+        "ADDRESS": {
+            "text": "Hai Ba Trang, Quán Hải Châu, Da Nang",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "15/06/2026 07:06",
+            "box_2d": [
+                247,
+                182,
+                306,
+                187,
+                303,
+                202,
+                245,
+                197
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "494,640",
+            "box_2d": [
+                649,
+                517,
+                729,
+                510,
+                732,
+                528,
+                652,
+                534
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-16-604Z_amidz7a.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                360,
+                87,
+                545,
+                87,
+                545,
+                102,
+                360,
+                102
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                368,
+                105,
+                535,
+                105,
+                535,
+                115,
+                368,
+                115
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "18/06/202613:31",
+            "box_2d": [
+                240,
+                176,
+                289,
+                180,
+                286,
+                195,
+                237,
+                191
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "5,970.000",
+            "box_2d": null
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-18-203Z_pfpifr.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÀM XÃ HỘI NGUYÊN TRƯỜNG",
+            "box_2d": [
+                388,
+                145,
+                539,
+                143,
+                540,
+                162,
+                389,
+                164
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 274, Bách Đáng, Trường Quyền, Quận 1, Thành Phố Hồ Chí Minh",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "24/05/202609.26",
+            "box_2d": [
+                253,
+                172,
+                312,
+                178,
+                308,
+                194,
+                250,
+                187
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "393,120",
+            "box_2d": [
+                243,
+                515,
+                363,
+                517,
+                363,
+                535,
+                242,
+                533
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-19-663Z_kg3jts.jpeg": {
+        "SELLER": {
+            "text": "BACH HÒA XÃNH",
+            "box_2d": [
+                360,
+                103,
+                482,
+                95,
+                485,
+                114,
+                362,
+                122
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                331,
+                122,
+                512,
+                111,
+                514,
+                128,
+                333,
+                140
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "HÀNG ĐẦU TƯ NĂM 2018 - THÁNG 4, ĐÄT 2019",
+            "box_2d": null
+        },
+        "TOTAL_COST": {
+            "text": "78.000",
+            "box_2d": [
+                314,
+                186,
+                396,
+                188,
+                395,
+                203,
+                313,
+                200
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-21-011Z_fu0x3m.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XAN MOUYEN TRAI",
+            "box_2d": [
+                352,
+                95,
+                556,
+                91,
+                556,
+                106,
+                352,
+                110
+            ]
+        },
+        "ADDRESS": {
+            "text": "SB 158 Tran AUNB oaoQuan 1 Binn Don8",
+            "box_2d": [
+                289,
+                120,
+                620,
+                117,
+                620,
+                135,
+                290,
+                138
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "13/05/2026 22:21",
+            "box_2d": [
+                349,
+                167,
+                425,
+                165,
+                426,
+                180,
+                349,
+                182
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "719,280",
+            "box_2d": [
+                239,
+                531,
+                350,
+                529,
+                351,
+                546,
+                240,
+                549
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-19-22-512Z_qemx19.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH NGUYÊN TRẢI",
+            "box_2d": [
+                375,
+                126,
+                619,
+                128,
+                619,
+                149,
+                375,
+                147
+            ]
+        },
+        "ADDRESS": {
+            "text": "614 ĐƯỜNG THÀNH VIỆT, QUARTER CÂU GIAY, HÀ NỘI",
+            "box_2d": [
+                418,
+                196,
+                581,
+                202,
+                580,
+                219,
+                417,
+                214
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "19/08/2026 07:45",
+            "box_2d": [
+                375,
+                240,
+                540,
+                248,
+                538,
+                265,
+                374,
+                257
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "45.100",
+            "box_2d": [
+                245,
+                500,
+                349,
+                505,
+                348,
+                524,
+                243,
+                519
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-04-160Z_7u5amf.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ HỘI NGUYÊN TRẢI ĐẠI",
+            "box_2d": [
+                375,
+                115,
+                556,
+                114,
+                556,
+                132,
+                375,
+                133
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachnoaxanh.com",
+            "box_2d": [
+                387,
+                163,
+                545,
+                162,
+                545,
+                180,
+                387,
+                181
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "12/06/2026 21:18",
+            "box_2d": [
+                247,
+                199,
+                306,
+                204,
+                303,
+                220,
+                245,
+                215
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "498,960",
+            "box_2d": [
+                654,
+                564,
+                737,
+                564,
+                737,
+                582,
+                654,
+                582
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-07-706Z_y8aibk.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH NGUYEN TRAI",
+            "box_2d": [
+                335,
+                96,
+                571,
+                96,
+                571,
+                111,
+                335,
+                111
+            ]
+        },
+        "ADDRESS": {
+            "text": "S6 358 Bui Thi Xuan, Quan Ng Hanh Son, Da Nang",
+            "box_2d": [
+                362,
+                114,
+                546,
+                112,
+                546,
+                126,
+                362,
+                129
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "10/06/2626 09:10",
+            "box_2d": [
+                230,
+                228,
+                293,
+                228,
+                293,
+                242,
+                230,
+                242
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "264,000",
+            "box_2d": [
+                725,
+                567,
+                743,
+                567,
+                743,
+                583,
+                725,
+                583
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-08-879Z_ifo5cj.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH QUAN 12",
+            "box_2d": [
+                388,
+                96,
+                602,
+                104,
+                601,
+                125,
+                387,
+                117
+            ]
+        },
+        "ADDRESS": {
+            "text": "TP. H8 CHÍ MINH",
+            "box_2d": [
+                395,
+                117,
+                595,
+                124,
+                594,
+                141,
+                394,
+                135
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "08/06/2026 07:03",
+            "box_2d": [
+                253,
+                224,
+                317,
+                230,
+                314,
+                246,
+                250,
+                240
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "117,700",
+            "box_2d": [
+                238,
+                514,
+                345,
+                520,
+                343,
+                538,
+                236,
+                532
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-09-991Z_sjber.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH QUAN 12",
+            "box_2d": [
+                342,
+                93,
+                532,
+                96,
+                532,
+                111,
+                342,
+                108
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                349,
+                111,
+                528,
+                112,
+                528,
+                127,
+                349,
+                125
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "14/06/2026 08:02",
+            "box_2d": [
+                224,
+                196,
+                279,
+                196,
+                279,
+                211,
+                224,
+                211
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "78,000",
+            "box_2d": [
+                225,
+                178,
+                269,
+                178,
+                269,
+                192,
+                225,
+                192
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-11-219Z_6vm01j.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HỌA XÃ NH",
+            "box_2d": [
+                391,
+                87,
+                517,
+                94,
+                515,
+                111,
+                389,
+                104
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 246 Trần Nhật Ánh, Quận 1, Đống Đa",
+            "box_2d": [
+                363,
+                103,
+                547,
+                110,
+                545,
+                128,
+                361,
+                121
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "24/05/2026 07:06",
+            "box_2d": [
+                235,
+                170,
+                283,
+                173,
+                281,
+                188,
+                233,
+                186
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "84.000",
+            "box_2d": [
+                635,
+                442,
+                708,
+                440,
+                709,
+                459,
+                637,
+                461
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-12-285Z_4iv5m.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NH",
+            "box_2d": [
+                392,
+                112,
+                528,
+                118,
+                527,
+                135,
+                391,
+                129
+            ]
+        },
+        "ADDRESS": {
+            "text": "Trần Hưng Đạo, Quận 1, Đống Đa",
+            "box_2d": [
+                361,
+                129,
+                560,
+                137,
+                558,
+                155,
+                360,
+                147
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "27/05/2026 08:09",
+            "box_2d": [
+                336,
+                208,
+                426,
+                215,
+                424,
+                232,
+                334,
+                226
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "207,366",
+            "box_2d": [
+                216,
+                517,
+                321,
+                519,
+                320,
+                538,
+                215,
+                536
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-13-542Z_reracn.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NH.$.NG YÊU NGUYÊN TRÂI",
+            "box_2d": [
+                333,
+                135,
+                570,
+                130,
+                571,
+                156,
+                334,
+                160
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                359,
+                157,
+                544,
+                154,
+                545,
+                171,
+                359,
+                175
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "31/05/2026 13:51",
+            "box_2d": [
+                243,
+                228,
+                297,
+                236,
+                292,
+                251,
+                238,
+                244
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "305,800",
+            "box_2d": [
+                632,
+                550,
+                714,
+                546,
+                716,
+                565,
+                634,
+                569
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-14-599Z_6dw24q.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                398,
+                86,
+                515,
+                77,
+                517,
+                95,
+                400,
+                103
+            ]
+        },
+        "ADDRESS": {
+            "text": "357 Bui Thi Xuán, Quan 1, Căn Thọ",
+            "box_2d": [
+                385,
+                144,
+                528,
+                137,
+                530,
+                156,
+                387,
+                162
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "20/06/202612:13",
+            "box_2d": [
+                350,
+                163,
+                426,
+                168,
+                424,
+                183,
+                348,
+                178
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "671.000",
+            "box_2d": [
+                611,
+                545,
+                688,
+                542,
+                689,
+                561,
+                613,
+                563
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-16-778Z_27shze.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                370,
+                139,
+                552,
+                147,
+                551,
+                161,
+                369,
+                154
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com H NOi",
+            "box_2d": [
+                381,
+                152,
+                547,
+                161,
+                545,
+                173,
+                380,
+                164
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "18/06/207618:59",
+            "box_2d": [
+                349,
+                208,
+                426,
+                208,
+                426,
+                219,
+                349,
+                219
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "439,560",
+            "box_2d": [
+                625,
+                561,
+                700,
+                561,
+                700,
+                579,
+                625,
+                579
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-18-575Z_t6i0jx.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NH LÊ ÚC THỌ",
+            "box_2d": [
+                387,
+                99,
+                579,
+                95,
+                579,
+                116,
+                388,
+                120
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 141 Ngũyen Trãi, Quán 1, Cán Thơ",
+            "box_2d": [
+                254,
+                156,
+                302,
+                162,
+                298,
+                177,
+                251,
+                172
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "14/06/2016 21:52",
+            "box_2d": [
+                362,
+                168,
+                449,
+                174,
+                447,
+                192,
+                360,
+                186
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "239,760",
+            "box_2d": [
+                223,
+                844,
+                557,
+                834,
+                558,
+                854,
+                225,
+                865
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-20-187Z_tt8mrn.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH NGUYÊN TRẢI",
+            "box_2d": [
+                348,
+                92,
+                611,
+                101,
+                610,
+                119,
+                347,
+                110
+            ]
+        },
+        "ADDRESS": {
+            "text": "216 LY THƯƠNG QUARTER, Đ郊区, TEND",
+            "box_2d": [
+                378,
+                115,
+                583,
+                122,
+                583,
+                137,
+                377,
+                130
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "10/06/202621:55",
+            "box_2d": [
+                347,
+                204,
+                437,
+                204,
+                437,
+                218,
+                347,
+                218
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "356.490",
+            "box_2d": [
+                668,
+                461,
+                757,
+                463,
+                756,
+                482,
+                667,
+                479
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-21-613Z_tqivxq.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XAM QUAN 12",
+            "box_2d": [
+                362,
+                107,
+                555,
+                111,
+                554,
+                130,
+                362,
+                125
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                369,
+                124,
+                548,
+                128,
+                547,
+                142,
+                369,
+                139
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "30/05/292616:15",
+            "box_2d": [
+                240,
+                191,
+                301,
+                196,
+                299,
+                210,
+                237,
+                205
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "154,440",
+            "box_2d": [
+                645,
+                540,
+                726,
+                538,
+                727,
+                556,
+                647,
+                558
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-23-068Z_655co.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                363,
+                124,
+                563,
+                119,
+                564,
+                137,
+                364,
+                141
+            ]
+        },
+        "ADDRESS": {
+            "text": "S 35 Hai Ba Trung, Quan 1, Hai Phons",
+            "box_2d": [
+                374,
+                143,
+                556,
+                138,
+                557,
+                153,
+                375,
+                158
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "31/05/202610:11",
+            "box_2d": [
+                354,
+                236,
+                509,
+                232,
+                510,
+                247,
+                355,
+                252
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "297.000",
+            "box_2d": [
+                253,
+                492,
+                372,
+                491,
+                372,
+                510,
+                254,
+                511
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-25-392Z_syliel.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HỌA XÃ NHÀM LÊ ĐỒ THỢ",
+            "box_2d": [
+                364,
+                121,
+                520,
+                116,
+                521,
+                133,
+                365,
+                137
+            ]
+        },
+        "ADDRESS": {
+            "text": "NGUYÊN TRẢI, QUẢN 7, TP. HỒ CHÍ MINH",
+            "box_2d": [
+                377,
+                161,
+                515,
+                154,
+                517,
+                171,
+                378,
+                178
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "28/05/2026 21:17",
+            "box_2d": [
+                254,
+                182,
+                308,
+                191,
+                303,
+                206,
+                249,
+                197
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "462,000",
+            "box_2d": [
+                604,
+                520,
+                673,
+                517,
+                674,
+                531,
+                605,
+                534
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-27-186Z_n805eq.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NHM",
+            "box_2d": [
+                378,
+                83,
+                500,
+                81,
+                501,
+                98,
+                379,
+                101
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 331 Hải Bà Trưng, Quận 1, TP. Hà Nội",
+            "box_2d": [
+                355,
+                97,
+                528,
+                97,
+                528,
+                115,
+                355,
+                115
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIEU THANH TOÀN",
+            "box_2d": [
+                369,
+                140,
+                518,
+                142,
+                518,
+                160,
+                369,
+                158
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "42,000",
+            "box_2d": [
+                229,
+                153,
+                277,
+                156,
+                275,
+                171,
+                228,
+                168
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-28-960Z_8og8pa.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XA",
+            "box_2d": [
+                404,
+                84,
+                518,
+                84,
+                518,
+                97,
+                404,
+                97
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                381,
+                98,
+                543,
+                96,
+                544,
+                111,
+                382,
+                113
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "19/06/202615:23",
+            "box_2d": [
+                357,
+                157,
+                435,
+                162,
+                433,
+                178,
+                355,
+                173
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "532,440",
+            "box_2d": [
+                258,
+                542,
+                372,
+                542,
+                372,
+                560,
+                258,
+                560
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-30-975Z_zbegg.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                438,
+                69,
+                553,
+                77,
+                551,
+                92,
+                436,
+                83
+            ]
+        },
+        "ADDRESS": {
+            "text": "216 Hai Ba Trung, Quan Thanh Khie, Da Nang",
+            "box_2d": [
+                414,
+                82,
+                580,
+                94,
+                578,
+                108,
+                412,
+                97
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIEU THANH TOAN",
+            "box_2d": [
+                425,
+                125,
+                570,
+                135,
+                568,
+                150,
+                423,
+                140
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "778.680",
+            "box_2d": [
+                269,
+                867,
+                585,
+                853,
+                586,
+                871,
+                270,
+                884
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-32-637Z_8e9twd.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANM QUN 12",
+            "box_2d": [
+                367,
+                101,
+                543,
+                99,
+                543,
+                118,
+                368,
+                119
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.tachhoaxann.com",
+            "box_2d": [
+                372,
+                118,
+                538,
+                116,
+                538,
+                131,
+                372,
+                133
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "75/05/20769755",
+            "box_2d": [
+                265,
+                169,
+                322,
+                177,
+                318,
+                193,
+                261,
+                185
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "381,000",
+            "box_2d": [
+                610,
+                514,
+                680,
+                511,
+                682,
+                528,
+                612,
+                532
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-34-140Z_qj4jk9.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH NGUYEN TRAI",
+            "box_2d": [
+                347,
+                103,
+                594,
+                96,
+                595,
+                114,
+                348,
+                121
+            ]
+        },
+        "ADDRESS": {
+            "text": "S8 31 Nguyen Trai,Quan 1,Binh Duong",
+            "box_2d": [
+                285,
+                136,
+                660,
+                132,
+                660,
+                153,
+                285,
+                157
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "14/96/202622:19",
+            "box_2d": [
+                351,
+                218,
+                519,
+                212,
+                520,
+                228,
+                352,
+                234
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "590g",
+            "box_2d": [
+                393,
+                169,
+                557,
+                164,
+                558,
+                182,
+                394,
+                187
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-35-639Z_a1hxq.jpeg": {
+        "SELLER": {
+            "text": "PHKEU THANH YOAN",
+            "box_2d": [
+                383,
+                110,
+                562,
+                108,
+                562,
+                125,
+                383,
+                128
+            ]
+        },
+        "ADDRESS": {
+            "text": "BÁCH HÒA XÀNH QUẢN 12",
+            "box_2d": [
+                376,
+                93,
+                569,
+                90,
+                569,
+                109,
+                376,
+                112
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "22/05/2026 17:55",
+            "box_2d": [
+                361,
+                179,
+                442,
+                181,
+                441,
+                195,
+                360,
+                193
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "3,280,000",
+            "box_2d": [
+                655,
+                489,
+                736,
+                487,
+                737,
+                504,
+                657,
+                507
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-38-104Z_sdn2bh.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                366,
+                84,
+                555,
+                85,
+                555,
+                103,
+                366,
+                101
+            ]
+        },
+        "ADDRESS": {
+            "text": "159 NGUYEN HUE, QUAN 3, DONG NAI",
+            "box_2d": [
+                376,
+                103,
+                546,
+                103,
+                546,
+                116,
+                376,
+                116
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "04/06/282617:53",
+            "box_2d": [
+                350,
+                159,
+                429,
+                166,
+                427,
+                181,
+                348,
+                175
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "517,000",
+            "box_2d": [
+                222,
+                557,
+                321,
+                557,
+                321,
+                574,
+                222,
+                574
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-40-018Z_045y8l.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH MCUYÉN TRAI",
+            "box_2d": [
+                375,
+                73,
+                591,
+                80,
+                589,
+                101,
+                374,
+                94
+            ]
+        },
+        "ADDRESS": {
+            "text": "282 NGUYEN HUE, QUOC TAY, DONG NAI",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "12/06/202618:20",
+            "box_2d": [
+                285,
+                146,
+                321,
+                149,
+                319,
+                161,
+                283,
+                158
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "620.400",
+            "box_2d": [
+                659,
+                526,
+                735,
+                526,
+                735,
+                543,
+                659,
+                543
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-41-572Z_b8zg7g.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH QUAN 12",
+            "box_2d": [
+                355,
+                62,
+                539,
+                63,
+                539,
+                78,
+                355,
+                77
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 336 Cáçn Mang Thánh Tâm, Quan 7, TP. Hồ Chí Minh",
+            "box_2d": [
+                245,
+                88,
+                644,
+                90,
+                644,
+                105,
+                245,
+                103
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "02/06/202616:12",
+            "box_2d": [
+                338,
+                149,
+                419,
+                152,
+                418,
+                166,
+                337,
+                164
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "568,000",
+            "box_2d": [
+                226,
+                526,
+                332,
+                523,
+                332,
+                542,
+                227,
+                544
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-43-088Z_dvsm4.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                360,
+                124,
+                559,
+                124,
+                559,
+                145,
+                360,
+                145
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachncaxanh.com",
+            "box_2d": [
+                367,
+                142,
+                550,
+                141,
+                551,
+                160,
+                368,
+                161
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "HD372836\n93/85/202610:01",
+            "box_2d": [
+                344,
+                207,
+                427,
+                215,
+                423,
+                233,
+                341,
+                225
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "Tổng tiền: \n202,000\nThanh toán:\n222,200",
+            "box_2d": [
+                233,
+                451,
+                341,
+                458,
+                339,
+                477,
+                230,
+                470
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-44-725Z_kqp2ih.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NH QUAN 12",
+            "box_2d": [
+                327,
+                131,
+                499,
+                125,
+                500,
+                143,
+                328,
+                149
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 102 Hà Bá Trưng, Quận 1, Thành phố Hồ Chí Minh",
+            "box_2d": [
+                343,
+                172,
+                488,
+                170,
+                488,
+                189,
+                344,
+                191
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "HĐ719131",
+            "box_2d": [
+                214,
+                189,
+                258,
+                191,
+                257,
+                206,
+                212,
+                203
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "64.000",
+            "box_2d": [
+                311,
+                213,
+                453,
+                216,
+                452,
+                232,
+                310,
+                228
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-46-212Z_6l8mvk.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH LEC THO",
+            "box_2d": [
+                355,
+                90,
+                581,
+                91,
+                581,
+                109,
+                355,
+                108
+            ]
+        },
+        "ADDRESS": {
+            "text": "286 Nguyen Hung Quan1 Dong Nai",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "06/06/202622:01",
+            "box_2d": [
+                352,
+                177,
+                436,
+                180,
+                435,
+                194,
+                351,
+                192
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "356,400",
+            "box_2d": [
+                238,
+                581,
+                393,
+                579,
+                393,
+                597,
+                239,
+                600
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-48-590Z_e9if57.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QU&N 12",
+            "box_2d": [
+                359,
+                97,
+                569,
+                97,
+                569,
+                118,
+                359,
+                118
+            ]
+        },
+        "ADDRESS": {
+            "text": "Trần Hùng Dao, Quan 1, Hải Phòng",
+            "box_2d": [
+                364,
+                119,
+                562,
+                116,
+                562,
+                134,
+                365,
+                137
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "30/05/2026 10:56",
+            "box_2d": [
+                342,
+                193,
+                430,
+                193,
+                430,
+                208,
+                342,
+                208
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "68.000",
+            "box_2d": [
+                256,
+                319,
+                274,
+                319,
+                274,
+                335,
+                256,
+                335
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-50-320Z_7un1dm.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                375,
+                92,
+                572,
+                96,
+                572,
+                114,
+                374,
+                110
+            ]
+        },
+        "ADDRESS": {
+            "text": "56 314 Ly Thuong Kiet, Quan 3, Binh Thanh, TP. Ho Chi Minh",
+            "box_2d": [
+                383,
+                111,
+                564,
+                114,
+                563,
+                129,
+                383,
+                125
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "16/06/2026 08:52",
+            "box_2d": [
+                249,
+                213,
+                305,
+                211,
+                307,
+                225,
+                250,
+                228
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "42,000",
+            "box_2d": [
+                402,
+                171,
+                556,
+                171,
+                556,
+                186,
+                402,
+                186
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-52-240Z_7ekqh.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NHM",
+            "box_2d": [
+                373,
+                125,
+                562,
+                124,
+                562,
+                141,
+                373,
+                142
+            ]
+        },
+        "ADDRESS": {
+            "text": "Nguyễn Trãi, Quán Sơn Trà, Da Nang",
+            "box_2d": [
+                390,
+                173,
+                549,
+                175,
+                549,
+                192,
+                390,
+                191
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "02/05/2026 22:24",
+            "box_2d": [
+                249,
+                191,
+                291,
+                196,
+                289,
+                211,
+                246,
+                206
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "17.95",
+            "box_2d": [
+                350,
+                198,
+                435,
+                202,
+                433,
+                218,
+                348,
+                214
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-53-905Z_gep7xe.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH QUẢN 12",
+            "box_2d": [
+                372,
+                82,
+                563,
+                82,
+                563,
+                99,
+                372,
+                99
+            ]
+        },
+        "ADDRESS": {
+            "text": "HÀNG NGÀY, QUẢY KHAND ĐẦU TƯ HÀ NỘI, ĐĂNG SƠN, PHƯƠT THỪA MÁT BÁCH HOÀ XÃNH",
+            "box_2d": [
+                224,
+                775,
+                709,
+                764,
+                710,
+                786,
+                225,
+                797
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "28/05/2016 09:31",
+            "box_2d": [
+                354,
+                181,
+                505,
+                186,
+                504,
+                204,
+                353,
+                198
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "373.000",
+            "box_2d": null
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-55-800Z_dn8cba.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH QUẢNG 12",
+            "box_2d": [
+                367,
+                83,
+                558,
+                89,
+                557,
+                108,
+                366,
+                101
+            ]
+        },
+        "ADDRESS": {
+            "text": "43 ĐƯỜI THỊ XUÂN, QUẢNG 1, CÔN THƠ",
+            "box_2d": [
+                376,
+                101,
+                549,
+                106,
+                549,
+                122,
+                376,
+                117
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "MAY CT: 13/86/2926 13.26",
+            "box_2d": [
+                247,
+                174,
+                306,
+                179,
+                303,
+                194,
+                245,
+                188
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "Tiéu chênh tổng chi phí: 602,800",
+            "box_2d": [
+                226,
+                913,
+                718,
+                894,
+                720,
+                916,
+                228,
+                935
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-57-440Z_eqv9tn.jpeg": {
+        "SELLER": {
+            "text": "BACH HÓA XANH NGUYÊN TRXI",
+            "box_2d": [
+                365,
+                127,
+                620,
+                129,
+                620,
+                151,
+                365,
+                150
+            ]
+        },
+        "ADDRESS": {
+            "text": "299Nguyễn Trãi,Quan1,Hải Phòng",
+            "box_2d": [
+                396,
+                152,
+                595,
+                154,
+                594,
+                168,
+                396,
+                166
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "04/06/2026 16:23",
+            "box_2d": [
+                254,
+                266,
+                334,
+                273,
+                332,
+                287,
+                251,
+                280
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "170,640",
+            "box_2d": [
+                247,
+                560,
+                409,
+                562,
+                408,
+                581,
+                247,
+                579
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-20-59-077Z_q9y4n8.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                383,
+                106,
+                590,
+                108,
+                590,
+                126,
+                383,
+                123
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhcaxanh.com",
+            "box_2d": [
+                393,
+                128,
+                582,
+                128,
+                582,
+                141,
+                393,
+                141
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "18/06/202612:17",
+            "box_2d": [
+                252,
+                214,
+                312,
+                217,
+                311,
+                232,
+                250,
+                229
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "24,000",
+            "box_2d": [
+                252,
+                193,
+                301,
+                197,
+                299,
+                211,
+                250,
+                207
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-01-445Z_n331zk.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                398,
+                86,
+                515,
+                88,
+                515,
+                103,
+                397,
+                100
+            ]
+        },
+        "ADDRESS": {
+            "text": "Lê Lợi, Quần Ngựa Hà Nội, Bà Đ抬起",
+            "box_2d": [
+                372,
+                101,
+                539,
+                99,
+                540,
+                117,
+                372,
+                118
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "03/96/202621:08",
+            "box_2d": [
+                347,
+                163,
+                425,
+                168,
+                423,
+                182,
+                345,
+                177
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "395.280",
+            "box_2d": [
+                604,
+                544,
+                680,
+                542,
+                682,
+                561,
+                605,
+                563
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-03-277Z_zlk15b.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÀO XÃ NƯỚC NGUYÊN TRẢI",
+            "box_2d": [
+                397,
+                140,
+                539,
+                137,
+                540,
+                156,
+                398,
+                159
+            ]
+        },
+        "ADDRESS": {
+            "text": "210 BỘI THƠ, XIẾU QUỐC, QUỐC ĐẠI, ĐỒNG NAI",
+            "box_2d": [
+                268,
+                156,
+                305,
+                159,
+                304,
+                172,
+                266,
+                169
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "17/05/297689:32",
+            "box_2d": [
+                361,
+                161,
+                439,
+                164,
+                438,
+                179,
+                360,
+                175
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "458.700",
+            "box_2d": [
+                264,
+                173,
+                322,
+                176,
+                321,
+                190,
+                263,
+                188
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-04-870Z_llxwqg.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH LÊ ĐỨC THY",
+            "box_2d": [
+                353,
+                111,
+                583,
+                109,
+                583,
+                127,
+                353,
+                130
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                373,
+                129,
+                565,
+                127,
+                565,
+                145,
+                373,
+                146
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "26/06/2026 11:02",
+            "box_2d": [
+                248,
+                219,
+                305,
+                223,
+                303,
+                238,
+                246,
+                234
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "467,500",
+            "box_2d": [
+                668,
+                480,
+                747,
+                480,
+                747,
+                498,
+                668,
+                498
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-06-527Z_79k3d.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                364,
+                98,
+                568,
+                89,
+                570,
+                111,
+                366,
+                120
+            ]
+        },
+        "ADDRESS": {
+            "text": "79 Tran Hung Dao, Quan 1, Can Tho",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "26/06/202610:14",
+            "box_2d": [
+                348,
+                212,
+                508,
+                218,
+                507,
+                239,
+                347,
+                234
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "3,000",
+            "box_2d": [
+                642,
+                310,
+                703,
+                308,
+                705,
+                326,
+                644,
+                329
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-08-230Z_7nffzj.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH LÊ ÚC THỌ",
+            "box_2d": [
+                382,
+                137,
+                591,
+                144,
+                590,
+                161,
+                381,
+                155
+            ]
+        },
+        "ADDRESS": {
+            "text": "18 Nguyen Hue, Quan 7, TP. HO CHI MINH CITY",
+            "box_2d": [
+                389,
+                190,
+                426,
+                190,
+                426,
+                197,
+                389,
+                197
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "17/06/2026 08:48",
+            "box_2d": [
+                278,
+                232,
+                337,
+                238,
+                334,
+                252,
+                276,
+                247
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "327,800",
+            "box_2d": [
+                384,
+                613,
+                583,
+                613,
+                583,
+                626,
+                384,
+                626
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-09-812Z_luqx3.jpeg": {
+        "SELLER": {
+            "text": "BAC HOA XANH QUAN 12",
+            "box_2d": [
+                366,
+                132,
+                544,
+                127,
+                545,
+                146,
+                367,
+                151
+            ]
+        },
+        "ADDRESS": {
+            "text": "Tran Hung Dao, Quan Hai Chau, Da Nang",
+            "box_2d": [
+                386,
+                191,
+                525,
+                189,
+                525,
+                208,
+                386,
+                210
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "03/06/282620.38",
+            "box_2d": [
+                257,
+                228,
+                312,
+                231,
+                311,
+                246,
+                256,
+                243
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "383,400",
+            "box_2d": [
+                251,
+                594,
+                336,
+                594,
+                336,
+                609,
+                251,
+                609
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-11-328Z_h9w2ld.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH LE QUOC THO",
+            "box_2d": [
+                356,
+                81,
+                595,
+                58,
+                599,
+                83,
+                360,
+                106
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                380,
+                99,
+                573,
+                83,
+                576,
+                104,
+                384,
+                120
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "30/05/2026 07:41",
+            "box_2d": [
+                368,
+                195,
+                521,
+                195,
+                521,
+                210,
+                368,
+                210
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "455,480",
+            "box_2d": [
+                259,
+                512,
+                380,
+                510,
+                380,
+                528,
+                260,
+                530
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-12-827Z_np67ld.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                368,
+                71,
+                554,
+                61,
+                555,
+                78,
+                370,
+                89
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                377,
+                86,
+                546,
+                76,
+                548,
+                94,
+                379,
+                104
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "HO291669",
+            "box_2d": [
+                357,
+                153,
+                433,
+                153,
+                433,
+                167,
+                357,
+                167
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "548,100",
+            "box_2d": [
+                269,
+                904,
+                733,
+                893,
+                734,
+                911,
+                270,
+                922
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-14-202Z_jr4cw.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃM NGUYÊN TRẢI",
+            "box_2d": [
+                373,
+                109,
+                544,
+                103,
+                545,
+                118,
+                374,
+                124
+            ]
+        },
+        "ADDRESS": {
+            "text": "163 HA1 BƯỚC TRƯỜNG, QUỐC ĐƠN, ĐỒNG NAI",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "16/86/2026 13:45",
+            "box_2d": [
+                352,
+                170,
+                430,
+                173,
+                429,
+                187,
+                351,
+                185
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "462.240",
+            "box_2d": [
+                254,
+                779,
+                731,
+                756,
+                733,
+                777,
+                256,
+                800
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-15-770Z_kqw6ju.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                415,
+                131,
+                551,
+                137,
+                550,
+                155,
+                414,
+                149
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                405,
+                199,
+                572,
+                205,
+                571,
+                223,
+                404,
+                217
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "31/05/2026 22:18",
+            "box_2d": [
+                243,
+                247,
+                312,
+                243,
+                314,
+                260,
+                245,
+                264
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "223,560",
+            "box_2d": [
+                688,
+                471,
+                772,
+                469,
+                773,
+                488,
+                689,
+                490
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-17-016Z_v4evhn.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUAN 12",
+            "box_2d": [
+                384,
+                99,
+                586,
+                101,
+                586,
+                116,
+                384,
+                115
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                393,
+                119,
+                579,
+                119,
+                579,
+                133,
+                393,
+                133
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "22/95/202618:38",
+            "box_2d": [
+                252,
+                201,
+                314,
+                205,
+                312,
+                220,
+                250,
+                216
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "206,280",
+            "box_2d": [
+                683,
+                516,
+                766,
+                515,
+                767,
+                534,
+                683,
+                535
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-18-404Z_s3to2p.jpeg": {
+        "SELLER": {
+            "text": "BACH MOA XANH LÊ ƯỚC THÔ",
+            "box_2d": [
+                375,
+                95,
+                586,
+                87,
+                588,
+                107,
+                377,
+                116
+            ]
+        },
+        "ADDRESS": {
+            "text": "243 CÁCH MÄNG TỪNG TẦN, QUẢN 10. TP. HỒ CHÍ MINH CITY",
+            "box_2d": [
+                400,
+                112,
+                566,
+                107,
+                567,
+                121,
+                401,
+                127
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "10/06/2026 21:39",
+            "box_2d": [
+                377,
+                188,
+                453,
+                188,
+                453,
+                203,
+                377,
+                203
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "752,400",
+            "box_2d": [
+                659,
+                571,
+                735,
+                571,
+                735,
+                589,
+                659,
+                589
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-19-915Z_09yqp9.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                406,
+                103,
+                540,
+                99,
+                541,
+                117,
+                406,
+                121
+            ]
+        },
+        "ADDRESS": {
+            "text": "58 Bui Thi Xu, Quan 1, Binh Duong",
+            "box_2d": [
+                377,
+                124,
+                572,
+                119,
+                572,
+                134,
+                378,
+                138
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "09/06/2026 15:13",
+            "box_2d": [
+                351,
+                199,
+                440,
+                202,
+                439,
+                219,
+                350,
+                217
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "263,520",
+            "box_2d": [
+                263,
+                517,
+                363,
+                515,
+                363,
+                530,
+                264,
+                532
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-21-436Z_p3mtse.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH QUN 12",
+            "box_2d": [
+                387,
+                83,
+                573,
+                77,
+                574,
+                99,
+                388,
+                105
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                394,
+                101,
+                564,
+                95,
+                565,
+                113,
+                395,
+                119
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "18/06/262613:38",
+            "box_2d": [
+                278,
+                174,
+                334,
+                178,
+                332,
+                193,
+                276,
+                189
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "646,920",
+            "box_2d": [
+                277,
+                551,
+                384,
+                551,
+                384,
+                565,
+                277,
+                565
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-22-816Z_svb46o.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HOÀ XÃNH LÊ ÓC THỌ",
+            "box_2d": [
+                353,
+                92,
+                571,
+                101,
+                570,
+                120,
+                351,
+                111
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 217,Nguyễn Thị Minh Khai,Quán 3,Tp.Hồ Chí Minh",
+            "box_2d": [
+                373,
+                111,
+                552,
+                119,
+                551,
+                136,
+                371,
+                128
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "PHIẾU THÀNH TOÁN",
+            "box_2d": [
+                389,
+                158,
+                540,
+                164,
+                539,
+                181,
+                388,
+                175
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "519.480",
+            "box_2d": [
+                384,
+                607,
+                595,
+                607,
+                595,
+                620,
+                384,
+                620
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-24-048Z_hywukh.jpeg": {
+        "SELLER": {
+            "text": "PHIEL THANH TOAN",
+            "box_2d": [
+                417,
+                161,
+                571,
+                156,
+                572,
+                172,
+                418,
+                178
+            ]
+        },
+        "ADDRESS": {
+            "text": "50 Ngay Trail, Quan 3, Binh Duong",
+            "box_2d": null
+        },
+        "TIMESTAMP": {
+            "text": "25/05/2026 22:07",
+            "box_2d": [
+                277,
+                202,
+                339,
+                205,
+                338,
+                219,
+                276,
+                217
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "353,160",
+            "box_2d": null
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-25-334Z_n2qy7r.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NHÀ NGUYÊN TRẢI",
+            "box_2d": [
+                404,
+                146,
+                549,
+                137,
+                551,
+                151,
+                406,
+                160
+            ]
+        },
+        "ADDRESS": {
+            "text": "Số 401 Hà Nội Trà Vinh, Quán Đống Đa, Hà Nội",
+            "box_2d": [
+                368,
+                167,
+                446,
+                167,
+                446,
+                182,
+                368,
+                182
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "13/06/2026 16:35",
+            "box_2d": [
+                366,
+                183,
+                516,
+                180,
+                517,
+                198,
+                367,
+                202
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "78.900",
+            "box_2d": [
+                638,
+                260,
+                703,
+                256,
+                705,
+                274,
+                640,
+                278
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-26-696Z_2zua8g.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                426,
+                72,
+                546,
+                65,
+                548,
+                82,
+                428,
+                90
+            ]
+        },
+        "ADDRESS": {
+            "text": "395 Lê Lợi, Quán Ngû Hành Sơn, Da Nang",
+            "box_2d": [
+                402,
+                91,
+                574,
+                79,
+                575,
+                95,
+                404,
+                106
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "13/06/2026 09:59",
+            "box_2d": [
+                381,
+                156,
+                458,
+                156,
+                458,
+                170,
+                381,
+                170
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "511.920",
+            "box_2d": [
+                672,
+                543,
+                751,
+                541,
+                753,
+                560,
+                673,
+                562
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-28-004Z_ufv0p.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH LEO UC THO",
+            "box_2d": [
+                364,
+                70,
+                583,
+                62,
+                584,
+                83,
+                366,
+                91
+            ]
+        },
+        "ADDRESS": {
+            "text": "52 BUI THI XUAN, QUAN 1. CAN THO",
+            "box_2d": [
+                383,
+                86,
+                561,
+                82,
+                562,
+                100,
+                383,
+                105
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "22/05/202620:03",
+            "box_2d": [
+                366,
+                160,
+                441,
+                160,
+                441,
+                171,
+                366,
+                171
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "789,920",
+            "box_2d": null
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-29-249Z_8cvm7.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH NGUYEN TRAI",
+            "box_2d": [
+                387,
+                828,
+                667,
+                812,
+                669,
+                833,
+                389,
+                849
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxanh.com",
+            "box_2d": [
+                415,
+                801,
+                632,
+                790,
+                633,
+                808,
+                417,
+                819
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "01/08/2026 22:18",
+            "box_2d": [
+                471,
+                671,
+                646,
+                664,
+                648,
+                682,
+                472,
+                688
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "194,400",
+            "box_2d": [
+                250,
+                337,
+                325,
+                339,
+                324,
+                355,
+                249,
+                352
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-30-379Z_yfm5n.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH LE OUC THO",
+            "box_2d": [
+                401,
+                91,
+                610,
+                86,
+                611,
+                104,
+                402,
+                109
+            ]
+        },
+        "ADDRESS": {
+            "text": "ww.bachhoaxanh.com",
+            "box_2d": [
+                420,
+                109,
+                588,
+                104,
+                589,
+                119,
+                420,
+                124
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "29/85/202617:01",
+            "box_2d": [
+                306,
+                167,
+                351,
+                170,
+                349,
+                184,
+                304,
+                181
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "679,800",
+            "box_2d": [
+                401,
+                172,
+                476,
+                176,
+                474,
+                190,
+                400,
+                187
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-31-682Z_d9gdl.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                425,
+                103,
+                551,
+                106,
+                550,
+                125,
+                424,
+                122
+            ]
+        },
+        "ADDRESS": {
+            "text": "www.bachhoaxann.com",
+            "box_2d": [
+                396,
+                121,
+                581,
+                123,
+                580,
+                140,
+                396,
+                139
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "22/95/202614:43",
+            "box_2d": [
+                266,
+                233,
+                339,
+                236,
+                338,
+                251,
+                265,
+                247
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "360,800",
+            "box_2d": [
+                269,
+                581,
+                368,
+                578,
+                369,
+                596,
+                270,
+                599
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-33-151Z_vk3y87.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃNH",
+            "box_2d": [
+                448,
+                77,
+                575,
+                83,
+                574,
+                101,
+                447,
+                95
+            ]
+        },
+        "ADDRESS": {
+            "text": "149 BỘI THÀ NH newXANH, QUỐC 3, TP. HỒ CHÍ MINH",
+            "box_2d": [
+                419,
+                95,
+                602,
+                99,
+                601,
+                116,
+                418,
+                113
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "28/05/2026 15:18",
+            "box_2d": [
+                395,
+                168,
+                477,
+                172,
+                476,
+                186,
+                394,
+                183
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "426,030",
+            "box_2d": [
+                316,
+                280,
+                335,
+                280,
+                335,
+                295,
+                316,
+                295
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-34-484Z_7hizxs.jpeg": {
+        "SELLER": {
+            "text": "BÁCH HÒA XÃ NHÀ QUẢNG 12",
+            "box_2d": [
+                463,
+                158,
+                509,
+                163,
+                506,
+                179,
+                460,
+                174
+            ]
+        },
+        "ADDRESS": {
+            "text": "Cäch Mang Thang Tam, Quan 3, TP. Ho Chi Minh City",
+            "box_2d": [
+                409,
+                188,
+                562,
+                192,
+                561,
+                211,
+                408,
+                207
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "02/08/2026 17:52",
+            "box_2d": [
+                372,
+                231,
+                524,
+                240,
+                522,
+                257,
+                370,
+                249
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "505,440",
+            "box_2d": [
+                252,
+                832,
+                716,
+                820,
+                717,
+                841,
+                253,
+                853
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-35-930Z_pzf7kv.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                398,
+                166,
+                504,
+                169,
+                503,
+                184,
+                397,
+                181
+            ]
+        },
+        "ADDRESS": {
+            "text": "PHIEU THANH TOAN",
+            "box_2d": [
+                383,
+                234,
+                518,
+                237,
+                517,
+                255,
+                383,
+                251
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "24/05/202616:43",
+            "box_2d": [
+                260,
+                263,
+                311,
+                265,
+                310,
+                280,
+                259,
+                277
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "294,800",
+            "box_2d": [
+                251,
+                568,
+                333,
+                570,
+                333,
+                586,
+                250,
+                584
+            ]
+        }
+    },
+    "supermarket_bachhoaxanh_2026-06-28T08-21-37-438Z_ws8xls.jpeg": {
+        "SELLER": {
+            "text": "BACH HOA XANH",
+            "box_2d": [
+                409,
+                157,
+                513,
+                147,
+                516,
+                161,
+                412,
+                172
+            ]
+        },
+        "ADDRESS": {
+            "text": "297 NGUYEN Trai, Quan 1, Binh Duong",
+            "box_2d": [
+                401,
+                206,
+                528,
+                194,
+                530,
+                208,
+                403,
+                221
+            ]
+        },
+        "TIMESTAMP": {
+            "text": "05/08/2026 14:35",
+            "box_2d": [
+                372,
+                224,
+                440,
+                224,
+                440,
+                236,
+                372,
+                236
+            ]
+        },
+        "TOTAL_COST": {
+            "text": "272.000",
+            "box_2d": [
+                285,
+                250,
+                339,
+                254,
+                338,
+                265,
+                283,
+                262
             ]
         }
     }

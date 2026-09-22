@@ -24,9 +24,6 @@ if hasattr(sys.stderr, 'reconfigure'):
 # Thiết lập môi trường để tránh lỗi protobuf với PaddlePaddle
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
-# ---------------------------------------------------------
-# MOCK LLM DATA GENERATOR (Vietnamese Invoices)
-# ---------------------------------------------------------
 CITIES = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Cần Thơ", "Bình Dương", "Đồng Nai"]
 DISTRICTS = {
     "Hà Nội": ["Quận Cầu Giấy", "Quận Đống Đa", "Quận Ba Đình", "Quận Hai Bà Trưng", "Quận Hoàn Kiếm", "Quận Thanh Xuân"],
@@ -276,9 +273,6 @@ TEMPLATE_PROFILES = {
     }
 }
 
-# ---------------------------------------------------------
-# HELPER FUNCTIONS FOR VIETNAMESE NUMBERS AND CURRENCY
-# ---------------------------------------------------------
 
 def num_to_vietnamese_words(num):
     """Converts a number to Vietnamese words for receipts like C45-BB."""
@@ -349,9 +343,6 @@ def format_currency(val, template_type):
         # Standard: comma separation
         return f"{val:,.0f}"
 
-# ---------------------------------------------------------
-# MOCK LLM DATA GENERATOR
-# ---------------------------------------------------------
 
 def generate_random_invoice_data(template_type=None):
     """Simulates LLM generating a highly realistic structured Vietnamese invoice JSON."""
@@ -452,9 +443,6 @@ def generate_random_invoice_data(template_type=None):
         "total_words": total_words
     }
 
-# ---------------------------------------------------------
-# CORE RENDERING & COORDINATE EXTRACTION ENGINE
-# ---------------------------------------------------------
 
 def render_html_with_data(data, template_type="supermarket_winmart"):
     """Renders invoice HTML using Jinja2 template engine with custom currency filters."""
@@ -547,16 +535,13 @@ def generate_invoice_assets(data, template_type="supermarket_winmart", output_di
         page.set_content(html_content)
         page.wait_for_timeout(500) # Give it half a second to load webfonts
         
-        # 1. Take a screenshot of the page
         page.screenshot(path=png_path, full_page=True)
         
-        # 2. Print page to PDF
         if is_a4:
             page.pdf(path=pdf_path, format="A4", margin={"top": "10mm", "bottom": "10mm", "left": "10mm", "right": "10mm"})
         else:
             page.pdf(path=pdf_path, width="80mm", height="200mm", margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
             
-        # 3. RUN DOM EVALUATION TO EXTRACT EXACT BOUNDING BOXES FOR EACH FIELD
         box_data = page.evaluate("""() => {
             const elements = document.querySelectorAll('.kie-field');
             const result = [];
@@ -576,7 +561,6 @@ def generate_invoice_assets(data, template_type="supermarket_winmart", output_di
             return result;
         }""")
         
-        # 4. Áp dụng Tăng cường ảnh (Augmentation) nếu có yêu cầu
         if perspective_level > 0 or shadow_level > 0 or flash_level > 0 or fold_level > 0 or fade_level > 0 or streak_level > 0 or bg_type != "white":
             try:
                 import cv2
