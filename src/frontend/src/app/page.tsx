@@ -263,62 +263,6 @@ const DEFAULT_HISTORY_RECORDS = [
   }
 ];
 
-interface BBoxItem {
-  label: string;
-  field: string;
-  color: string;
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
-
-const SAMPLE_BOUNDING_BOXES: Record<string, BBoxItem[]> = {
-  sample_winmart: [
-    { label: "Đơn vị bán hàng", field: "SELLER", color: "border-indigo-500 bg-indigo-500/15 text-indigo-800", top: 4, left: 16, width: 68, height: 6 },
-    { label: "Địa chỉ cửa hàng", field: "ADDRESS", color: "border-blue-500 bg-blue-500/15 text-blue-800", top: 11, left: 8, width: 84, height: 7 },
-    { label: "Thời gian lập", field: "TIMESTAMP", color: "border-amber-500 bg-amber-500/15 text-amber-800", top: 19, left: 8, width: 84, height: 4 },
-    { label: "Bảng sản phẩm (5 món)", field: "ITEMS", color: "border-purple-500 bg-purple-500/15 text-purple-800", top: 25, left: 6, width: 88, height: 47 },
-    { label: "Tổng thanh toán", field: "TOTAL_COST", color: "border-emerald-500 bg-emerald-500/20 text-emerald-800", top: 74, left: 20, width: 70, height: 7 },
-  ],
-  sample_highland: [
-    { label: "Đơn vị bán hàng", field: "SELLER", color: "border-indigo-500 bg-indigo-500/15 text-indigo-800", top: 5, left: 20, width: 60, height: 7 },
-    { label: "Địa chỉ cửa hàng", field: "ADDRESS", color: "border-blue-500 bg-blue-500/15 text-blue-800", top: 13, left: 10, width: 80, height: 7 },
-    { label: "Thời gian lập", field: "TIMESTAMP", color: "border-amber-500 bg-amber-500/15 text-amber-800", top: 21, left: 10, width: 80, height: 5 },
-    { label: "Bảng sản phẩm (2 món)", field: "ITEMS", color: "border-purple-500 bg-purple-500/15 text-purple-800", top: 28, left: 8, width: 84, height: 38 },
-    { label: "Tổng thanh toán", field: "TOTAL_COST", color: "border-emerald-500 bg-emerald-500/20 text-emerald-800", top: 68, left: 20, width: 70, height: 8 },
-  ],
-  sample_circlek: [
-    { label: "Đơn vị bán hàng", field: "SELLER", color: "border-indigo-500 bg-indigo-500/15 text-indigo-800", top: 5, left: 18, width: 64, height: 7 },
-    { label: "Địa chỉ cửa hàng", field: "ADDRESS", color: "border-blue-500 bg-blue-500/15 text-blue-800", top: 13, left: 10, width: 80, height: 7 },
-    { label: "Thời gian lập", field: "TIMESTAMP", color: "border-amber-500 bg-amber-500/15 text-amber-800", top: 21, left: 10, width: 80, height: 5 },
-    { label: "Bảng sản phẩm (2 món)", field: "ITEMS", color: "border-purple-500 bg-purple-500/15 text-purple-800", top: 29, left: 8, width: 84, height: 35 },
-    { label: "Tổng thanh toán", field: "TOTAL_COST", color: "border-emerald-500 bg-emerald-500/20 text-emerald-800", top: 66, left: 18, width: 70, height: 8 },
-  ],
-  sample_phuclong: [
-    { label: "Đơn vị bán hàng", field: "SELLER", color: "border-indigo-500 bg-indigo-500/15 text-indigo-800", top: 5, left: 16, width: 68, height: 7 },
-    { label: "Địa chỉ cửa hàng", field: "ADDRESS", color: "border-blue-500 bg-blue-500/15 text-blue-800", top: 13, left: 10, width: 80, height: 7 },
-    { label: "Thời gian lập", field: "TIMESTAMP", color: "border-amber-500 bg-amber-500/15 text-amber-800", top: 21, left: 10, width: 80, height: 5 },
-    { label: "Bảng sản phẩm (2 món)", field: "ITEMS", color: "border-purple-500 bg-purple-500/15 text-purple-800", top: 29, left: 8, width: 84, height: 36 },
-    { label: "Tổng thanh toán", field: "TOTAL_COST", color: "border-emerald-500 bg-emerald-500/20 text-emerald-800", top: 67, left: 20, width: 70, height: 8 },
-  ],
-  sample_viettel: [
-    { label: "Đơn vị phát hành", field: "SELLER", color: "border-indigo-500 bg-indigo-500/15 text-indigo-800", top: 5, left: 10, width: 80, height: 8 },
-    { label: "Địa chỉ doanh nghiệp", field: "ADDRESS", color: "border-blue-500 bg-blue-500/15 text-blue-800", top: 14, left: 10, width: 80, height: 7 },
-    { label: "Thời gian lập", field: "TIMESTAMP", color: "border-amber-500 bg-amber-500/15 text-amber-800", top: 22, left: 10, width: 80, height: 5 },
-    { label: "Bảng dịch vụ & Thuế VAT", field: "ITEMS", color: "border-purple-500 bg-purple-500/15 text-purple-800", top: 30, left: 8, width: 84, height: 40 },
-    { label: "Tổng thanh toán", field: "TOTAL_COST", color: "border-emerald-500 bg-emerald-500/20 text-emerald-800", top: 72, left: 20, width: 70, height: 8 },
-  ]
-};
-
-const DEFAULT_BOUNDING_BOXES: BBoxItem[] = [
-  { label: "Đơn vị bán hàng", field: "SELLER", color: "border-indigo-500 bg-indigo-500/15 text-indigo-800", top: 5, left: 15, width: 70, height: 7 },
-  { label: "Địa chỉ cửa hàng", field: "ADDRESS", color: "border-blue-500 bg-blue-500/15 text-blue-800", top: 13, left: 10, width: 80, height: 8 },
-  { label: "Thời gian lập", field: "TIMESTAMP", color: "border-amber-500 bg-amber-500/15 text-amber-800", top: 22, left: 10, width: 80, height: 5 },
-  { label: "Bảng danh mục món hàng", field: "ITEMS", color: "border-purple-500 bg-purple-500/15 text-purple-800", top: 30, left: 8, width: 84, height: 40 },
-  { label: "Tổng thanh toán", field: "TOTAL_COST", color: "border-emerald-500 bg-emerald-500/20 text-emerald-800", top: 72, left: 20, width: 70, height: 8 },
-];
-
 const DOCALIGNER_CORNERS: Record<string, { label: string; x: number; y: number }[]> = {
   sample_winmart: [
     { label: "P1 (Top-Left)", x: 1.9, y: 5.2 },
@@ -434,7 +378,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("extract");
   const [isServerOnline, setIsServerOnline] = useState<boolean | null>(null);
   const [gpuInfo, setGpuInfo] = useState<any>(null);
-  const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed" | "annotated">("original");
+  const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed">("original");
   const [preprocessedUrl, setPreprocessedUrl] = useState<string | null>(null);
   const [detectedAngle, setDetectedAngle] = useState<number | null>(null);
   const [showQuadContour, setShowQuadContour] = useState<boolean>(false);
@@ -553,7 +497,7 @@ export default function Home() {
           setValidation(res.data.validation);
           setLatency(res.data.latency_seconds);
           setServerImageUrl(res.data.image_url);
-          setImageViewMode("annotated");
+          setImageViewMode("preprocessed");
           setLoading(false);
           return;
         }
@@ -577,7 +521,7 @@ export default function Home() {
         discrepancy: 0,
         message: "Số học đối soát khớp 100%"
       });
-      setImageViewMode("annotated");
+      setImageViewMode("preprocessed");
       setLoading(false);
       return;
     }
@@ -1576,7 +1520,7 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* 3-Mode Image View Switcher Pill Bar */}
+                {/* 2-Mode Image View Switcher Pill Bar */}
                 {preview && (
                   <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl mb-2.5 border border-slate-200/60">
                     <button
@@ -1589,7 +1533,7 @@ export default function Home() {
                       }`}
                     >
                       <Camera className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Ảnh Gốc</span>
+                      <span>Ảnh Gốc (Camera)</span>
                     </button>
                     <button
                       type="button"
@@ -1601,19 +1545,7 @@ export default function Home() {
                       }`}
                     >
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>Tiền Xử Lý</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setImageViewMode("annotated"); setShowQuadContour(false); }}
-                      className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                        imageViewMode === "annotated"
-                          ? "bg-violet-600 text-white shadow-xs"
-                          : "text-slate-600 hover:text-slate-900"
-                      }`}
-                    >
-                      <Layers className="w-3.5 h-3.5" />
-                      <span>Hậu Xử Lý BBox</span>
+                      <span>Đã Tiền Xử Lý (DocAligner)</span>
                     </button>
                   </div>
                 )}
@@ -1733,31 +1665,6 @@ export default function Home() {
                               </div>
                             </div>
                           )}
-
-                          {/* Visual Grounding Bounding Box Overlays */}
-                          {imageViewMode === "annotated" && (
-                            <div className="absolute inset-0 pointer-events-none">
-                              {(selectedSampleId && SAMPLE_BOUNDING_BOXES[selectedSampleId]
-                                ? SAMPLE_BOUNDING_BOXES[selectedSampleId]
-                                : (result ? DEFAULT_BOUNDING_BOXES : [])
-                              ).map((box, bIdx) => (
-                                <div
-                                  key={bIdx}
-                                  className={`absolute border-2 rounded transition-all ${box.color}`}
-                                  style={{
-                                    top: `${box.top}%`,
-                                    left: `${box.left}%`,
-                                    width: `${box.width}%`,
-                                    height: `${box.height}%`,
-                                  }}
-                                >
-                                  <span className="absolute -top-3 left-1 text-[9px] font-bold px-1.5 py-0.2 rounded shadow-xs uppercase tracking-tight bg-white/95 border border-slate-300 text-slate-800 whitespace-nowrap">
-                                    {box.field}: {box.label}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       </div>
 
@@ -1775,11 +1682,6 @@ export default function Home() {
                             ) : (
                               <><Sparkles className="w-3 h-3 text-indigo-200" /> DocAligner: Đã Cắt Bỏ Nền Bàn + Nắn Phẳng 0.0° + CLAHE</>
                             )}
-                          </span>
-                        )}
-                        {imageViewMode === "annotated" && (
-                          <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-violet-700/90 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            <Layers className="w-3 h-3 text-violet-200" /> Hậu Xử Lý: Grounding 5 Trường Khóa (Ảnh 0° Chuẩn)
                           </span>
                         )}
                       </div>
@@ -1801,7 +1703,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Preprocessing / Postprocessing Educational Callout */}
+                    {/* Preprocessing Educational Callout */}
                     <div className="p-3 rounded-xl border text-xs leading-relaxed transition-all">
                       {imageViewMode === "original" && (
                         <div className="flex items-start gap-2 text-slate-700 bg-slate-50 border border-slate-200 p-2.5 rounded-lg">
@@ -1821,14 +1723,6 @@ export default function Home() {
                               <li><strong className="text-indigo-950 font-semibold">Bẻ Phẳng Phối Cảnh & Xoay 0° (Perspective Rectification):</strong> Áp dụng phép biến đổi 4 điểm (Homography/Four-point transform) nắn tờ hóa đơn phẳng phiu 0.0° vuông góc với khung nhìn.</li>
                               <li><strong className="text-indigo-950 font-semibold">Cân bằng sáng cục bộ (CLAHE LAB):</strong> Phân tách kênh độ sáng L, khử bóng râm chùm sáng và làm rõ nét chữ in nhiệt mờ.</li>
                             </ul>
-                          </div>
-                        </div>
-                      )}
-                      {imageViewMode === "annotated" && (
-                        <div className="flex items-start gap-2 text-violet-950 bg-violet-50/80 border border-violet-200 p-2.5 rounded-lg">
-                          <Layers className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-bold text-violet-900">Giai đoạn 3 - Hậu Xử Lý & Visual Grounding:</span> Khoanh vùng tọa độ chuẩn xác 5 trường khóa (<code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">SELLER</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">ADDRESS</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">TIMESTAMP</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">ITEMS</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">TOTAL_COST</code>) trên ảnh hóa đơn đã cắt xoay thẳng 0°, tự động nối rớt dòng sản phẩm và đối soát cân đối tài chính.
                           </div>
                         </div>
                       )}
@@ -2720,29 +2614,6 @@ export default function Home() {
               }}
               className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
             />
-            {imageViewMode === "annotated" && (
-              <div className="absolute inset-0 pointer-events-none">
-                {(selectedSampleId && SAMPLE_BOUNDING_BOXES[selectedSampleId]
-                  ? SAMPLE_BOUNDING_BOXES[selectedSampleId]
-                  : (result ? DEFAULT_BOUNDING_BOXES : [])
-                ).map((box, bIdx) => (
-                  <div
-                    key={bIdx}
-                    className={`absolute border-2 rounded transition-all ${box.color}`}
-                    style={{
-                      top: `${box.top}%`,
-                      left: `${box.left}%`,
-                      width: `${box.width}%`,
-                      height: `${box.height}%`,
-                    }}
-                  >
-                    <span className="absolute -top-3 left-1 text-[9px] font-bold px-1.5 py-0.2 rounded shadow-xs uppercase tracking-tight bg-white border border-slate-300 text-slate-800 whitespace-nowrap">
-                      {box.field}: {box.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       )}
