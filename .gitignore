@@ -92,3 +92,8 @@ database/
 report_assets/
 docs/CapstoneProject_AIP491_Report_Final/
 docs/overleaf_report/
+*.onnx
+benchmark_*.txt
+mcocr_*.txt
+hybrid_log*.txt
+sftp_cmds.txt

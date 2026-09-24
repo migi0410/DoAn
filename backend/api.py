@@ -577,27 +577,54 @@ async def api_preprocess_image(
 
     h0, w0 = img.shape[:2]
     
-    # 1. Background cropping
-    cropped = ImagePreprocessor.crop_document(img)
+    # 1. Try DocAligner Deep Learning Corner Detection & Rectification
+    try:
+        from backend.docaligner import DocAligner
+        from backend.document_processor import four_point_transform, enhance_illumination
+        aligner = DocAligner()
+        pts = aligner(img)
+        if pts is not None and len(pts) == 4:
+            warped = four_point_transform(img, pts)
+            enhanced = enhance_illumination(warped)
+            dx = pts[1][0] - pts[0][0]
+            dy = pts[1][1] - pts[0][1]
+            skew_angle = round(float(np.degrees(np.arctan2(dy, dx))), 1)
+            corners_pts = [{"x": round(float(pt[0]/w0*100), 1), "y": round(float(pt[1]/h0*100), 1)} for pt in pts]
+            h1, w1 = enhanced.shape[:2]
+            out_filename = f"prep_{file_id}.jpg"
+            out_path = os.path.join(UPLOAD_DIR, out_filename)
+            cv2.imwrite(out_path, enhanced)
+            return {
+                "success": True,
+                "original_url": original_url,
+                "preprocessed_url": f"/temp_uploads/{out_filename}",
+                "skew_angle": skew_angle,
+                "corners": corners_pts,
+                "method": "DocAligner (FastViT Heatmap Regression)",
+                "steps": [
+                    f"1. AI DocAligner phát hiện 4 góc tài liệu: P1({corners_pts[0]['x']}%, {corners_pts[0]['y']}%), P2({corners_pts[1]['x']}%, {corners_pts[1]['y']}%), P3({corners_pts[2]['x']}%, {corners_pts[2]['y']}%), P4({corners_pts[3]['x']}%, {corners_pts[3]['y']}%)",
+                    f"2. Bẻ phẳng phối cảnh 4 góc (Perspective Transform): {w0}x{h0} ➔ {w1}x{h1}",
+                    f"3. Cân bằng sáng cục bộ thích ứng CLAHE trên không gian màu LAB"
+                ]
+            }
+    except Exception as e_da:
+        print(f"DocAligner fallback to OpenCV: {e_da}")
     
-    # 2. Angle detection & deskew
+    # Fallback to OpenCV Contour / Hough Deskew
+    cropped = ImagePreprocessor.crop_document(img)
     skew_angle = round(float(ImagePreprocessor.detect_skew_angle(cropped)), 2)
     deskewed = ImagePreprocessor.deskew(cropped)
-    
-    # 3. CLAHE illumination enhancement
     enhanced = enhance_illumination(deskewed)
     h1, w1 = enhanced.shape[:2]
 
-    # Save preprocessed image
     out_filename = f"prep_{file_id}.jpg"
     out_path = os.path.join(UPLOAD_DIR, out_filename)
     cv2.imwrite(out_path, enhanced)
-    preprocessed_url = f"/temp_uploads/{out_filename}"
 
     return {
         "success": True,
         "original_url": original_url,
-        "preprocessed_url": preprocessed_url,
+        "preprocessed_url": f"/temp_uploads/{out_filename}",
         "skew_angle": skew_angle,
         "cropped": True,
         "enhanced": True,
