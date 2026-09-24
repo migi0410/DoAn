@@ -531,6 +531,18 @@ def api_switch_adapter(target: str = Form(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+_DOCALIGNER = None
+
+def get_docaligner():
+    global _DOCALIGNER
+    if _DOCALIGNER is None:
+        try:
+            from backend.docaligner import DocAligner
+            _DOCALIGNER = DocAligner()
+        except Exception as e:
+            print(f"[DocAligner] Singleton init: {e}")
+    return _DOCALIGNER
+
 @app.post("/api/preprocess")
 async def api_preprocess_image(
     file: Optional[UploadFile] = File(None),
@@ -580,12 +592,12 @@ async def api_preprocess_image(
     # 1. Try DocAligner Deep Learning Corner Detection & Rectification
     try:
         import time
-        from backend.docaligner import DocAligner
         from backend.document_processor import four_point_transform, enhance_illumination
-        t_start = time.perf_counter()
-        aligner = DocAligner()
-        pts = aligner(img)
-        latency_ms = round((time.perf_counter() - t_start) * 1000, 1)
+        aligner = get_docaligner()
+        if aligner is not None:
+            t_start = time.perf_counter()
+            pts = aligner(img)
+            latency_ms = round((time.perf_counter() - t_start) * 1000, 1)
         if pts is not None and len(pts) == 4:
             warped = four_point_transform(img, pts)
             enhanced = enhance_illumination(warped)
