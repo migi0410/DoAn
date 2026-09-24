@@ -579,10 +579,13 @@ async def api_preprocess_image(
     
     # 1. Try DocAligner Deep Learning Corner Detection & Rectification
     try:
+        import time
         from backend.docaligner import DocAligner
         from backend.document_processor import four_point_transform, enhance_illumination
+        t_start = time.perf_counter()
         aligner = DocAligner()
         pts = aligner(img)
+        latency_ms = round((time.perf_counter() - t_start) * 1000, 1)
         if pts is not None and len(pts) == 4:
             warped = four_point_transform(img, pts)
             enhanced = enhance_illumination(warped)
@@ -600,9 +603,11 @@ async def api_preprocess_image(
                 "preprocessed_url": f"/temp_uploads/{out_filename}",
                 "skew_angle": skew_angle,
                 "corners": corners_pts,
-                "method": "DocAligner (FastViT Heatmap Regression)",
+                "latency_ms": latency_ms,
+                "method": "DocAligner (FastViT-SA24 + BiFPN ONNX)",
+                "is_live_inference": True,
                 "steps": [
-                    f"1. AI DocAligner phát hiện 4 góc tài liệu: P1({corners_pts[0]['x']}%, {corners_pts[0]['y']}%), P2({corners_pts[1]['x']}%, {corners_pts[1]['y']}%), P3({corners_pts[2]['x']}%, {corners_pts[2]['y']}%), P4({corners_pts[3]['x']}%, {corners_pts[3]['y']}%)",
+                    f"1. AI DocAligner suy luận thời gian thực ({latency_ms} ms trên CPU ONNX): P1({corners_pts[0]['x']}%, {corners_pts[0]['y']}%), P2({corners_pts[1]['x']}%, {corners_pts[1]['y']}%), P3({corners_pts[2]['x']}%, {corners_pts[2]['y']}%), P4({corners_pts[3]['x']}%, {corners_pts[3]['y']}%)",
                     f"2. Bẻ phẳng phối cảnh 4 góc (Perspective Transform): {w0}x{h0} ➔ {w1}x{h1}",
                     f"3. Cân bằng sáng cục bộ thích ứng CLAHE trên không gian màu LAB"
                 ]
