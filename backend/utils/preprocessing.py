@@ -9,9 +9,9 @@ class ImagePreprocessor:
     """
     
     @staticmethod
-    def deskew(image: np.ndarray) -> np.ndarray:
+    def detect_skew_angle(image: np.ndarray) -> float:
         """
-        Detects the skew angle of the receipt text using Hough Line Transform and rotates it back to straight.
+        Detects the skew angle of the receipt text using Hough Line Transform.
         """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if len(image.shape) == 3 else image
         edges = cv2.Canny(gray, 50, 150, apertureSize=3)
@@ -20,20 +20,27 @@ class ImagePreprocessor:
         angles = []
         if lines is not None:
             for line in lines:
-                x1, y1, x2, y2 = line[0]
+                l = line.flatten()
+                if len(l) < 4:
+                    continue
+                x1, y1, x2, y2 = int(l[0]), int(l[1]), int(l[2]), int(l[3])
                 angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
-                # Only consider near horizontal or near vertical lines
                 if -45 < angle < 45:
                     angles.append(angle)
                 elif angle > 45:
                     angles.append(angle - 90)
                 elif angle < -45:
                     angles.append(angle + 90)
-        
         if not angles:
-            return image
-            
-        median_angle = np.median(angles)
+            return 0.0
+        return float(np.median(angles))
+
+    @staticmethod
+    def deskew(image: np.ndarray) -> np.ndarray:
+        """
+        Detects the skew angle of the receipt text using Hough Line Transform and rotates it back to straight.
+        """
+        median_angle = ImagePreprocessor.detect_skew_angle(image)
         if abs(median_angle) < 0.5:
             return image
             

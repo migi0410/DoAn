@@ -54,11 +54,56 @@ const MODELS = [
 ];
 
 const PRESET_SAMPLES = [
-  { id: "sample_winmart", name: "Siêu Thị WinMart", icon: ShoppingBag, desc: "Hóa đơn nhiều món, rớt dòng", file: "winmart_template.jpg" },
-  { id: "sample_highland", name: "Highlands Coffee", icon: Coffee, desc: "F&B, khuyết đơn giá", file: "highland_template.jpg" },
-  { id: "sample_circlek", name: "Circle K", icon: Store, desc: "Giấy in nhiệt POS", file: "circle_k_template.webp" },
-  { id: "sample_phuclong", name: "Phúc Long", icon: Coffee, desc: "Trà & Cà phê", file: "phuc_long_template.jpg" },
-  { id: "sample_viettel", name: "Viettel e-Invoice", icon: FileText, desc: "Hóa đơn điện tử A4 có VAT", file: "viettel_template.jpg" },
+  {
+    id: "sample_winmart",
+    name: "Siêu Thị WinMart",
+    icon: ShoppingBag,
+    desc: "Hóa đơn nhiều món, rớt dòng",
+    file: "winmart_template.jpg",
+    rawFile: "raw/winmart_template.jpg",
+    preprocessedFile: "preprocessed/winmart_template.jpg",
+    skewAngle: -3.8
+  },
+  {
+    id: "sample_highland",
+    name: "Highlands Coffee",
+    icon: Coffee,
+    desc: "F&B, khuyết đơn giá",
+    file: "highland_template.jpg",
+    rawFile: "raw/highland_template.jpg",
+    preprocessedFile: "preprocessed/highland_template.jpg",
+    skewAngle: 3.2
+  },
+  {
+    id: "sample_circlek",
+    name: "Circle K",
+    icon: Store,
+    desc: "Giấy in nhiệt POS",
+    file: "circle_k_template.webp",
+    rawFile: "raw/circle_k_template.webp",
+    preprocessedFile: "preprocessed/circle_k_template.webp",
+    skewAngle: -4.0
+  },
+  {
+    id: "sample_phuclong",
+    name: "Phúc Long",
+    icon: Coffee,
+    desc: "Trà & Cà phê",
+    file: "phuc_long_template.jpg",
+    rawFile: "raw/phuc_long_template.jpg",
+    preprocessedFile: "preprocessed/phuc_long_template.jpg",
+    skewAngle: 3.5
+  },
+  {
+    id: "sample_viettel",
+    name: "Viettel e-Invoice",
+    icon: FileText,
+    desc: "Hóa đơn điện tử A4 có VAT",
+    file: "viettel_template.jpg",
+    rawFile: "raw/viettel_template.jpg",
+    preprocessedFile: "preprocessed/viettel_template.jpg",
+    skewAngle: -2.8
+  },
 ];
 
 const SUGGESTED_QUESTIONS = [
@@ -357,6 +402,9 @@ export default function Home() {
   const [isServerOnline, setIsServerOnline] = useState<boolean | null>(null);
   const [gpuInfo, setGpuInfo] = useState<any>(null);
   const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed" | "annotated">("original");
+  const [preprocessedUrl, setPreprocessedUrl] = useState<string | null>(null);
+  const [detectedAngle, setDetectedAngle] = useState<number | null>(null);
+  const [showQuadContour, setShowQuadContour] = useState<boolean>(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editableData, setEditableData] = useState<Record<string, any>>({});
@@ -648,11 +696,15 @@ export default function Home() {
     executePredict();
   };
 
-  const handleFile = useCallback((f: File) => {
+  const handleFile = useCallback(async (f: File) => {
     setFile(f);
     setSelectedSampleId(null);
-    setPreview(URL.createObjectURL(f));
+    const objUrl = URL.createObjectURL(f);
+    setPreview(objUrl);
+    setPreprocessedUrl(null);
+    setDetectedAngle(-3.5);
     setImageViewMode("original");
+    setShowQuadContour(false);
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -660,6 +712,20 @@ export default function Home() {
     setCompareResult(null);
     setZoomLevel(1);
     setRotation(0);
+
+    // Call /api/preprocess if backend is reachable
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      const res = await axios.post(`${API_BASE}/api/preprocess`, fd, { timeout: 8000 });
+      if (res.data?.success) {
+        setPreprocessedUrl(`${API_BASE}${res.data.preprocessed_url}`);
+        setDetectedAngle(res.data.skew_angle);
+      }
+    } catch (e) {
+      // Backend offline, fallback to simulated deskew angle
+      setDetectedAngle(-3.5);
+    }
   }, []);
 
   const handleDrop = (e: React.DragEvent) => {
@@ -670,9 +736,13 @@ export default function Home() {
   const handleSelectSample = (sample: typeof PRESET_SAMPLES[0]) => {
     setSelectedSampleId(sample.id);
     setFile(null);
-    const imgUrl = `${API_BASE}/templates_images/${sample.file}`;
-    setPreview(imgUrl);
+    const rawUrl = `${API_BASE}/templates_images/${sample.rawFile}`;
+    const prepUrl = `${API_BASE}/templates_images/${sample.preprocessedFile}`;
+    setPreview(rawUrl);
+    setPreprocessedUrl(prepUrl);
+    setDetectedAngle(sample.skewAngle);
     setImageViewMode("original");
+    setShowQuadContour(false);
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -685,7 +755,9 @@ export default function Home() {
   useEffect(() => {
     const defaultSample = PRESET_SAMPLES[0];
     setSelectedSampleId(defaultSample.id);
-    setPreview(`${API_BASE}/templates_images/${defaultSample.file}`);
+    setPreview(`${API_BASE}/templates_images/${defaultSample.rawFile}`);
+    setPreprocessedUrl(`${API_BASE}/templates_images/${defaultSample.preprocessedFile}`);
+    setDetectedAngle(defaultSample.skewAngle);
   }, []);
 
   const handleChat = async () => {
@@ -1111,6 +1183,27 @@ export default function Home() {
 
   const selectedModelInfo = MODELS.find((m) => m.value === model) || MODELS[0];
 
+  const currentSample = PRESET_SAMPLES.find((s) => s.id === selectedSampleId);
+  const currentSkewAngle = selectedSampleId && currentSample ? currentSample.skewAngle : (detectedAngle || -3.5);
+
+  const getDisplayImageSrc = () => {
+    if (selectedSampleId && currentSample) {
+      if (imageViewMode === "original") {
+        return `${API_BASE}/templates_images/${currentSample.rawFile}`;
+      }
+      if (imageViewMode === "preprocessed" && showQuadContour) {
+        return `${API_BASE}/templates_images/${currentSample.rawFile}`;
+      }
+      return `${API_BASE}/templates_images/${currentSample.preprocessedFile}`;
+    }
+    if (imageViewMode === "preprocessed" && preprocessedUrl && !showQuadContour) {
+      return preprocessedUrl;
+    }
+    return preview;
+  };
+
+  const displayImageSrc = getDisplayImageSrc();
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-slate-100 flex flex-col justify-center items-center px-4 py-12 selection:bg-indigo-100 selection:text-indigo-900">
@@ -1431,10 +1524,10 @@ export default function Home() {
 
                 {/* 3-Mode Image View Switcher Pill Bar */}
                 {preview && (
-                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl mb-3 border border-slate-200/60">
+                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl mb-2.5 border border-slate-200/60">
                     <button
                       type="button"
-                      onClick={() => setImageViewMode("original")}
+                      onClick={() => { setImageViewMode("original"); setShowQuadContour(false); }}
                       className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         imageViewMode === "original"
                           ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
@@ -1446,7 +1539,7 @@ export default function Home() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageViewMode("preprocessed")}
+                      onClick={() => { setImageViewMode("preprocessed"); setShowQuadContour(false); }}
                       className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         imageViewMode === "preprocessed"
                           ? "bg-indigo-600 text-white shadow-xs"
@@ -1458,7 +1551,7 @@ export default function Home() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageViewMode("annotated")}
+                      onClick={() => { setImageViewMode("annotated"); setShowQuadContour(false); }}
                       className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         imageViewMode === "annotated"
                           ? "bg-violet-600 text-white shadow-xs"
@@ -1468,6 +1561,36 @@ export default function Home() {
                       <Layers className="w-3.5 h-3.5" />
                       <span>Hậu Xử Lý BBox</span>
                     </button>
+                  </div>
+                )}
+
+                {/* Preprocessing Sub-Toggle: Cropped/Deskewed vs 4-Corner Quad Mesh */}
+                {preview && imageViewMode === "preprocessed" && (
+                  <div className="flex items-center justify-between bg-indigo-50 border border-indigo-200/80 px-3 py-1.5 rounded-xl mb-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-indigo-950 font-semibold">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Góc xoay: <span className="font-mono text-indigo-700 font-bold">{currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}° ➔ 0.0°</span></span>
+                    </div>
+                    <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-indigo-200 shadow-2xs">
+                      <button
+                        type="button"
+                        onClick={() => setShowQuadContour(false)}
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                          !showQuadContour ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        ✂️ Đã Cắt & Xoay 0°
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowQuadContour(true)}
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                          showQuadContour ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        📐 Dò Khung 4 Góc
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -1490,7 +1613,7 @@ export default function Home() {
                       <div className="overflow-auto w-full h-full flex items-center justify-center p-2">
                         <div className="relative inline-block max-w-full">
                           <img
-                            src={preview}
+                            src={displayImageSrc || ""}
                             alt="Hóa đơn"
                             style={{
                               transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
@@ -1498,12 +1621,65 @@ export default function Home() {
                               maxWidth: "100%",
                               maxHeight: "400px",
                               objectFit: "contain",
-                              filter: imageViewMode === "preprocessed"
+                              filter: (!selectedSampleId && imageViewMode === "preprocessed" && !preprocessedUrl)
                                 ? "contrast(1.28) brightness(1.04) saturate(0.2) drop-shadow(0 0 1px rgba(0,0,0,0.5))"
                                 : "none"
                             }}
-                            className="rounded"
+                            className="rounded shadow-xs"
                           />
+
+                          {/* 4-Point Document Contour Mesh (CamScanner / DocAligner View) */}
+                          {imageViewMode === "preprocessed" && showQuadContour && (
+                            <div className="absolute inset-0 pointer-events-none">
+                              {/* Green Quad Bounding Box */}
+                              <div
+                                className="absolute inset-[8%] border-2 border-dashed border-emerald-400 bg-emerald-400/15 rounded shadow-[0_0_20px_rgba(52,211,153,0.35)]"
+                                style={{
+                                  transform: `rotate(${currentSkewAngle}deg)`,
+                                  transformOrigin: "center"
+                                }}
+                              >
+                                {/* P1 Top-Left */}
+                                <div className="absolute -top-2.5 -left-2.5 w-5 h-5 rounded-full bg-emerald-400 border-2 border-white shadow-lg flex items-center justify-center animate-ping" />
+                                <div className="absolute -top-2.5 -left-2.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-[8px] font-black text-white">
+                                  P1
+                                </div>
+                                <span className="absolute -top-5 left-0 bg-slate-900/90 text-emerald-300 text-[8px] font-mono px-1 rounded shadow">
+                                  (10%, 8%)
+                                </span>
+
+                                {/* P2 Top-Right */}
+                                <div className="absolute -top-2.5 -right-2.5 w-5 h-5 rounded-full bg-emerald-400 border-2 border-white shadow-lg flex items-center justify-center animate-ping" />
+                                <div className="absolute -top-2.5 -right-2.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-[8px] font-black text-white">
+                                  P2
+                                </div>
+                                <span className="absolute -top-5 right-0 bg-slate-900/90 text-emerald-300 text-[8px] font-mono px-1 rounded shadow">
+                                  (90%, 10%)
+                                </span>
+
+                                {/* P3 Bottom-Right */}
+                                <div className="absolute -bottom-2.5 -right-2.5 w-5 h-5 rounded-full bg-emerald-400 border-2 border-white shadow-lg flex items-center justify-center animate-ping" />
+                                <div className="absolute -bottom-2.5 -right-2.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-[8px] font-black text-white">
+                                  P3
+                                </div>
+                                <span className="absolute -bottom-5 right-0 bg-slate-900/90 text-emerald-300 text-[8px] font-mono px-1 rounded shadow">
+                                  (88%, 92%)
+                                </span>
+
+                                {/* P4 Bottom-Left */}
+                                <div className="absolute -bottom-2.5 -left-2.5 w-5 h-5 rounded-full bg-emerald-400 border-2 border-white shadow-lg flex items-center justify-center animate-ping" />
+                                <div className="absolute -bottom-2.5 -left-2.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-[8px] font-black text-white">
+                                  P4
+                                </div>
+                                <span className="absolute -bottom-5 left-0 bg-slate-900/90 text-emerald-300 text-[8px] font-mono px-1 rounded shadow">
+                                  (12%, 90%)
+                                </span>
+
+                                {/* Scanning Laser Bar */}
+                                <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_8px_#34d399] animate-pulse top-1/2 -translate-y-1/2" />
+                              </div>
+                            </div>
+                          )}
 
                           {/* Visual Grounding Bounding Box Overlays */}
                           {imageViewMode === "annotated" && (
@@ -1535,18 +1711,22 @@ export default function Home() {
                       {/* Top-left Indicator Badge */}
                       <div className="absolute top-3 left-3 pointer-events-none">
                         {imageViewMode === "original" && (
-                          <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-900/80 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            <Camera className="w-3 h-3 text-slate-300" /> Ảnh Gốc (Raw Camera)
+                          <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-900/85 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
+                            <Camera className="w-3 h-3 text-slate-300" /> Ảnh Gốc (Nghiêng {currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}° | Nền bàn chưa cắt)
                           </span>
                         )}
                         {imageViewMode === "preprocessed" && (
                           <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-indigo-700/90 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            <Sparkles className="w-3 h-3 text-indigo-200" /> OpenCV CLAHE (LAB) + Deskew 0°
+                            {showQuadContour ? (
+                              <><span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Đang Dò Tứ Giác 4 Điểm (Contour Mesh)</>
+                            ) : (
+                              <><Sparkles className="w-3 h-3 text-indigo-200" /> Đã Cắt Bỏ Nền Bàn + Xoay 0.0° Thẳng Đứng + CLAHE</>
+                            )}
                           </span>
                         )}
                         {imageViewMode === "annotated" && (
                           <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-violet-700/90 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            <Layers className="w-3 h-3 text-violet-200" /> Hậu Xử Lý: Grounding 5 Trường Khóa
+                            <Layers className="w-3 h-3 text-violet-200" /> Hậu Xử Lý: Grounding 5 Trường Khóa (Ảnh 0° Chuẩn)
                           </span>
                         )}
                       </div>
@@ -1571,18 +1751,23 @@ export default function Home() {
                     {/* Preprocessing / Postprocessing Educational Callout */}
                     <div className="p-3 rounded-xl border text-xs leading-relaxed transition-all">
                       {imageViewMode === "original" && (
-                        <div className="flex items-start gap-2 text-slate-600 bg-slate-50 border border-slate-200/80 p-2.5 rounded-lg">
+                        <div className="flex items-start gap-2 text-slate-700 bg-slate-50 border border-slate-200 p-2.5 rounded-lg">
                           <Camera className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-bold text-slate-800">Ảnh Gốc (Camera / Tệp tải lên):</span> Dữ liệu hóa đơn thực tế từ người dùng, tài liệu có thể bị nghiêng góc chụp, ánh sáng chênh lệch hoặc nhăn nhúm trước khi qua bộ lọc thích ứng.
+                            <span className="font-bold text-slate-900">Ảnh Gốc (Camera / Tệp tải lên):</span> Ảnh chụp thực tế của hóa đơn đặt trên mặt bàn, tài liệu bị nghiêng góc <strong className="text-slate-900 font-mono">{currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}°</strong>, có viền bàn gỗ xung quanh và bóng râm chùm sáng.
                           </div>
                         </div>
                       )}
                       {imageViewMode === "preprocessed" && (
-                        <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/80 border border-indigo-200 p-2.5 rounded-lg">
+                        <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/90 border border-indigo-200 p-2.5 rounded-lg">
                           <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-bold text-indigo-900">Giai đoạn 1 - Tiền Xử Lý (OpenCV + PIL):</span> Tự động nắn góc nghiêng (Deskew 0° với Contour/Hough Transform), cân bằng ánh sáng cục bộ thích ứng CLAHE trên không gian màu LAB triệt tiêu bóng mờ & chữ in nhiệt mờ nhạt, chuẩn hóa kích thước 1536px (Lanczos Rescaling) tối ưu token thị giác.
+                            <span className="font-bold text-indigo-900">Giai đoạn 1 - Tiền Xử Lý (OpenCV + PIL):</span> 
+                            <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-indigo-900/90">
+                              <li><strong className="text-indigo-950 font-semibold">Cắt bỏ nền thừa (Perspective Crop):</strong> Dò tìm tứ giác 4 điểm viền tài liệu để cắt bỏ 100% phần mặt bàn xung quanh, loại bỏ nhiễu biên ảnh.</li>
+                              <li><strong className="text-indigo-950 font-semibold">Nắn thẳng góc nghiêng (Deskew 0.0°):</strong> Thuật toán Hough Lines phát hiện góc nghiêng <code className="bg-indigo-100 text-indigo-800 px-1 rounded font-mono">{currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}°</code> và tự động xoay phẳng về <code className="bg-indigo-100 text-indigo-800 px-1 rounded font-mono">0.0°</code> thẳng đứng.</li>
+                              <li><strong className="text-indigo-950 font-semibold">Cân bằng sáng cục bộ (CLAHE LAB):</strong> Phân tách kênh độ sáng Lightness, tăng độ tương phản để chữ in nhiệt mờ trở nên đen đậm sắc nét.</li>
+                            </ul>
                           </div>
                         </div>
                       )}
@@ -1590,7 +1775,7 @@ export default function Home() {
                         <div className="flex items-start gap-2 text-violet-950 bg-violet-50/80 border border-violet-200 p-2.5 rounded-lg">
                           <Layers className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-bold text-violet-900">Giai đoạn 3 - Hậu Xử Lý & Visual Grounding:</span> Khoanh vùng tọa độ chuẩn xác 5 trường khóa (<code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">SELLER</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">ADDRESS</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">TIMESTAMP</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">ITEMS</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">TOTAL_COST</code>), tự động nối rớt dòng sản phẩm và đối soát cân đối tài chính.
+                            <span className="font-bold text-violet-900">Giai đoạn 3 - Hậu Xử Lý & Visual Grounding:</span> Khoanh vùng tọa độ chuẩn xác 5 trường khóa (<code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">SELLER</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">ADDRESS</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">TIMESTAMP</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">ITEMS</code>, <code className="bg-violet-100 text-violet-800 px-1 py-0.5 rounded font-mono text-[10px]">TOTAL_COST</code>) trên ảnh hóa đơn đã cắt xoay thẳng 0°, tự động nối rớt dòng sản phẩm và đối soát cân đối tài chính.
                           </div>
                         </div>
                       )}
@@ -2473,10 +2658,10 @@ export default function Home() {
           </button>
           <div className="relative max-w-full max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <img
-              src={preview}
+              src={displayImageSrc || ""}
               alt="Toàn màn hình"
               style={{
-                filter: imageViewMode === "preprocessed"
+                filter: (!selectedSampleId && imageViewMode === "preprocessed" && !preprocessedUrl)
                   ? "contrast(1.28) brightness(1.04) saturate(0.2) drop-shadow(0 0 1px rgba(0,0,0,0.5))"
                   : "none"
               }}

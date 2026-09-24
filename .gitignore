@@ -35,7 +35,7 @@ synthetic_dataset_hardcore/
 synthetic_dataset_hardcore_test/
 synthetic_dataset_v3/
 temp_gemini_downloads/
-templates_images/
+/templates_images/
 raw_data/
 Kaggle_*.zip
 Training_Code_v2.zip
@@ -43,6 +43,9 @@ Training_Code_v2.zip
 *.csv
 *.png
 *.jpg
+*.webp
+!frontend/public/templates_images/**
+!src/frontend/public/templates_images/**
 temp*.txt
 temp*.json
 

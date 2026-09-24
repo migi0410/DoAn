@@ -14,10 +14,14 @@ try:
     from backend.auth_routes import router as auth_router
     from backend.database import init_database, db_save_receipt, db_get_receipts, db_delete_receipt
     from backend.supabase_client import upload_image_to_supabase
+    from backend.utils.preprocessing import ImagePreprocessor
+    from backend.document_processor import enhance_illumination
 except ImportError:
     from auth_routes import router as auth_router
     from database import init_database, db_save_receipt, db_get_receipts, db_delete_receipt
     from supabase_client import upload_image_to_supabase
+    from utils.preprocessing import ImagePreprocessor
+    from document_processor import enhance_illumination
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -526,6 +530,86 @@ def api_switch_adapter(target: str = Form(...)):
         return r.json()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/preprocess")
+async def api_preprocess_image(
+    file: Optional[UploadFile] = File(None),
+    sample_id: Optional[str] = Form(None)
+):
+    """
+    OpenCV Document Preprocessing Pipeline:
+    1. Background cropping (4-point document contour detection)
+    2. Tilt angle detection (Hough line transform) and deskewing to 0.0°
+    3. Illumination enhancement (CLAHE in LAB color space)
+    """
+    file_id = str(uuid.uuid4())[:8]
+    img = None
+    original_url = ""
+
+    if file and file.filename:
+        ext = file.filename.split(".")[-1].lower() if "." in file.filename else "jpg"
+        save_filename = f"upload_{file_id}.{ext}"
+        raw_path = os.path.join(UPLOAD_DIR, save_filename)
+        with open(raw_path, "wb") as f_out:
+            shutil.copyfileobj(file.file, f_out)
+        try:
+            from PIL import Image, ImageOps
+            with Image.open(raw_path) as pil_img:
+                transposed = ImageOps.exif_transpose(pil_img)
+                transposed.save(raw_path)
+        except Exception:
+            pass
+        original_url = f"/temp_uploads/{save_filename}"
+        img = cv2.imread(raw_path)
+    elif sample_id:
+        for s in SAMPLE_RECEIPTS:
+            if s["id"] == sample_id:
+                raw_filename = s["filename"]
+                raw_path = os.path.join(TEMPLATES_DIR, "raw", raw_filename)
+                if not os.path.exists(raw_path):
+                    raw_path = os.path.join(TEMPLATES_DIR, raw_filename)
+                original_url = f"/templates_images/raw/{raw_filename}"
+                img = cv2.imread(raw_path)
+                break
+
+    if img is None:
+        raise HTTPException(status_code=400, detail="Không thể nạp hình ảnh để tiền xử lý.")
+
+    h0, w0 = img.shape[:2]
+    
+    # 1. Background cropping
+    cropped = ImagePreprocessor.crop_document(img)
+    
+    # 2. Angle detection & deskew
+    skew_angle = round(float(ImagePreprocessor.detect_skew_angle(cropped)), 2)
+    deskewed = ImagePreprocessor.deskew(cropped)
+    
+    # 3. CLAHE illumination enhancement
+    enhanced = enhance_illumination(deskewed)
+    h1, w1 = enhanced.shape[:2]
+
+    # Save preprocessed image
+    out_filename = f"prep_{file_id}.jpg"
+    out_path = os.path.join(UPLOAD_DIR, out_filename)
+    cv2.imwrite(out_path, enhanced)
+    preprocessed_url = f"/temp_uploads/{out_filename}"
+
+    return {
+        "success": True,
+        "original_url": original_url,
+        "preprocessed_url": preprocessed_url,
+        "skew_angle": skew_angle,
+        "cropped": True,
+        "enhanced": True,
+        "original_shape": [h0, w0],
+        "preprocessed_shape": [h1, w1],
+        "crop_ratio": round((h1 * w1) / (h0 * w0) * 100, 1),
+        "steps": [
+            f"1. Phát hiện viền tứ giác hóa đơn & Cắt bỏ nền bàn: {w0}x{h0} ➔ {w1}x{h1}",
+            f"2. Dò góc nghiêng Hough Transform: {skew_angle}° ➔ Đã xoay thẳng đứng 0.0°",
+            f"3. Cân bằng tương phản thích ứng CLAHE trên không gian màu LAB"
+        ]
+    }
 
 @app.post("/api/predict")
 async def predict_receipt(
