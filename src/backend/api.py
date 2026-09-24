@@ -554,6 +554,13 @@ async def predict_receipt(
         img_path = os.path.join(UPLOAD_DIR, save_filename)
         with open(img_path, "wb") as f_out:
             shutil.copyfileobj(file.file, f_out)
+        try:
+            from PIL import Image, ImageOps
+            with Image.open(img_path) as pil_img:
+                transposed = ImageOps.exif_transpose(pil_img)
+                transposed.save(img_path)
+        except Exception as e_exif:
+            print(f"Warning: EXIF transpose skipped: {e_exif}")
         image_url = f"/temp_uploads/{save_filename}"
     elif matched_sample:
         src_path = os.path.join(TEMPLATES_DIR, matched_sample["filename"])

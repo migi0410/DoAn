@@ -8,7 +8,7 @@ from PIL import Image
 from supabase import create_client
 
 # ================= CẤU HÌNH =================
-GEMINI_API_KEY = "AIzaSyCjEtuouy2no_Rnu73qUTyjxnlnweFiYl4"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 SUPABASE_URL = "https://gmefyvajylsqsyfpuahk.supabase.co"
 SUPABASE_KEY = "YOUR_SUPABASE_KEY"
 BUCKET_NAME = "raw_images"
