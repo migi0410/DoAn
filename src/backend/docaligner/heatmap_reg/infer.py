@@ -54,16 +54,22 @@ def postprocess(
         polygons = cb.Polygons.from_image(mask).drop_empty()
         if len(polygons) > 0:
             polygons = polygons[polygons.area == polygons.area.max()]
-        return polygons.centroid.flatten().tolist()
+            return polygons.centroid.flatten().tolist()
+        return []
 
     polygon = []
     for ii, pred in enumerate(preds[0]):
-        pred = cb.imresize(pred, size=imgs_size)
-        pred[pred < heatmap_threshold] = 0
-        pred = np.uint8(pred * 255)
-        pred = cb.imbinarize(pred)
-        point = _get_point_with_max_area(pred)
-        if len(point) == 2 and ii < 4:
+        pred_resized = cb.imresize(pred, size=imgs_size)
+        max_val = float(pred_resized.max())
+        thresh = min(heatmap_threshold, max(0.08, max_val * 0.45))
+
+        mask = (pred_resized >= thresh).astype(np.uint8) * 255
+        point = _get_point_with_max_area(mask)
+        if len(point) != 2:
+            y, x = np.unravel_index(np.argmax(pred_resized), pred_resized.shape)
+            point = [float(x), float(y)]
+
+        if ii < 4:
             polygon.append(point)
 
     return polygon
