@@ -556,17 +556,17 @@ def api_switch_adapter(target: str = Form(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-_DOCALIGNER = None
+_YOLO_CROPPER = None
 
-def get_docaligner():
-    global _DOCALIGNER
-    if _DOCALIGNER is None:
+def get_yolo_cropper():
+    global _YOLO_CROPPER
+    if _YOLO_CROPPER is None:
         try:
-            from backend.docaligner import DocAligner
-            _DOCALIGNER = DocAligner()
+            from backend.yolo_cropper import get_yolo_cropper as _init_yolo_cropper
+            _YOLO_CROPPER = _init_yolo_cropper()
         except Exception as e:
-            print(f"[DocAligner] Singleton init: {e}")
-    return _DOCALIGNER
+            print(f"[YOLO11s-Pose] Singleton init: {e}")
+    return _YOLO_CROPPER
 
 @app.post("/api/preprocess")
 async def api_preprocess_image(
@@ -574,10 +574,10 @@ async def api_preprocess_image(
     sample_id: Optional[str] = Form(None)
 ):
     """
-    OpenCV Document Preprocessing Pipeline:
-    1. Background cropping (4-point document contour detection)
-    2. Tilt angle detection (Hough line transform) and deskewing to 0.0°
-    3. Illumination enhancement (CLAHE in LAB color space)
+    Document Preprocessing Pipeline:
+    1. YOLO11s-Pose Keypoint Detection & Parallelogram Completion (4 corner points)
+    2. 4-point Perspective Transform (Deskewing to 0.0°)
+    3. Contrast Limited Adaptive Histogram Equalization (CLAHE in LAB color space)
     """
     file_id = str(uuid.uuid4())[:8]
     img = None
@@ -614,23 +614,16 @@ async def api_preprocess_image(
 
     h0, w0 = img.shape[:2]
     
-    # 1. Try DocAligner Deep Learning Corner Detection & Rectification
+    # 1. Try YOLO11s-Pose Deep Learning Corner Detection & Rectification
     try:
-        import time
-        from backend.document_processor import four_point_transform, enhance_illumination
-        aligner = get_docaligner()
-        if aligner is not None:
-            t_start = time.perf_counter()
-            pts = aligner(img)
-            latency_ms = round((time.perf_counter() - t_start) * 1000, 1)
-        if pts is not None and len(pts) == 4:
-            warped = four_point_transform(img, pts)
-            enhanced = enhance_illumination(warped)
-            dx = pts[1][0] - pts[0][0]
-            dy = pts[1][1] - pts[0][1]
-            skew_angle = round(float(np.degrees(np.arctan2(dy, dx))), 1)
-            corners_pts = [{"x": round(float(pt[0]/w0*100), 1), "y": round(float(pt[1]/h0*100), 1)} for pt in pts]
-            h1, w1 = enhanced.shape[:2]
+        cropper = get_yolo_cropper()
+        if cropper is not None:
+            proc_res = cropper.process(img)
+            enhanced = proc_res["enhanced"]
+            latency_ms = proc_res["latency_ms"]
+            skew_angle = proc_res["skew_angle"]
+            corners_pts = proc_res["corners"]
+            h1, w1 = proc_res["h_prep"], proc_res["w_prep"]
             out_filename = f"prep_{file_id}.jpg"
             out_path = os.path.join(UPLOAD_DIR, out_filename)
             cv2.imwrite(out_path, enhanced)
@@ -641,16 +634,16 @@ async def api_preprocess_image(
                 "skew_angle": skew_angle,
                 "corners": corners_pts,
                 "latency_ms": latency_ms,
-                "method": "DocAligner (FastViT-SA24 + BiFPN ONNX)",
+                "method": proc_res["method"],
                 "is_live_inference": True,
                 "steps": [
-                    f"1. AI DocAligner suy luận thời gian thực ({latency_ms} ms trên CPU ONNX): P1({corners_pts[0]['x']}%, {corners_pts[0]['y']}%), P2({corners_pts[1]['x']}%, {corners_pts[1]['y']}%), P3({corners_pts[2]['x']}%, {corners_pts[2]['y']}%), P4({corners_pts[3]['x']}%, {corners_pts[3]['y']}%)",
+                    f"1. AI YOLO11s-Pose suy luận thời gian thực ({latency_ms} ms trên {proc_res['device']}): P1({corners_pts[0]['x']}%, {corners_pts[0]['y']}%), P2({corners_pts[1]['x']}%, {corners_pts[1]['y']}%), P3({corners_pts[2]['x']}%, {corners_pts[2]['y']}%), P4({corners_pts[3]['x']}%, {corners_pts[3]['y']}%)",
                     f"2. Bẻ phẳng phối cảnh 4 góc (Perspective Transform): {w0}x{h0} ➔ {w1}x{h1}",
                     f"3. Cân bằng sáng cục bộ thích ứng CLAHE trên không gian màu LAB"
                 ]
             }
-    except Exception as e_da:
-        print(f"DocAligner fallback to OpenCV: {e_da}")
+    except Exception as e_yolo:
+        print(f"YOLO11s-Pose fallback to OpenCV: {e_yolo}")
     
     # Fallback to OpenCV Contour / Hough Deskew
     cropped = ImagePreprocessor.crop_document(img)

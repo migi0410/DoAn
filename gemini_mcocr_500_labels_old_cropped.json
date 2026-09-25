@@ -1,0 +1,6008 @@
+{
+  "mcocr_mcocr_public_145013ilier.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013ilier.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2222,
+      0.0694
+    ],
+    "top_right": [
+      0.7407,
+      0.1042
+    ],
+    "bottom_right": [
+      0.7037,
+      0.6806
+    ],
+    "bottom_left": [
+      0.1852,
+      0.6458
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013hewxu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013hewxu.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0972
+    ],
+    "top_right": [
+      0.8241,
+      0.0972
+    ],
+    "bottom_right": [
+      0.8241,
+      0.6667
+    ],
+    "bottom_left": [
+      0.1759,
+      0.6667
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014rrbnn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rrbnn.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.213,
+      0.05
+    ],
+    "top_right": [
+      0.787,
+      0.07
+    ],
+    "bottom_right": [
+      0.8,
+      0.97
+    ],
+    "bottom_left": [
+      0.2,
+      0.95
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013nsnnh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013nsnnh.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.23148,
+      0.0625
+    ],
+    "top_right": [
+      0.74074,
+      0.11979
+    ],
+    "bottom_right": [
+      0.76852,
+      0.38542
+    ],
+    "bottom_left": [
+      0.25926,
+      0.32812
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014nwfmm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014nwfmm.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.139,
+      0.069
+    ],
+    "top_right": [
+      0.676,
+      0.056
+    ],
+    "bottom_right": [
+      0.685,
+      0.688
+    ],
+    "bottom_left": [
+      0.148,
+      0.701
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013cqpwh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013cqpwh.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1147,
+      0.1313
+    ],
+    "top_right": [
+      0.9481,
+      0.1268
+    ],
+    "bottom_right": [
+      0.9541,
+      0.7701
+    ],
+    "bottom_left": [
+      0.1208,
+      0.7745
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014jpzwu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014jpzwu.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1237,
+      0.0537
+    ],
+    "top_right": [
+      0.7878,
+      0.044
+    ],
+    "bottom_right": [
+      0.7943,
+      0.9692
+    ],
+    "bottom_left": [
+      0.1107,
+      0.9766
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013nwksx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013nwksx.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.185,
+      0.13
+    ],
+    "top_right": [
+      0.787,
+      0.13
+    ],
+    "bottom_right": [
+      0.787,
+      0.375
+    ],
+    "bottom_left": [
+      0.167,
+      0.375
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014lqgzd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014lqgzd.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.15625,
+      0.05126953125
+    ],
+    "top_right": [
+      0.8333333333333334,
+      0.05126953125
+    ],
+    "bottom_right": [
+      0.8463541666666666,
+      0.93017578125
+    ],
+    "bottom_left": [
+      0.16927083333333334,
+      0.93017578125
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014diuoj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014diuoj.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.0459,
+      0.0275
+    ],
+    "top_right": [
+      0.9541,
+      0.0225
+    ],
+    "bottom_right": [
+      0.9286,
+      0.16
+    ],
+    "bottom_left": [
+      0.0663,
+      0.165
+    ],
+    "confidence": 0.9
+  },
+  "mcocr_mcocr_public_145013kaedt.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013kaedt.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.22156,
+      0.09672
+    ],
+    "top_right": [
+      0.7705,
+      0.10169
+    ],
+    "bottom_right": [
+      0.7705,
+      0.70932
+    ],
+    "bottom_left": [
+      0.22156,
+      0.70436
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013iijxa.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013iijxa.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.278,
+      0.057
+    ],
+    "top_right": [
+      0.731,
+      0.057
+    ],
+    "bottom_right": [
+      0.731,
+      0.406
+    ],
+    "bottom_left": [
+      0.278,
+      0.406
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013bybgv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013bybgv.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1574,
+      0.125
+    ],
+    "top_right": [
+      0.8379,
+      0.1198
+    ],
+    "bottom_right": [
+      0.8379,
+      0.4167
+    ],
+    "bottom_left": [
+      0.1574,
+      0.4219
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014emqom.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014emqom.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.09259,
+      0.05556
+    ],
+    "top_right": [
+      0.90741,
+      0.06944
+    ],
+    "bottom_right": [
+      0.88889,
+      0.61111
+    ],
+    "bottom_left": [
+      0.07407,
+      0.59722
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014oaduc.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014oaduc.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1367,
+      0.1123
+    ],
+    "top_right": [
+      0.8594,
+      0.1123
+    ],
+    "bottom_right": [
+      0.8594,
+      0.415
+    ],
+    "bottom_left": [
+      0.1367,
+      0.415
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014kyxew.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kyxew.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1979,
+      0.1563
+    ],
+    "top_right": [
+      0.7813,
+      0.1328
+    ],
+    "bottom_right": [
+      0.8125,
+      0.6797
+    ],
+    "bottom_left": [
+      0.1771,
+      0.7031
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013aaprl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013aaprl.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0694
+    ],
+    "top_right": [
+      0.8241,
+      0.0694
+    ],
+    "bottom_right": [
+      0.8241,
+      0.6458
+    ],
+    "bottom_left": [
+      0.1759,
+      0.6458
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014msalk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014msalk.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1759,
+      0.0365
+    ],
+    "top_right": [
+      0.8148,
+      0.0365
+    ],
+    "bottom_right": [
+      0.8148,
+      0.5156
+    ],
+    "bottom_left": [
+      0.1759,
+      0.5156
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014kplqb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kplqb.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1574,
+      0.0599
+    ],
+    "top_right": [
+      0.8426,
+      0.0573
+    ],
+    "bottom_right": [
+      0.8333,
+      0.2917
+    ],
+    "bottom_left": [
+      0.1667,
+      0.2943
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014xvwfa.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xvwfa.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.25,
+      0.3125
+    ],
+    "top_right": [
+      0.8125,
+      0.3125
+    ],
+    "bottom_right": [
+      0.8125,
+      0.6875
+    ],
+    "bottom_left": [
+      0.25,
+      0.6875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014rwzyq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rwzyq.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.106,
+      0.084
+    ],
+    "top_right": [
+      0.883,
+      0.072
+    ],
+    "bottom_right": [
+      0.894,
+      0.466
+    ],
+    "bottom_left": [
+      0.1,
+      0.478
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014pvsrm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014pvsrm.jpg",
+    "width": 730,
+    "height": 1440,
+    "top_left": [
+      0.139,
+      0.083
+    ],
+    "top_right": [
+      0.884,
+      0.069
+    ],
+    "bottom_right": [
+      0.866,
+      0.628
+    ],
+    "bottom_left": [
+      0.125,
+      0.642
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014pyhgf.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014pyhgf.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.08333,
+      0.04688
+    ],
+    "top_right": [
+      0.91667,
+      0.04427
+    ],
+    "bottom_right": [
+      0.91667,
+      0.96094
+    ],
+    "bottom_left": [
+      0.08333,
+      0.96354
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014vdyar.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014vdyar.jpg",
+    "width": 352,
+    "height": 480,
+    "top_left": [
+      0.093,
+      0.052
+    ],
+    "top_right": [
+      0.907,
+      0.063
+    ],
+    "bottom_right": [
+      0.889,
+      0.938
+    ],
+    "bottom_left": [
+      0.074,
+      0.927
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014kuxpu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kuxpu.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.1296,
+      0.0521
+    ],
+    "top_right": [
+      0.8704,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8704,
+      0.4115
+    ],
+    "bottom_left": [
+      0.1296,
+      0.4115
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013bvmvl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013bvmvl.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.259,
+      0.059
+    ],
+    "top_right": [
+      0.736,
+      0.066
+    ],
+    "bottom_right": [
+      0.727,
+      0.67
+    ],
+    "bottom_left": [
+      0.264,
+      0.663
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145013vxrqg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013vxrqg.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0573
+    ],
+    "top_right": [
+      0.8241,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8241,
+      0.3854
+    ],
+    "bottom_left": [
+      0.1759,
+      0.3906
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014egqdh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014egqdh.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1587,
+      0.0223
+    ],
+    "top_right": [
+      0.8433,
+      0.0223
+    ],
+    "bottom_right": [
+      0.8433,
+      0.7316
+    ],
+    "bottom_left": [
+      0.1587,
+      0.7316
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013dcqda.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013dcqda.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1528,
+      0.1354
+    ],
+    "top_right": [
+      0.838,
+      0.1215
+    ],
+    "bottom_right": [
+      0.8472,
+      0.7604
+    ],
+    "bottom_left": [
+      0.1435,
+      0.7743
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145014avuac.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014avuac.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.16666666666666666,
+      0.05555555555555555
+    ],
+    "top_right": [
+      0.8333333333333334,
+      0.05555555555555555
+    ],
+    "bottom_right": [
+      0.8333333333333334,
+      0.6319444444444444
+    ],
+    "bottom_left": [
+      0.16666666666666666,
+      0.6319444444444444
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014uqhki.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014uqhki.jpg",
+    "width": 714,
+    "height": 960,
+    "top_left": [
+      0.177083,
+      0.0703125
+    ],
+    "top_right": [
+      0.921875,
+      0.0703125
+    ],
+    "bottom_right": [
+      0.921875,
+      0.765625
+    ],
+    "bottom_left": [
+      0.177083,
+      0.765625
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014owowx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014owowx.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0926,
+      0.0903
+    ],
+    "top_right": [
+      0.9074,
+      0.0903
+    ],
+    "bottom_right": [
+      0.9074,
+      0.6042
+    ],
+    "bottom_left": [
+      0.0926,
+      0.6042
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145014cpzwm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014cpzwm.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.18055,
+      0.0625
+    ],
+    "top_right": [
+      0.81944,
+      0.05859
+    ],
+    "bottom_right": [
+      0.81944,
+      0.48828
+    ],
+    "bottom_left": [
+      0.18055,
+      0.49218
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145013tnlbk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013tnlbk.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.09259,
+      0.04948
+    ],
+    "top_right": [
+      0.90741,
+      0.05469
+    ],
+    "bottom_right": [
+      0.90741,
+      0.4349
+    ],
+    "bottom_left": [
+      0.09259,
+      0.42969
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014gylsk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014gylsk.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.052,
+      0.043
+    ],
+    "top_right": [
+      0.938,
+      0.039
+    ],
+    "bottom_right": [
+      0.948,
+      0.293
+    ],
+    "bottom_left": [
+      0.063,
+      0.297
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013mwcaz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013mwcaz.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.088,
+      0.049
+    ],
+    "top_right": [
+      0.903,
+      0.049
+    ],
+    "bottom_right": [
+      0.903,
+      0.939
+    ],
+    "bottom_left": [
+      0.088,
+      0.939
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ewdtv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ewdtv.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.2037,
+      0.0417
+    ],
+    "top_right": [
+      0.7407,
+      0.0521
+    ],
+    "bottom_right": [
+      0.7037,
+      0.3594
+    ],
+    "bottom_left": [
+      0.1759,
+      0.349
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014smasw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014smasw.jpg",
+    "width": 960,
+    "height": 1280,
+    "top_left": [
+      0.167,
+      0.052
+    ],
+    "top_right": [
+      0.833,
+      0.094
+    ],
+    "bottom_right": [
+      0.741,
+      0.443
+    ],
+    "bottom_left": [
+      0.093,
+      0.401
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013idjei.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013idjei.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.052
+    ],
+    "top_right": [
+      0.907,
+      0.052
+    ],
+    "bottom_right": [
+      0.907,
+      0.323
+    ],
+    "bottom_left": [
+      0.093,
+      0.323
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014fegvz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fegvz.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.088,
+      0.029
+    ],
+    "top_right": [
+      0.912,
+      0.026
+    ],
+    "bottom_right": [
+      0.912,
+      0.409
+    ],
+    "bottom_left": [
+      0.088,
+      0.411
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ryyyw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ryyyw.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.3056,
+      0.1198
+    ],
+    "top_right": [
+      0.6944,
+      0.1198
+    ],
+    "bottom_right": [
+      0.6944,
+      0.3542
+    ],
+    "bottom_left": [
+      0.3056,
+      0.3542
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014bqwna.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bqwna.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.056
+    ],
+    "top_right": [
+      0.907,
+      0.056
+    ],
+    "bottom_right": [
+      0.907,
+      0.472
+    ],
+    "bottom_left": [
+      0.093,
+      0.472
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013dsaix.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013dsaix.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.175,
+      0.049
+    ],
+    "top_right": [
+      0.805,
+      0.049
+    ],
+    "bottom_right": [
+      0.785,
+      0.716
+    ],
+    "bottom_left": [
+      0.165,
+      0.716
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013iulwh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013iulwh.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1918,
+      0.0248
+    ],
+    "top_right": [
+      0.8003,
+      0.0248
+    ],
+    "bottom_right": [
+      0.8069,
+      0.9548
+    ],
+    "bottom_left": [
+      0.1852,
+      0.9548
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ypjsx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ypjsx.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2,
+      0.195
+    ],
+    "top_right": [
+      0.8,
+      0.195
+    ],
+    "bottom_right": [
+      0.8,
+      0.675
+    ],
+    "bottom_left": [
+      0.2,
+      0.675
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014mdljs.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014mdljs.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2685,
+      0.2708
+    ],
+    "top_right": [
+      0.7963,
+      0.2639
+    ],
+    "bottom_right": [
+      0.8056,
+      0.6042
+    ],
+    "bottom_left": [
+      0.2593,
+      0.6111
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ghnst.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ghnst.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0722,
+      0.0406
+    ],
+    "top_right": [
+      0.9278,
+      0.0427
+    ],
+    "bottom_right": [
+      0.9241,
+      0.4844
+    ],
+    "bottom_left": [
+      0.0759,
+      0.4823
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013kwwha.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013kwwha.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.104,
+      0.009
+    ],
+    "top_right": [
+      0.989,
+      0.009
+    ],
+    "bottom_right": [
+      0.911,
+      0.967
+    ],
+    "bottom_left": [
+      0.195,
+      0.967
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013tifph.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013tifph.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1984,
+      0.0372
+    ],
+    "top_right": [
+      0.9259,
+      0.0248
+    ],
+    "bottom_right": [
+      0.9591,
+      0.9673
+    ],
+    "bottom_left": [
+      0.2149,
+      0.9796
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014enllh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014enllh.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.2777,
+      0.0442
+    ],
+    "top_right": [
+      0.7361,
+      0.0468
+    ],
+    "bottom_right": [
+      0.7314,
+      0.3723
+    ],
+    "bottom_left": [
+      0.2731,
+      0.3697
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014zcoyr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014zcoyr.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.157,
+      0.191
+    ],
+    "top_right": [
+      0.833,
+      0.167
+    ],
+    "bottom_right": [
+      0.806,
+      0.681
+    ],
+    "bottom_left": [
+      0.167,
+      0.701
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145013wwkrv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013wwkrv.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.0926,
+      0.1458
+    ],
+    "top_right": [
+      0.9074,
+      0.1458
+    ],
+    "bottom_right": [
+      0.9074,
+      0.3594
+    ],
+    "bottom_left": [
+      0.0926,
+      0.3594
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013uwdpy.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013uwdpy.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1322,
+      0.0744
+    ],
+    "top_right": [
+      0.86,
+      0.0744
+    ],
+    "bottom_right": [
+      0.86,
+      0.9425
+    ],
+    "bottom_left": [
+      0.1322,
+      0.9425
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145014yaivb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014yaivb.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.069
+    ],
+    "top_right": [
+      0.907,
+      0.069
+    ],
+    "bottom_right": [
+      0.907,
+      0.931
+    ],
+    "bottom_left": [
+      0.093,
+      0.931
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014cnphh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014cnphh.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.1458,
+      0.2593
+    ],
+    "top_right": [
+      0.5365,
+      0.1667
+    ],
+    "bottom_right": [
+      0.849,
+      0.6667
+    ],
+    "bottom_left": [
+      0.4583,
+      0.7593
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145014xxiyx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xxiyx.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.0651,
+      0.0635
+    ],
+    "top_right": [
+      0.9309,
+      0.0488
+    ],
+    "bottom_right": [
+      0.944,
+      0.4883
+    ],
+    "bottom_left": [
+      0.0781,
+      0.5029
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014lbzhz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014lbzhz.jpg",
+    "width": 1024,
+    "height": 1820,
+    "top_left": [
+      0.1296,
+      0.0677
+    ],
+    "top_right": [
+      0.8703,
+      0.0677
+    ],
+    "bottom_right": [
+      0.8703,
+      0.3671
+    ],
+    "bottom_left": [
+      0.1296,
+      0.3671
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014qbdep.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014qbdep.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.176,
+      0.047
+    ],
+    "top_right": [
+      0.833,
+      0.047
+    ],
+    "bottom_right": [
+      0.833,
+      0.51
+    ],
+    "bottom_left": [
+      0.157,
+      0.521
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014khqqq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014khqqq.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1984,
+      0.0496
+    ],
+    "top_right": [
+      0.7937,
+      0.062
+    ],
+    "bottom_right": [
+      0.8102,
+      0.744
+    ],
+    "bottom_left": [
+      0.1819,
+      0.7316
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014miikd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014miikd.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.08,
+      0.05
+    ],
+    "top_right": [
+      0.92,
+      0.05
+    ],
+    "bottom_right": [
+      0.92,
+      0.95
+    ],
+    "bottom_left": [
+      0.08,
+      0.95
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013bjvsn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013bjvsn.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.16534391534391535,
+      0.22321428571428573
+    ],
+    "top_right": [
+      0.8267195767195767,
+      0.22321428571428573
+    ],
+    "bottom_right": [
+      0.8267195767195767,
+      0.7688492063492064
+    ],
+    "bottom_left": [
+      0.16534391534391535,
+      0.7688492063492064
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014cmghn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014cmghn.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.08796,
+      0.13281
+    ],
+    "top_right": [
+      0.91204,
+      0.10677
+    ],
+    "bottom_right": [
+      0.9213,
+      0.3099
+    ],
+    "bottom_left": [
+      0.09722,
+      0.33594
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013bajyy.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013bajyy.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1574,
+      0.0521
+    ],
+    "top_right": [
+      0.8519,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8519,
+      0.4115
+    ],
+    "bottom_left": [
+      0.1574,
+      0.4115
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014bxkli.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bxkli.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.2685,
+      0.099
+    ],
+    "top_right": [
+      0.6481,
+      0.0885
+    ],
+    "bottom_right": [
+      0.6667,
+      0.5104
+    ],
+    "bottom_left": [
+      0.2963,
+      0.5208
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014bokrq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bokrq.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.199,
+      0.066
+    ],
+    "top_right": [
+      0.745,
+      0.066
+    ],
+    "bottom_right": [
+      0.745,
+      0.538
+    ],
+    "bottom_left": [
+      0.199,
+      0.538
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013moepq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013moepq.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.18055555555555555,
+      0.21875
+    ],
+    "top_right": [
+      0.8194444444444444,
+      0.22569444444444445
+    ],
+    "bottom_right": [
+      0.8194444444444444,
+      0.5868055555555556
+    ],
+    "bottom_left": [
+      0.18055555555555555,
+      0.5798611111111112
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013egelf.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013egelf.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1759,
+      0.0521
+    ],
+    "top_right": [
+      0.8241,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8241,
+      0.4167
+    ],
+    "bottom_left": [
+      0.1759,
+      0.4167
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014mcvls.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014mcvls.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.20833,
+      0.04948
+    ],
+    "top_right": [
+      0.80093,
+      0.04948
+    ],
+    "bottom_right": [
+      0.80093,
+      0.4974
+    ],
+    "bottom_left": [
+      0.20833,
+      0.4974
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145014tpwuk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014tpwuk.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.1574,
+      0.1944
+    ],
+    "top_right": [
+      0.8333,
+      0.125
+    ],
+    "bottom_right": [
+      0.7407,
+      0.8333
+    ],
+    "bottom_left": [
+      0.0926,
+      0.9028
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014vhiaa.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014vhiaa.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.078
+    ],
+    "top_right": [
+      0.907,
+      0.078
+    ],
+    "bottom_right": [
+      0.907,
+      0.411
+    ],
+    "bottom_left": [
+      0.093,
+      0.411
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014uagtj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014uagtj.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.162,
+      0.248
+    ],
+    "top_right": [
+      0.827,
+      0.124
+    ],
+    "bottom_right": [
+      0.959,
+      0.744
+    ],
+    "bottom_left": [
+      0.298,
+      0.868
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014hrvjc.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014hrvjc.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1497,
+      0.0464
+    ],
+    "top_right": [
+      0.8398,
+      0.0415
+    ],
+    "bottom_right": [
+      0.8398,
+      0.9521
+    ],
+    "bottom_left": [
+      0.1497,
+      0.957
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013hvjbj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013hvjbj.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.2407,
+      0.0885
+    ],
+    "top_right": [
+      0.7593,
+      0.0885
+    ],
+    "bottom_right": [
+      0.7593,
+      0.4375
+    ],
+    "bottom_left": [
+      0.2407,
+      0.4375
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fiydd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fiydd.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.052
+    ],
+    "top_right": [
+      0.907,
+      0.052
+    ],
+    "bottom_right": [
+      0.907,
+      0.401
+    ],
+    "bottom_left": [
+      0.093,
+      0.401
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014enxgn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014enxgn.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.09259,
+      0.02083
+    ],
+    "top_right": [
+      0.90741,
+      0.02083
+    ],
+    "bottom_right": [
+      0.90741,
+      0.41667
+    ],
+    "bottom_left": [
+      0.09259,
+      0.41667
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014vpjby.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014vpjby.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.35185,
+      0.19791
+    ],
+    "top_right": [
+      0.91203,
+      0.1875
+    ],
+    "bottom_right": [
+      0.875,
+      0.66666
+    ],
+    "bottom_left": [
+      0.31944,
+      0.67708
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014xtcll.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xtcll.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.181,
+      0.102
+    ],
+    "top_right": [
+      0.833,
+      0.086
+    ],
+    "bottom_right": [
+      0.833,
+      0.383
+    ],
+    "bottom_left": [
+      0.181,
+      0.398
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014yiovk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014yiovk.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1759,
+      0.0469
+    ],
+    "top_right": [
+      0.8333,
+      0.0417
+    ],
+    "bottom_right": [
+      0.8333,
+      0.9688
+    ],
+    "bottom_left": [
+      0.1759,
+      0.974
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013adyee.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013adyee.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2037,
+      0.2014
+    ],
+    "top_right": [
+      0.7407,
+      0.1875
+    ],
+    "bottom_right": [
+      0.75,
+      0.5694
+    ],
+    "bottom_left": [
+      0.213,
+      0.5833
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014umhqi.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014umhqi.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.259,
+      0.0
+    ],
+    "top_right": [
+      0.991,
+      0.0
+    ],
+    "bottom_right": [
+      0.991,
+      0.995
+    ],
+    "bottom_left": [
+      0.259,
+      0.995
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014dypib.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014dypib.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.074,
+      0.033
+    ],
+    "top_right": [
+      0.926,
+      0.033
+    ],
+    "bottom_right": [
+      0.926,
+      0.258
+    ],
+    "bottom_left": [
+      0.074,
+      0.258
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014ztmap.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ztmap.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1296,
+      0.0417
+    ],
+    "top_right": [
+      0.8704,
+      0.0417
+    ],
+    "bottom_right": [
+      0.8704,
+      0.9583
+    ],
+    "bottom_left": [
+      0.1296,
+      0.9583
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014vkdhy.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014vkdhy.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.132,
+      0.05
+    ],
+    "top_right": [
+      0.861,
+      0.045
+    ],
+    "bottom_right": [
+      0.861,
+      0.481
+    ],
+    "bottom_left": [
+      0.132,
+      0.486
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014evqra.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014evqra.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1667,
+      0.0443
+    ],
+    "top_right": [
+      0.8287,
+      0.0417
+    ],
+    "bottom_right": [
+      0.8241,
+      0.4167
+    ],
+    "bottom_left": [
+      0.162,
+      0.4193
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014yphuv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014yphuv.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.13,
+      0.047
+    ],
+    "top_right": [
+      0.88,
+      0.073
+    ],
+    "bottom_right": [
+      0.833,
+      0.458
+    ],
+    "bottom_left": [
+      0.083,
+      0.432
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013scuxn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013scuxn.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.2381,
+      0.13394
+    ],
+    "top_right": [
+      0.74074,
+      0.12897
+    ],
+    "bottom_right": [
+      0.72751,
+      0.48115
+    ],
+    "bottom_left": [
+      0.25132,
+      0.48611
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014jqtcw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014jqtcw.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1667,
+      0.0694
+    ],
+    "top_right": [
+      0.8241,
+      0.0833
+    ],
+    "bottom_right": [
+      0.8056,
+      0.6806
+    ],
+    "bottom_left": [
+      0.1852,
+      0.6667
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014qikqz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014qikqz.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2579365079365079,
+      0.13293650793650794
+    ],
+    "top_right": [
+      0.7374338624338624,
+      0.1304563492063492
+    ],
+    "bottom_right": [
+      0.7374338624338624,
+      0.47271825396825395
+    ],
+    "bottom_left": [
+      0.2579365079365079,
+      0.4751984126984127
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014fgfzb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fgfzb.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.069,
+      0.052
+    ],
+    "top_right": [
+      0.926,
+      0.049
+    ],
+    "bottom_right": [
+      0.926,
+      0.409
+    ],
+    "bottom_left": [
+      0.069,
+      0.411
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014hwaqw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014hwaqw.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.162,
+      0.0495
+    ],
+    "top_right": [
+      0.838,
+      0.0599
+    ],
+    "bottom_right": [
+      0.8194,
+      0.4297
+    ],
+    "bottom_left": [
+      0.1713,
+      0.4141
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fvjus.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fvjus.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.1296,
+      0.0521
+    ],
+    "top_right": [
+      0.8704,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8704,
+      0.4427
+    ],
+    "bottom_left": [
+      0.1296,
+      0.4427
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014fxqlw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fxqlw.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.1171875,
+      0.06227106227106227
+    ],
+    "top_right": [
+      0.791015625,
+      0.05860805860805861
+    ],
+    "bottom_right": [
+      0.7958984375,
+      0.6446886446886447
+    ],
+    "bottom_left": [
+      0.1123046875,
+      0.6483516483516484
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014uqaia.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014uqaia.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.09259,
+      0.05556
+    ],
+    "top_right": [
+      0.89815,
+      0.05903
+    ],
+    "bottom_right": [
+      0.89815,
+      0.98264
+    ],
+    "bottom_left": [
+      0.09259,
+      0.98611
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014xxqwv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xxqwv.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.13425925925925927,
+      0.12239583333333333
+    ],
+    "top_right": [
+      0.8657407407407407,
+      0.11979166666666667
+    ],
+    "bottom_right": [
+      0.8657407407407407,
+      0.3359375
+    ],
+    "bottom_left": [
+      0.13425925925925927,
+      0.3385416666666667
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013tafca.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013tafca.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1172,
+      0.0879
+    ],
+    "top_right": [
+      0.8789,
+      0.0879
+    ],
+    "bottom_right": [
+      0.8789,
+      0.9033
+    ],
+    "bottom_left": [
+      0.1172,
+      0.9033
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145013guoun.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013guoun.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.08333,
+      0.0625
+    ],
+    "top_right": [
+      0.91667,
+      0.0625
+    ],
+    "bottom_right": [
+      0.91667,
+      0.6875
+    ],
+    "bottom_left": [
+      0.08333,
+      0.6875
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014kvqte.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kvqte.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.24414,
+      0.0708
+    ],
+    "top_right": [
+      0.77148,
+      0.06836
+    ],
+    "bottom_right": [
+      0.77474,
+      0.39307
+    ],
+    "bottom_left": [
+      0.24089,
+      0.39551
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145013kokcl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013kokcl.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.04,
+      0.03
+    ],
+    "top_right": [
+      0.959,
+      0.035
+    ],
+    "bottom_right": [
+      0.959,
+      0.977
+    ],
+    "bottom_left": [
+      0.04,
+      0.972
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ycgki.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ycgki.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1574,
+      0.0694
+    ],
+    "top_right": [
+      0.8333,
+      0.0625
+    ],
+    "bottom_right": [
+      0.8426,
+      0.6319
+    ],
+    "bottom_left": [
+      0.1667,
+      0.6389
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013kwckq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013kwckq.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.139,
+      0.078
+    ],
+    "top_right": [
+      0.88,
+      0.078
+    ],
+    "bottom_right": [
+      0.88,
+      0.781
+    ],
+    "bottom_left": [
+      0.139,
+      0.781
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013tvyce.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013tvyce.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.187,
+      0.32
+    ],
+    "top_right": [
+      0.92,
+      0.26
+    ],
+    "bottom_right": [
+      0.853,
+      0.7
+    ],
+    "bottom_left": [
+      0.133,
+      0.76
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013iyqnr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013iyqnr.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.296,
+      0.083
+    ],
+    "top_right": [
+      0.731,
+      0.094
+    ],
+    "bottom_right": [
+      0.704,
+      0.406
+    ],
+    "bottom_left": [
+      0.269,
+      0.396
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014wowmj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014wowmj.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1574,
+      0.0468
+    ],
+    "top_right": [
+      0.8333,
+      0.0468
+    ],
+    "bottom_right": [
+      0.8333,
+      0.427
+    ],
+    "bottom_left": [
+      0.1574,
+      0.427
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013dtobm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013dtobm.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0659
+    ],
+    "top_right": [
+      0.7963,
+      0.0972
+    ],
+    "bottom_right": [
+      0.75,
+      0.9063
+    ],
+    "bottom_left": [
+      0.1343,
+      0.8715
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014pstow.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014pstow.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.390625,
+      0.1611328125
+    ],
+    "top_right": [
+      0.703125,
+      0.1611328125
+    ],
+    "bottom_right": [
+      0.703125,
+      0.341796875
+    ],
+    "bottom_left": [
+      0.390625,
+      0.341796875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014kbcho.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kbcho.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.0787,
+      0.0859
+    ],
+    "top_right": [
+      0.9213,
+      0.0859
+    ],
+    "bottom_right": [
+      0.9213,
+      0.388
+    ],
+    "bottom_left": [
+      0.0787,
+      0.388
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013sbulh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013sbulh.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.119,
+      0.055
+    ],
+    "top_right": [
+      0.926,
+      0.055
+    ],
+    "bottom_right": [
+      0.926,
+      0.982
+    ],
+    "bottom_left": [
+      0.119,
+      0.982
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014kdvhb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kdvhb.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1759,
+      0.0469
+    ],
+    "top_right": [
+      0.7407,
+      0.0495
+    ],
+    "bottom_right": [
+      0.7454,
+      0.4089
+    ],
+    "bottom_left": [
+      0.1806,
+      0.40625
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014eilwc.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014eilwc.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.259,
+      0.047
+    ],
+    "top_right": [
+      0.741,
+      0.047
+    ],
+    "bottom_right": [
+      0.722,
+      0.521
+    ],
+    "bottom_left": [
+      0.269,
+      0.521
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013crgek.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013crgek.jpg",
+    "width": 1024,
+    "height": 1024,
+    "top_left": [
+      0.1302,
+      0.0049
+    ],
+    "top_right": [
+      0.8659,
+      0.0049
+    ],
+    "bottom_right": [
+      0.8659,
+      0.9912
+    ],
+    "bottom_left": [
+      0.1302,
+      0.9912
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014gcycl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014gcycl.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.13227513227513227,
+      0.06944444444444445
+    ],
+    "top_right": [
+      0.860978835978836,
+      0.0496031746031746
+    ],
+    "bottom_right": [
+      0.860978835978836,
+      0.9821428571428571
+    ],
+    "bottom_left": [
+      0.11904761904761904,
+      0.987093253968254
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014kogop.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kogop.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.15104166666666666,
+      0.06640625
+    ],
+    "top_right": [
+      0.8645833333333334,
+      0.09375
+    ],
+    "bottom_right": [
+      0.8385416666666666,
+      0.90234375
+    ],
+    "bottom_left": [
+      0.125,
+      0.86328125
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014xmngo.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xmngo.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.126,
+      0.005
+    ],
+    "top_right": [
+      0.86,
+      0.005
+    ],
+    "bottom_right": [
+      0.86,
+      0.496
+    ],
+    "bottom_left": [
+      0.126,
+      0.496
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014shwyh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014shwyh.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.2778,
+      0.125
+    ],
+    "top_right": [
+      0.7037,
+      0.125
+    ],
+    "bottom_right": [
+      0.7037,
+      0.6042
+    ],
+    "bottom_left": [
+      0.2778,
+      0.6042
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014blxif.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014blxif.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0182
+    ],
+    "top_right": [
+      0.9167,
+      0.0234
+    ],
+    "bottom_right": [
+      0.9167,
+      0.401
+    ],
+    "bottom_left": [
+      0.1759,
+      0.3958
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013ogvmp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013ogvmp.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.1583,
+      0.0594
+    ],
+    "top_right": [
+      0.8375,
+      0.0594
+    ],
+    "bottom_right": [
+      0.8375,
+      0.5156
+    ],
+    "bottom_left": [
+      0.1583,
+      0.5031
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014vitnu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014vitnu.jpg",
+    "width": 960,
+    "height": 1280,
+    "top_left": [
+      0.151,
+      0.1055
+    ],
+    "top_right": [
+      0.8438,
+      0.1016
+    ],
+    "bottom_right": [
+      0.8438,
+      0.6641
+    ],
+    "bottom_left": [
+      0.151,
+      0.668
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014xpucl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xpucl.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.15625,
+      0.048828125
+    ],
+    "top_right": [
+      0.8463541666666666,
+      0.048828125
+    ],
+    "bottom_right": [
+      0.8463541666666666,
+      0.9521484375
+    ],
+    "bottom_left": [
+      0.15625,
+      0.9521484375
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013qxxxo.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013qxxxo.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.162,
+      0.132
+    ],
+    "top_right": [
+      0.838,
+      0.122
+    ],
+    "bottom_right": [
+      0.838,
+      0.684
+    ],
+    "bottom_left": [
+      0.162,
+      0.694
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014jfncf.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014jfncf.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.09259,
+      0.0625
+    ],
+    "top_right": [
+      0.9074,
+      0.05729
+    ],
+    "bottom_right": [
+      0.9074,
+      0.276
+    ],
+    "bottom_left": [
+      0.09259,
+      0.28125
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014kbzqa.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014kbzqa.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1296,
+      0.0729
+    ],
+    "top_right": [
+      0.8704,
+      0.0729
+    ],
+    "bottom_right": [
+      0.8704,
+      0.4167
+    ],
+    "bottom_left": [
+      0.1296,
+      0.4167
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014rdhuo.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rdhuo.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.175,
+      0.055
+    ],
+    "top_right": [
+      0.825,
+      0.055
+    ],
+    "bottom_right": [
+      0.825,
+      0.945
+    ],
+    "bottom_left": [
+      0.175,
+      0.945
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013zguhy.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013zguhy.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.3056,
+      0.1094
+    ],
+    "top_right": [
+      0.6898,
+      0.1094
+    ],
+    "bottom_right": [
+      0.6991,
+      0.3516
+    ],
+    "bottom_left": [
+      0.2963,
+      0.3516
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014mnwrz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014mnwrz.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1432,
+      0.0005
+    ],
+    "top_right": [
+      0.651,
+      0.0005
+    ],
+    "bottom_right": [
+      0.651,
+      0.4883
+    ],
+    "bottom_left": [
+      0.1432,
+      0.4883
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014nykks.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014nykks.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.066
+    ],
+    "top_right": [
+      0.838,
+      0.066
+    ],
+    "bottom_right": [
+      0.838,
+      0.691
+    ],
+    "bottom_left": [
+      0.1759,
+      0.691
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014ubcjg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ubcjg.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.243,
+      0.0298
+    ],
+    "top_right": [
+      0.7489,
+      0.0463
+    ],
+    "bottom_right": [
+      0.7614,
+      0.9656
+    ],
+    "bottom_left": [
+      0.2554,
+      0.9491
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013ckwpd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013ckwpd.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.23611111111,
+      0.1015625
+    ],
+    "top_right": [
+      0.79166666666,
+      0.1015625
+    ],
+    "bottom_right": [
+      0.79166666666,
+      0.609375
+    ],
+    "bottom_left": [
+      0.23611111111,
+      0.609375
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ltwth.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ltwth.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1111,
+      0.0833
+    ],
+    "top_right": [
+      0.8796,
+      0.0694
+    ],
+    "bottom_right": [
+      0.8333,
+      0.625
+    ],
+    "bottom_left": [
+      0.0926,
+      0.6389
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014phbcu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014phbcu.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.2407,
+      0.0
+    ],
+    "top_right": [
+      0.7407,
+      0.0
+    ],
+    "bottom_right": [
+      0.7269,
+      0.5026
+    ],
+    "bottom_left": [
+      0.2731,
+      0.5026
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014rvwat.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rvwat.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.0625
+    ],
+    "top_right": [
+      0.815,
+      0.0625
+    ],
+    "bottom_right": [
+      0.815,
+      0.6875
+    ],
+    "bottom_left": [
+      0.185,
+      0.6875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013wgrej.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013wgrej.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.24,
+      0.19
+    ],
+    "top_right": [
+      0.8133,
+      0.18
+    ],
+    "bottom_right": [
+      0.7867,
+      0.65
+    ],
+    "bottom_left": [
+      0.2267,
+      0.67
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014fltno.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fltno.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1302,
+      0.0488
+    ],
+    "top_right": [
+      0.8789,
+      0.0488
+    ],
+    "bottom_right": [
+      0.8789,
+      0.9521
+    ],
+    "bottom_left": [
+      0.1302,
+      0.9521
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014voijl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014voijl.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.153,
+      0.078
+    ],
+    "top_right": [
+      0.847,
+      0.078
+    ],
+    "bottom_right": [
+      0.847,
+      0.602
+    ],
+    "bottom_left": [
+      0.153,
+      0.602
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013fskld.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013fskld.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.195,
+      0.0422
+    ],
+    "top_right": [
+      0.83,
+      0.0471
+    ],
+    "bottom_right": [
+      0.7969,
+      0.9459
+    ],
+    "bottom_left": [
+      0.1686,
+      0.94
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ancat.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ancat.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.1167,
+      0.0625
+    ],
+    "top_right": [
+      0.85,
+      0.05625
+    ],
+    "bottom_right": [
+      0.85,
+      0.50625
+    ],
+    "bottom_left": [
+      0.1167,
+      0.5125
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145013ddcph.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013ddcph.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0728,
+      0.0496
+    ],
+    "top_right": [
+      0.9325,
+      0.0496
+    ],
+    "bottom_right": [
+      0.9325,
+      0.9772
+    ],
+    "bottom_left": [
+      0.0728,
+      0.9772
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014owkmp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014owkmp.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.2407,
+      0.0521
+    ],
+    "top_right": [
+      0.7407,
+      0.0547
+    ],
+    "bottom_right": [
+      0.7407,
+      0.4193
+    ],
+    "bottom_left": [
+      0.2407,
+      0.4167
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ldvxl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ldvxl.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.08796,
+      0.13281
+    ],
+    "top_right": [
+      0.91203,
+      0.1302
+    ],
+    "bottom_right": [
+      0.91666,
+      0.33593
+    ],
+    "bottom_left": [
+      0.08333,
+      0.33854
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014avkgm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014avkgm.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.157,
+      0.122
+    ],
+    "top_right": [
+      0.833,
+      0.097
+    ],
+    "bottom_right": [
+      0.787,
+      0.611
+    ],
+    "bottom_left": [
+      0.13,
+      0.632
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014bwuiw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bwuiw.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.09722,
+      0.04948
+    ],
+    "top_right": [
+      0.90278,
+      0.04948
+    ],
+    "bottom_right": [
+      0.90278,
+      0.93906
+    ],
+    "bottom_left": [
+      0.09722,
+      0.93906
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013jwjnj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013jwjnj.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.049
+    ],
+    "top_right": [
+      0.741,
+      0.069
+    ],
+    "bottom_right": [
+      0.722,
+      0.66
+    ],
+    "bottom_left": [
+      0.167,
+      0.639
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014rmhwd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rmhwd.jpg",
+    "width": 1024,
+    "height": 1024,
+    "top_left": [
+      0.037,
+      0.0243
+    ],
+    "top_right": [
+      0.625,
+      0.0243
+    ],
+    "bottom_right": [
+      0.625,
+      0.691
+    ],
+    "bottom_left": [
+      0.037,
+      0.691
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014hexbx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014hexbx.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.052
+    ],
+    "top_right": [
+      0.907,
+      0.052
+    ],
+    "bottom_right": [
+      0.907,
+      0.302
+    ],
+    "bottom_left": [
+      0.093,
+      0.302
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014nbtki.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014nbtki.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1887,
+      0.0439
+    ],
+    "top_right": [
+      0.8138,
+      0.0439
+    ],
+    "bottom_right": [
+      0.8138,
+      0.4638
+    ],
+    "bottom_left": [
+      0.1887,
+      0.4638
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014oxghl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014oxghl.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0521
+    ],
+    "top_right": [
+      0.8241,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8241,
+      0.4167
+    ],
+    "bottom_left": [
+      0.1759,
+      0.4167
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013qwmeo.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013qwmeo.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1237,
+      0.0439
+    ],
+    "top_right": [
+      0.8594,
+      0.0464
+    ],
+    "bottom_right": [
+      0.8594,
+      0.9399
+    ],
+    "bottom_left": [
+      0.1237,
+      0.9375
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014oogiy.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014oogiy.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.139,
+      0.052
+    ],
+    "top_right": [
+      0.833,
+      0.052
+    ],
+    "bottom_right": [
+      0.815,
+      0.438
+    ],
+    "bottom_left": [
+      0.167,
+      0.438
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014rijtj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rijtj.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.0741,
+      0.0052
+    ],
+    "top_right": [
+      0.9259,
+      0.0078
+    ],
+    "bottom_right": [
+      0.9259,
+      0.9896
+    ],
+    "bottom_left": [
+      0.0741,
+      0.987
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013uomce.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013uomce.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.139,
+      0.115
+    ],
+    "top_right": [
+      0.861,
+      0.115
+    ],
+    "bottom_right": [
+      0.861,
+      0.292
+    ],
+    "bottom_left": [
+      0.139,
+      0.292
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013jgdys.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013jgdys.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.236,
+      0.07
+    ],
+    "top_right": [
+      0.819,
+      0.07
+    ],
+    "bottom_right": [
+      0.819,
+      0.633
+    ],
+    "bottom_left": [
+      0.236,
+      0.633
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014bfwhz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bfwhz.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1885,
+      0.0496
+    ],
+    "top_right": [
+      0.8102,
+      0.0471
+    ],
+    "bottom_right": [
+      0.8102,
+      0.4836
+    ],
+    "bottom_left": [
+      0.1885,
+      0.4861
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145013vnlnm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013vnlnm.jpg",
+    "width": 1024,
+    "height": 1820,
+    "top_left": [
+      0.093,
+      0.026
+    ],
+    "top_right": [
+      0.907,
+      0.026
+    ],
+    "bottom_right": [
+      0.907,
+      0.938
+    ],
+    "bottom_left": [
+      0.093,
+      0.938
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013sihqk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013sihqk.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.37,
+      0.052
+    ],
+    "top_right": [
+      0.648,
+      0.052
+    ],
+    "bottom_right": [
+      0.648,
+      0.401
+    ],
+    "bottom_left": [
+      0.37,
+      0.401
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014gobum.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014gobum.jpg",
+    "width": 1024,
+    "height": 1024,
+    "top_left": [
+      0.09259259,
+      0.03125
+    ],
+    "top_right": [
+      0.91203704,
+      0.03125
+    ],
+    "bottom_right": [
+      0.91203704,
+      0.69444444
+    ],
+    "bottom_left": [
+      0.09259259,
+      0.69444444
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013bkcgv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013bkcgv.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.097
+    ],
+    "top_right": [
+      0.815,
+      0.097
+    ],
+    "bottom_right": [
+      0.815,
+      0.486
+    ],
+    "bottom_left": [
+      0.185,
+      0.486
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013alybg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013alybg.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.169,
+      0.195
+    ],
+    "top_right": [
+      0.898,
+      0.176
+    ],
+    "bottom_right": [
+      0.911,
+      0.889
+    ],
+    "bottom_left": [
+      0.182,
+      0.908
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ibokx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ibokx.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.24739583333,
+      0.263671875
+    ],
+    "top_right": [
+      0.9765625,
+      0.244140625
+    ],
+    "bottom_right": [
+      0.98307291666,
+      0.87890625
+    ],
+    "bottom_left": [
+      0.25390625,
+      0.8984375
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014gobol.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014gobol.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1181,
+      0.0741
+    ],
+    "top_right": [
+      0.8403,
+      0.0787
+    ],
+    "bottom_right": [
+      0.8438,
+      0.9306
+    ],
+    "bottom_left": [
+      0.1215,
+      0.9259
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014bymkd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bymkd.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2685,
+      0.3125
+    ],
+    "top_right": [
+      0.7268,
+      0.3055
+    ],
+    "bottom_right": [
+      0.7268,
+      0.6041
+    ],
+    "bottom_left": [
+      0.2685,
+      0.6111
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014irkqn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014irkqn.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0278,
+      0.099
+    ],
+    "top_right": [
+      0.9722,
+      0.099
+    ],
+    "bottom_right": [
+      0.9722,
+      0.4427
+    ],
+    "bottom_left": [
+      0.0278,
+      0.4427
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ltjcp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ltjcp.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1574,
+      0.1944
+    ],
+    "top_right": [
+      0.7407,
+      0.1806
+    ],
+    "bottom_right": [
+      0.75,
+      0.625
+    ],
+    "bottom_left": [
+      0.1667,
+      0.6389
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fvwak.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fvwak.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.167,
+      0.09
+    ],
+    "top_right": [
+      0.824,
+      0.09
+    ],
+    "bottom_right": [
+      0.824,
+      0.653
+    ],
+    "bottom_left": [
+      0.167,
+      0.653
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013udktj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013udktj.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.201,
+      0.231
+    ],
+    "top_right": [
+      0.771,
+      0.236
+    ],
+    "bottom_right": [
+      0.774,
+      0.875
+    ],
+    "bottom_left": [
+      0.205,
+      0.87
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014yibwb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014yibwb.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.099,
+      0.248
+    ],
+    "top_right": [
+      0.893,
+      0.248
+    ],
+    "bottom_right": [
+      0.893,
+      0.744
+    ],
+    "bottom_left": [
+      0.099,
+      0.744
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014etlhn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014etlhn.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1296,
+      0.066
+    ],
+    "top_right": [
+      0.8148,
+      0.0625
+    ],
+    "bottom_right": [
+      0.8333,
+      0.684
+    ],
+    "bottom_left": [
+      0.1481,
+      0.6875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013mmpgk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013mmpgk.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.1389,
+      0.0521
+    ],
+    "top_right": [
+      0.8611,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8611,
+      0.3854
+    ],
+    "bottom_left": [
+      0.1389,
+      0.3854
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013ckcsv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013ckcsv.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.104
+    ],
+    "top_right": [
+      0.787,
+      0.104
+    ],
+    "bottom_right": [
+      0.787,
+      0.681
+    ],
+    "bottom_left": [
+      0.185,
+      0.681
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014bqpcb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bqpcb.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.24074,
+      0.07292
+    ],
+    "top_right": [
+      0.66667,
+      0.05208
+    ],
+    "bottom_right": [
+      0.74074,
+      0.375
+    ],
+    "bottom_left": [
+      0.31481,
+      0.39583
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ofqlt.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ofqlt.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.1852,
+      0.1302
+    ],
+    "top_right": [
+      0.8148,
+      0.1302
+    ],
+    "bottom_right": [
+      0.8148,
+      0.3854
+    ],
+    "bottom_left": [
+      0.1852,
+      0.3854
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014gvogn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014gvogn.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.139,
+      0.01
+    ],
+    "top_right": [
+      0.88,
+      0.01
+    ],
+    "bottom_right": [
+      0.88,
+      0.99
+    ],
+    "bottom_left": [
+      0.139,
+      0.99
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145013eituj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013eituj.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2552083333333333,
+      0.14453125
+    ],
+    "top_right": [
+      0.7604166666666666,
+      0.14453125
+    ],
+    "bottom_right": [
+      0.7604166666666666,
+      0.3359375
+    ],
+    "bottom_left": [
+      0.2552083333333333,
+      0.3359375
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145013fwuow.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013fwuow.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.13
+    ],
+    "top_right": [
+      0.907,
+      0.141
+    ],
+    "bottom_right": [
+      0.907,
+      0.313
+    ],
+    "bottom_left": [
+      0.093,
+      0.302
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014zorzw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014zorzw.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1852,
+      0.0625
+    ],
+    "top_right": [
+      0.8056,
+      0.0625
+    ],
+    "bottom_right": [
+      0.8009,
+      0.9444
+    ],
+    "bottom_left": [
+      0.1759,
+      0.9444
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014wmrqi.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014wmrqi.jpg",
+    "width": 960,
+    "height": 1280,
+    "top_left": [
+      0.2685,
+      0.0208
+    ],
+    "top_right": [
+      0.7407,
+      0.0208
+    ],
+    "bottom_right": [
+      0.7407,
+      0.4427
+    ],
+    "bottom_left": [
+      0.2685,
+      0.4427
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014vwnco.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014vwnco.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.139,
+      0.052
+    ],
+    "top_right": [
+      0.88,
+      0.052
+    ],
+    "bottom_right": [
+      0.88,
+      0.417
+    ],
+    "bottom_left": [
+      0.139,
+      0.417
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014phmqt.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014phmqt.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.1389
+    ],
+    "top_right": [
+      0.7963,
+      0.1424
+    ],
+    "bottom_right": [
+      0.7963,
+      0.6285
+    ],
+    "bottom_left": [
+      0.1759,
+      0.625
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145013ndqdl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013ndqdl.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.26111111,
+      0.06875
+    ],
+    "top_right": [
+      0.83611111,
+      0.06640625
+    ],
+    "bottom_right": [
+      0.83611111,
+      0.62734375
+    ],
+    "bottom_left": [
+      0.26111111,
+      0.6296875
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014xwajt.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xwajt.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.259259,
+      0.197917
+    ],
+    "top_right": [
+      0.740741,
+      0.151042
+    ],
+    "bottom_right": [
+      0.787037,
+      0.416667
+    ],
+    "bottom_left": [
+      0.305556,
+      0.463542
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014ihyqu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ihyqu.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.0926,
+      0.0781
+    ],
+    "top_right": [
+      0.9074,
+      0.0781
+    ],
+    "bottom_right": [
+      0.9074,
+      0.3438
+    ],
+    "bottom_left": [
+      0.0926,
+      0.3438
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014lqzdv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014lqzdv.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.21296,
+      0.11979
+    ],
+    "top_right": [
+      0.90741,
+      0.11979
+    ],
+    "bottom_right": [
+      0.90741,
+      0.50521
+    ],
+    "bottom_left": [
+      0.21296,
+      0.50521
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014divcp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014divcp.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.069
+    ],
+    "top_right": [
+      0.815,
+      0.069
+    ],
+    "bottom_right": [
+      0.815,
+      0.59
+    ],
+    "bottom_left": [
+      0.185,
+      0.59
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014upass.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014upass.jpg",
+    "width": 1024,
+    "height": 1820,
+    "top_left": [
+      0.0787,
+      0.0417
+    ],
+    "top_right": [
+      0.9213,
+      0.0391
+    ],
+    "bottom_right": [
+      0.9213,
+      0.9557
+    ],
+    "bottom_left": [
+      0.0787,
+      0.9531
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145013gguch.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013gguch.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1497,
+      0.0488
+    ],
+    "top_right": [
+      0.8464,
+      0.0488
+    ],
+    "bottom_right": [
+      0.8464,
+      0.9521
+    ],
+    "bottom_left": [
+      0.1497,
+      0.9521
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145013nsktd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013nsktd.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1388888888888889,
+      0.05208333333333333
+    ],
+    "top_right": [
+      0.8611111111111112,
+      0.05208333333333333
+    ],
+    "bottom_right": [
+      0.8611111111111112,
+      0.46875
+    ],
+    "bottom_left": [
+      0.1388888888888889,
+      0.46875
+    ],
+    "confidence": 1.0
+  },
+  "mcocr_mcocr_public_145014ukewl.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ukewl.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.07407,
+      0.04861
+    ],
+    "top_right": [
+      0.91667,
+      0.04167
+    ],
+    "bottom_right": [
+      0.92593,
+      0.95833
+    ],
+    "bottom_left": [
+      0.06481,
+      0.96528
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fghbc.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fghbc.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1944,
+      0.099
+    ],
+    "top_right": [
+      0.7546,
+      0.1016
+    ],
+    "bottom_right": [
+      0.7546,
+      0.4141
+    ],
+    "bottom_left": [
+      0.1944,
+      0.4115
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014uabqc.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014uabqc.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.1574,
+      0.1198
+    ],
+    "top_right": [
+      0.8241,
+      0.1198
+    ],
+    "bottom_right": [
+      0.8241,
+      0.3906
+    ],
+    "bottom_left": [
+      0.1574,
+      0.3906
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014zibrj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014zibrj.jpg",
+    "width": 1024,
+    "height": 1820,
+    "top_left": [
+      0.1667,
+      0.0562
+    ],
+    "top_right": [
+      0.8333,
+      0.0637
+    ],
+    "bottom_right": [
+      0.84,
+      0.9558
+    ],
+    "bottom_left": [
+      0.18,
+      0.9483
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014qojtz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014qojtz.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.185,
+      0.073
+    ],
+    "top_right": [
+      0.815,
+      0.073
+    ],
+    "bottom_right": [
+      0.815,
+      0.391
+    ],
+    "bottom_left": [
+      0.185,
+      0.391
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014wcrlk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014wcrlk.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.21296,
+      0.06944
+    ],
+    "top_right": [
+      0.74074,
+      0.06944
+    ],
+    "bottom_right": [
+      0.74074,
+      0.63889
+    ],
+    "bottom_left": [
+      0.21296,
+      0.63889
+    ],
+    "confidence": 0.99
+  },
+  "mcocr_mcocr_public_145014zvjqh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014zvjqh.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1898,
+      0.1424
+    ],
+    "top_right": [
+      0.7361,
+      0.1215
+    ],
+    "bottom_right": [
+      0.7546,
+      0.6562
+    ],
+    "bottom_left": [
+      0.1991,
+      0.6701
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014mudmu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014mudmu.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.208333,
+      0.049479
+    ],
+    "top_right": [
+      0.74537,
+      0.059896
+    ],
+    "bottom_right": [
+      0.791667,
+      0.419271
+    ],
+    "bottom_left": [
+      0.162037,
+      0.408854
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014htnck.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014htnck.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1574,
+      0.0469
+    ],
+    "top_right": [
+      0.8426,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8426,
+      0.9375
+    ],
+    "bottom_left": [
+      0.1574,
+      0.9427
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014rotwn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rotwn.jpg",
+    "width": 1024,
+    "height": 1024,
+    "top_left": [
+      0.1389,
+      0.0556
+    ],
+    "top_right": [
+      0.8426,
+      0.0625
+    ],
+    "bottom_right": [
+      0.8426,
+      0.625
+    ],
+    "bottom_left": [
+      0.1389,
+      0.6181
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013xzfut.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013xzfut.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0521
+    ],
+    "top_right": [
+      0.8241,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8241,
+      0.4635
+    ],
+    "bottom_left": [
+      0.1759,
+      0.4635
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013wdwok.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013wdwok.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0708,
+      0.0297
+    ],
+    "top_right": [
+      0.9458,
+      0.0297
+    ],
+    "bottom_right": [
+      0.9458,
+      0.7672
+    ],
+    "bottom_left": [
+      0.0708,
+      0.7672
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013cuilp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013cuilp.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.3402777777777778,
+      0.046875
+    ],
+    "top_right": [
+      0.6631944444444444,
+      0.046875
+    ],
+    "bottom_right": [
+      0.6597222222222222,
+      0.4817708333333333
+    ],
+    "bottom_left": [
+      0.3368055555555556,
+      0.4817708333333333
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014xjfxx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xjfxx.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.19907,
+      0.14236
+    ],
+    "top_right": [
+      0.80093,
+      0.14931
+    ],
+    "bottom_right": [
+      0.80093,
+      0.39583
+    ],
+    "bottom_left": [
+      0.19907,
+      0.38889
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013rtwyd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013rtwyd.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1296,
+      0.0833
+    ],
+    "top_right": [
+      0.8704,
+      0.0833
+    ],
+    "bottom_right": [
+      0.8704,
+      0.6597
+    ],
+    "bottom_left": [
+      0.1296,
+      0.6597
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013qvqeu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013qvqeu.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1528,
+      0.0703
+    ],
+    "top_right": [
+      0.8472,
+      0.0703
+    ],
+    "bottom_right": [
+      0.8472,
+      0.625
+    ],
+    "bottom_left": [
+      0.1528,
+      0.625
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014njsyx.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014njsyx.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.021
+    ],
+    "top_right": [
+      0.907,
+      0.052
+    ],
+    "bottom_right": [
+      0.907,
+      0.927
+    ],
+    "bottom_left": [
+      0.093,
+      0.896
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014wscvw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014wscvw.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.09259,
+      0.15365
+    ],
+    "top_right": [
+      0.91204,
+      0.14323
+    ],
+    "bottom_right": [
+      0.9213,
+      0.98177
+    ],
+    "bottom_left": [
+      0.10648,
+      0.99219
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013rcioe.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013rcioe.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.052083333333333336,
+      0.0390625
+    ],
+    "top_right": [
+      0.9375,
+      0.05859375
+    ],
+    "bottom_right": [
+      0.9114583333333334,
+      0.9375
+    ],
+    "bottom_left": [
+      0.078125,
+      0.91796875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014gkduf.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014gkduf.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2333,
+      0.05
+    ],
+    "top_right": [
+      0.9267,
+      0.095
+    ],
+    "bottom_right": [
+      0.7933,
+      0.945
+    ],
+    "bottom_left": [
+      0.1267,
+      0.895
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013yinzr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013yinzr.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.0787,
+      0.0443
+    ],
+    "top_right": [
+      0.9213,
+      0.0443
+    ],
+    "bottom_right": [
+      0.9213,
+      0.4401
+    ],
+    "bottom_left": [
+      0.0787,
+      0.4401
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013eknsk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013eknsk.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.6217,
+      0.0248
+    ],
+    "top_right": [
+      0.9755,
+      0.0248
+    ],
+    "bottom_right": [
+      0.9755,
+      0.7439
+    ],
+    "bottom_left": [
+      0.6217,
+      0.7439
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013sqona.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013sqona.jpg",
+    "width": 1024,
+    "height": 1820,
+    "top_left": [
+      0.0833,
+      0.0469
+    ],
+    "top_right": [
+      0.8889,
+      0.0417
+    ],
+    "bottom_right": [
+      0.8426,
+      0.4115
+    ],
+    "bottom_left": [
+      0.037,
+      0.4167
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014irdem.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014irdem.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1574,
+      0.0677
+    ],
+    "top_right": [
+      0.7593,
+      0.0703
+    ],
+    "bottom_right": [
+      0.7593,
+      0.3203
+    ],
+    "bottom_left": [
+      0.1574,
+      0.3177
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013dxysa.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013dxysa.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.1667,
+      0.0521
+    ],
+    "top_right": [
+      0.8333,
+      0.0625
+    ],
+    "bottom_right": [
+      0.8241,
+      0.4323
+    ],
+    "bottom_left": [
+      0.1574,
+      0.4219
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014cwfup.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014cwfup.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.19,
+      0.1
+    ],
+    "top_right": [
+      0.8,
+      0.1
+    ],
+    "bottom_right": [
+      0.8,
+      0.9
+    ],
+    "bottom_left": [
+      0.19,
+      0.9
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014scxqk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014scxqk.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0885
+    ],
+    "top_right": [
+      0.8241,
+      0.0885
+    ],
+    "bottom_right": [
+      0.8426,
+      0.3594
+    ],
+    "bottom_left": [
+      0.1574,
+      0.3594
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013fonbk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013fonbk.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.0926,
+      0.0729
+    ],
+    "top_right": [
+      0.8981,
+      0.0625
+    ],
+    "bottom_right": [
+      0.9074,
+      0.3906
+    ],
+    "bottom_left": [
+      0.1019,
+      0.401
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014pcsfj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014pcsfj.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.153,
+      0.031
+    ],
+    "top_right": [
+      0.958,
+      0.031
+    ],
+    "bottom_right": [
+      0.958,
+      0.664
+    ],
+    "bottom_left": [
+      0.153,
+      0.664
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014futkh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014futkh.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.21296,
+      0.15972
+    ],
+    "top_right": [
+      0.75,
+      0.15278
+    ],
+    "bottom_right": [
+      0.75,
+      0.63889
+    ],
+    "bottom_left": [
+      0.21296,
+      0.64583
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013fcovi.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013fcovi.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.12,
+      0.066
+    ],
+    "top_right": [
+      0.843,
+      0.062
+    ],
+    "bottom_right": [
+      0.843,
+      0.66
+    ],
+    "bottom_left": [
+      0.12,
+      0.663
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014lxhnj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014lxhnj.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1123046875,
+      0.14275256222547583
+    ],
+    "top_right": [
+      0.8740234375,
+      0.14275256222547583
+    ],
+    "bottom_right": [
+      0.8740234375,
+      0.3989751098096632
+    ],
+    "bottom_left": [
+      0.1123046875,
+      0.3989751098096632
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013mzyyu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013mzyyu.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.18879036458,
+      0.078125
+    ],
+    "top_right": [
+      0.78776041667,
+      0.068359375
+    ],
+    "bottom_right": [
+      0.8203125,
+      0.439453125
+    ],
+    "bottom_left": [
+      0.22135416667,
+      0.44921875
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014izcur.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014izcur.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1979,
+      0.0625
+    ],
+    "top_right": [
+      0.84375,
+      0.05078
+    ],
+    "bottom_right": [
+      0.875,
+      0.3984375
+    ],
+    "bottom_left": [
+      0.21875,
+      0.41796875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013awcbh.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013awcbh.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.248016,
+      0.064484
+    ],
+    "top_right": [
+      0.892857,
+      0.0744
+    ],
+    "bottom_right": [
+      0.892857,
+      0.669643
+    ],
+    "bottom_left": [
+      0.248016,
+      0.657242
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014cuqln.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014cuqln.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1388888888888889,
+      0.13020833333333334
+    ],
+    "top_right": [
+      0.8333333333333334,
+      0.10416666666666667
+    ],
+    "bottom_right": [
+      0.8796296296296297,
+      0.3385416666666667
+    ],
+    "bottom_left": [
+      0.16666666666666666,
+      0.3645833333333333
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013cxtop.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013cxtop.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.093,
+      0.151
+    ],
+    "top_right": [
+      0.907,
+      0.151
+    ],
+    "bottom_right": [
+      0.907,
+      0.354
+    ],
+    "bottom_left": [
+      0.093,
+      0.354
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014uxlol.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014uxlol.jpg",
+    "width": 1024,
+    "height": 1820,
+    "top_left": [
+      0.08333,
+      0.02083
+    ],
+    "top_right": [
+      0.91667,
+      0.02083
+    ],
+    "bottom_right": [
+      0.91667,
+      0.98438
+    ],
+    "bottom_left": [
+      0.08333,
+      0.98438
+    ],
+    "confidence": 0.9
+  },
+  "mcocr_mcocr_public_145014tugre.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014tugre.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1481,
+      0.0625
+    ],
+    "top_right": [
+      0.8426,
+      0.0694
+    ],
+    "bottom_right": [
+      0.8426,
+      0.9375
+    ],
+    "bottom_left": [
+      0.1481,
+      0.9306
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ikozz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ikozz.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.068
+    ],
+    "top_right": [
+      0.907,
+      0.068
+    ],
+    "bottom_right": [
+      0.907,
+      0.271
+    ],
+    "bottom_left": [
+      0.093,
+      0.271
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014jkafe.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014jkafe.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2611,
+      0.1021
+    ],
+    "top_right": [
+      0.8222,
+      0.1021
+    ],
+    "bottom_right": [
+      0.8222,
+      0.9292
+    ],
+    "bottom_left": [
+      0.2611,
+      0.9292
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014yhorz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014yhorz.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.2638888888888889,
+      0.0703125
+    ],
+    "top_right": [
+      0.8472222222222222,
+      0.0703125
+    ],
+    "bottom_right": [
+      0.8472222222222222,
+      0.609375
+    ],
+    "bottom_left": [
+      0.2638888888888889,
+      0.609375
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014btidj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014btidj.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.1887,
+      0.0244
+    ],
+    "top_right": [
+      0.8333,
+      0.0244
+    ],
+    "bottom_right": [
+      0.8333,
+      0.9277
+    ],
+    "bottom_left": [
+      0.1887,
+      0.9277
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ybclw.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ybclw.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.199,
+      0.06
+    ],
+    "top_right": [
+      0.801,
+      0.057
+    ],
+    "bottom_right": [
+      0.801,
+      0.411
+    ],
+    "bottom_left": [
+      0.199,
+      0.414
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014awxdd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014awxdd.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.306,
+      0.089
+    ],
+    "top_right": [
+      0.694,
+      0.089
+    ],
+    "bottom_right": [
+      0.685,
+      0.563
+    ],
+    "bottom_left": [
+      0.222,
+      0.563
+    ],
+    "confidence": 0.9
+  },
+  "mcocr_mcocr_public_145013joykg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013joykg.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.09259,
+      0.23611
+    ],
+    "top_right": [
+      0.90741,
+      0.23611
+    ],
+    "bottom_right": [
+      0.90741,
+      0.61806
+    ],
+    "bottom_left": [
+      0.09259,
+      0.61806
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014xsppi.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xsppi.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.13,
+      0.049
+    ],
+    "top_right": [
+      0.879,
+      0.049
+    ],
+    "bottom_right": [
+      0.879,
+      0.952
+    ],
+    "bottom_left": [
+      0.13,
+      0.952
+    ],
+    "confidence": 0.9
+  },
+  "mcocr_mcocr_public_145014eercq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014eercq.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.152,
+      0.05
+    ],
+    "top_right": [
+      0.847,
+      0.05
+    ],
+    "bottom_right": [
+      0.847,
+      0.942
+    ],
+    "bottom_left": [
+      0.152,
+      0.942
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014upely.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014upely.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.139,
+      0.231
+    ],
+    "top_right": [
+      0.833,
+      0.231
+    ],
+    "bottom_right": [
+      0.833,
+      0.787
+    ],
+    "bottom_left": [
+      0.139,
+      0.787
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fhmjg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fhmjg.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.2315,
+      0.0248
+    ],
+    "top_right": [
+      0.959,
+      0.0744
+    ],
+    "bottom_right": [
+      0.9756,
+      0.9672
+    ],
+    "bottom_left": [
+      0.248,
+      0.9176
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fhfxn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fhfxn.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.083333333,
+      0.140625
+    ],
+    "top_right": [
+      0.916666667,
+      0.143229167
+    ],
+    "bottom_right": [
+      0.916666667,
+      0.369791667
+    ],
+    "bottom_left": [
+      0.083333333,
+      0.3671875
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013wacye.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013wacye.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0729
+    ],
+    "top_right": [
+      0.8241,
+      0.0729
+    ],
+    "bottom_right": [
+      0.8056,
+      0.5104
+    ],
+    "bottom_left": [
+      0.1667,
+      0.5104
+    ],
+    "confidence": 0.9
+  },
+  "mcocr_mcocr_public_145013yavpz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013yavpz.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.069
+    ],
+    "top_right": [
+      0.815,
+      0.069
+    ],
+    "bottom_right": [
+      0.815,
+      0.931
+    ],
+    "bottom_left": [
+      0.185,
+      0.931
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014evbnu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014evbnu.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.093,
+      0.052
+    ],
+    "top_right": [
+      0.907,
+      0.052
+    ],
+    "bottom_right": [
+      0.907,
+      0.938
+    ],
+    "bottom_left": [
+      0.093,
+      0.938
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014hdquz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014hdquz.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.09259,
+      0.04688
+    ],
+    "top_right": [
+      0.90741,
+      0.05729
+    ],
+    "bottom_right": [
+      0.90741,
+      0.42188
+    ],
+    "bottom_left": [
+      0.09259,
+      0.41146
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014euhfv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014euhfv.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.07407,
+      0.04167
+    ],
+    "top_right": [
+      0.92593,
+      0.04167
+    ],
+    "bottom_right": [
+      0.91667,
+      0.94271
+    ],
+    "bottom_left": [
+      0.07407,
+      0.94271
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013kcxya.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013kcxya.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.1237,
+      0.1221
+    ],
+    "top_right": [
+      0.8528,
+      0.0977
+    ],
+    "bottom_right": [
+      0.8789,
+      0.9277
+    ],
+    "bottom_left": [
+      0.1628,
+      0.9521
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014rpmsm.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014rpmsm.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1481,
+      0.0521
+    ],
+    "top_right": [
+      0.8519,
+      0.0729
+    ],
+    "bottom_right": [
+      0.8333,
+      0.9792
+    ],
+    "bottom_left": [
+      0.1296,
+      0.9583
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014fhbos.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014fhbos.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.26455,
+      0.14385
+    ],
+    "top_right": [
+      0.72751,
+      0.14385
+    ],
+    "bottom_right": [
+      0.72751,
+      0.42659
+    ],
+    "bottom_left": [
+      0.26455,
+      0.42659
+    ],
+    "confidence": 0.9
+  },
+  "mcocr_mcocr_public_145014cbkkn.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014cbkkn.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.25,
+      0.1875
+    ],
+    "top_right": [
+      0.74074,
+      0.16667
+    ],
+    "bottom_right": [
+      0.75926,
+      0.63889
+    ],
+    "bottom_left": [
+      0.26852,
+      0.65972
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014lbrqe.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014lbrqe.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.194,
+      0.236
+    ],
+    "top_right": [
+      0.741,
+      0.208
+    ],
+    "bottom_right": [
+      0.759,
+      0.625
+    ],
+    "bottom_left": [
+      0.213,
+      0.653
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013aeriv.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013aeriv.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.093,
+      0.007
+    ],
+    "top_right": [
+      0.926,
+      0.007
+    ],
+    "bottom_right": [
+      0.926,
+      0.993
+    ],
+    "bottom_left": [
+      0.093,
+      0.993
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014jvwce.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014jvwce.jpg",
+    "width": 1024,
+    "height": 1365,
+    "top_left": [
+      0.238,
+      0.119
+    ],
+    "top_right": [
+      0.906,
+      0.099
+    ],
+    "bottom_right": [
+      0.926,
+      0.972
+    ],
+    "bottom_left": [
+      0.198,
+      0.982
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014mjzwg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014mjzwg.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.074,
+      0.021
+    ],
+    "top_right": [
+      0.926,
+      0.026
+    ],
+    "bottom_right": [
+      0.926,
+      0.464
+    ],
+    "bottom_left": [
+      0.074,
+      0.458
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014tvfga.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014tvfga.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.162037,
+      0.096354
+    ],
+    "top_right": [
+      0.837963,
+      0.09375
+    ],
+    "bottom_right": [
+      0.837963,
+      0.294271
+    ],
+    "bottom_left": [
+      0.162037,
+      0.296875
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013rttzk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013rttzk.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.141
+    ],
+    "top_right": [
+      0.815,
+      0.141
+    ],
+    "bottom_right": [
+      0.815,
+      0.411
+    ],
+    "bottom_left": [
+      0.185,
+      0.411
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014drgcr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014drgcr.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1898,
+      0.3021
+    ],
+    "top_right": [
+      0.7454,
+      0.3056
+    ],
+    "bottom_right": [
+      0.7454,
+      0.6215
+    ],
+    "bottom_left": [
+      0.1898,
+      0.6181
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145013qrpce.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013qrpce.jpg",
+    "width": 472,
+    "height": 1024,
+    "top_left": [
+      0.1759,
+      0.0855
+    ],
+    "top_right": [
+      0.8148,
+      0.0812
+    ],
+    "bottom_right": [
+      0.8148,
+      0.2778
+    ],
+    "bottom_left": [
+      0.1759,
+      0.2821
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014yjivr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014yjivr.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.1296,
+      0.0469
+    ],
+    "top_right": [
+      0.8889,
+      0.0521
+    ],
+    "bottom_right": [
+      0.8889,
+      0.401
+    ],
+    "bottom_left": [
+      0.1296,
+      0.3958
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014pfcua.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014pfcua.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1888,
+      0.0928
+    ],
+    "top_right": [
+      0.8203,
+      0.0952
+    ],
+    "bottom_right": [
+      0.8203,
+      0.398
+    ],
+    "bottom_left": [
+      0.1888,
+      0.3955
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013laiap.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013laiap.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.176,
+      0.052
+    ],
+    "top_right": [
+      0.819,
+      0.052
+    ],
+    "bottom_right": [
+      0.819,
+      0.503
+    ],
+    "bottom_left": [
+      0.176,
+      0.503
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014motth.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014motth.jpg",
+    "width": 1024,
+    "height": 768,
+    "top_left": [
+      0.074074,
+      0.088541
+    ],
+    "top_right": [
+      0.907407,
+      0.046875
+    ],
+    "bottom_right": [
+      0.925926,
+      0.520833
+    ],
+    "bottom_left": [
+      0.166667,
+      0.572917
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014emexr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014emexr.jpg",
+    "width": 1024,
+    "height": 1518,
+    "top_left": [
+      0.1574,
+      0.0052
+    ],
+    "top_right": [
+      0.9074,
+      0.0052
+    ],
+    "bottom_right": [
+      0.9074,
+      0.5
+    ],
+    "bottom_left": [
+      0.1574,
+      0.5
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013eicdg.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013eicdg.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0651,
+      0.0488
+    ],
+    "top_right": [
+      0.651,
+      0.0244
+    ],
+    "bottom_right": [
+      0.6185,
+      0.4883
+    ],
+    "bottom_left": [
+      0.0651,
+      0.5127
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013njyzj.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013njyzj.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.1888,
+      0.083
+    ],
+    "top_right": [
+      0.8203,
+      0.083
+    ],
+    "bottom_right": [
+      0.8203,
+      0.4395
+    ],
+    "bottom_left": [
+      0.1888,
+      0.4395
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014zqocc.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014zqocc.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.32407,
+      0.00496
+    ],
+    "top_right": [
+      0.959,
+      0.17361
+    ],
+    "bottom_right": [
+      0.66137,
+      0.96726
+    ],
+    "bottom_left": [
+      0.03307,
+      0.79365
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014xdtdp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xdtdp.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.18,
+      0.1
+    ],
+    "top_right": [
+      0.8,
+      0.1
+    ],
+    "bottom_right": [
+      0.8,
+      0.5
+    ],
+    "bottom_left": [
+      0.18,
+      0.5
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013skwtp.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013skwtp.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2685,
+      0.2014
+    ],
+    "top_right": [
+      0.7269,
+      0.1875
+    ],
+    "bottom_right": [
+      0.7407,
+      0.6632
+    ],
+    "bottom_left": [
+      0.287,
+      0.6771
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014zxrle.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014zxrle.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.222,
+      0.298
+    ],
+    "top_right": [
+      0.778,
+      0.298
+    ],
+    "bottom_right": [
+      0.778,
+      0.799
+    ],
+    "bottom_left": [
+      0.222,
+      0.799
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013puwmb.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013puwmb.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.25,
+      0.1094
+    ],
+    "top_right": [
+      0.7407,
+      0.112
+    ],
+    "bottom_right": [
+      0.7407,
+      0.4505
+    ],
+    "bottom_left": [
+      0.25,
+      0.4479
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014ktane.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ktane.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.0787,
+      0.09375
+    ],
+    "top_right": [
+      0.89352,
+      0.09028
+    ],
+    "bottom_right": [
+      0.89815,
+      0.60069
+    ],
+    "bottom_left": [
+      0.07407,
+      0.60417
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014bwelu.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014bwelu.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.17,
+      0.15
+    ],
+    "top_right": [
+      0.83,
+      0.12
+    ],
+    "bottom_right": [
+      0.84,
+      0.705
+    ],
+    "bottom_left": [
+      0.18,
+      0.735
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013plnfr.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013plnfr.jpg",
+    "width": 1024,
+    "height": 1366,
+    "top_left": [
+      0.1237,
+      0.0439
+    ],
+    "top_right": [
+      0.8789,
+      0.0488
+    ],
+    "bottom_right": [
+      0.8789,
+      0.4883
+    ],
+    "bottom_left": [
+      0.1237,
+      0.4834
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014xubtk.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014xubtk.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.185,
+      0.026
+    ],
+    "top_right": [
+      0.815,
+      0.026
+    ],
+    "bottom_right": [
+      0.815,
+      0.344
+    ],
+    "bottom_left": [
+      0.185,
+      0.344
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014lrken.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014lrken.jpg",
+    "width": 590,
+    "height": 1280,
+    "top_left": [
+      0.09259,
+      0.0625
+    ],
+    "top_right": [
+      0.90741,
+      0.0625
+    ],
+    "bottom_right": [
+      0.90741,
+      0.39062
+    ],
+    "bottom_left": [
+      0.09259,
+      0.39062
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ttrrd.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ttrrd.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.1171875,
+      0.15625
+    ],
+    "top_right": [
+      0.87890625,
+      0.146484375
+    ],
+    "bottom_right": [
+      0.87890625,
+      0.48828125
+    ],
+    "bottom_left": [
+      0.1171875,
+      0.498046875
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145013chgcz.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145013chgcz.jpg",
+    "width": 768,
+    "height": 1024,
+    "top_left": [
+      0.2248,
+      0.5283
+    ],
+    "top_right": [
+      0.9193,
+      0.4786
+    ],
+    "bottom_right": [
+      0.9524,
+      0.7614
+    ],
+    "bottom_left": [
+      0.2579,
+      0.811
+    ],
+    "confidence": 0.98
+  },
+  "mcocr_mcocr_public_145014ufyxi.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ufyxi.jpg",
+    "width": 720,
+    "height": 1280,
+    "top_left": [
+      0.333,
+      0.063
+    ],
+    "top_right": [
+      0.819,
+      0.078
+    ],
+    "bottom_right": [
+      0.833,
+      0.719
+    ],
+    "bottom_left": [
+      0.319,
+      0.703
+    ],
+    "confidence": 0.95
+  },
+  "mcocr_mcocr_public_145014ectxq.jpg": {
+    "image_path": "C:/Users/Admin/OneDrive/DoAn/MASTER_DATASET_ARCHIVE/MC_OCR_Dataset/train_images/train_images\\mcocr_public_145014ectxq.jpg",
+    "width": 576,
+    "height": 1024,
+    "top_left": [
+      0.208,
+      0.117
+    ],
+    "top_right": [
+      0.819,
+      0.113
+    ],
+    "bottom_right": [
+      0.826,
+      0.695
+    ],
+    "bottom_left": [
+      0.208,
+      0.699
+    ],
+    "confidence": 0.98
+  }
+}

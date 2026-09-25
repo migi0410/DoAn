@@ -97,3 +97,9 @@ benchmark_*.txt
 mcocr_*.txt
 hybrid_log*.txt
 sftp_cmds.txt
+
+# YOLO11s Training runs and datasets
+runs/
+dataset_yolo_crop/
+test.txt
+.agents/

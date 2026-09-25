@@ -2177,13 +2177,13 @@ export default function Home() {
                         {isPreprocessing ? (
                           <span className="flex items-center gap-1.5 text-indigo-700 animate-pulse">
                             <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
-                            <span>DocAligner AI đang dò 4 góc & bẻ phẳng hóa đơn...</span>
+                            <span>YOLO11s-Pose AI đang dò 4 góc & bẻ phẳng hóa đơn...</span>
                           </span>
                         ) : (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-slate-700 font-bold">DocAligner FastViT:</span>
+                            <span className="text-slate-700 font-bold">YOLO11s-Pose:</span>
                             <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.2 rounded font-mono text-[10px] font-bold">
-                              ⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "18.2ms"}
+                              ⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "21.2ms"}
                             </span>
                             <span className="text-slate-400">|</span>
                             <span className="font-mono text-indigo-700 font-bold">
@@ -2197,7 +2197,7 @@ export default function Home() {
                         onClick={() => executePreprocess(file, selectedSampleId)}
                         disabled={isPreprocessing}
                         className="px-2.5 py-1 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer disabled:opacity-50 shadow-2xs"
-                        title="Bấm để kích hoạt AI DocAligner quét lại ảnh theo thời gian thực"
+                        title="Bấm để kích hoạt AI YOLO11s-Pose quét lại ảnh theo thời gian thực"
                       >
                         <RefreshCw className={`w-3 h-3 ${isPreprocessing ? "animate-spin" : ""}`} />
                         <span>Chạy Lại AI</span>
@@ -2273,7 +2273,7 @@ export default function Home() {
                         <div className="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-xs flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2 text-emerald-950 font-medium">
                             <span className="text-base">⚡</span>
-                            <span><strong>DocAligner AI:</strong> Đã phát hiện 4 góc viền, bẻ phẳng phối cảnh và nắn thẳng hóa đơn từ <strong className="text-rose-600 font-mono">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</strong> về <strong className="text-emerald-700 font-mono">0.0°</strong> chuẩn hóa.</span>
+                            <span><strong>YOLO11s-Pose AI:</strong> Đã phát hiện 4 góc viền, bẻ phẳng phối cảnh và nắn thẳng hóa đơn từ <strong className="text-rose-600 font-mono">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</strong> về <strong className="text-emerald-700 font-mono">0.0°</strong> chuẩn hóa.</span>
                           </div>
                           <button
                             type="button"
@@ -2312,14 +2312,14 @@ export default function Home() {
                                   {/* SVG Quad Polygon connecting P1 -> P2 -> P3 -> P4 */}
                                   <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                                     <defs>
-                                      <linearGradient id="docaligner-mesh" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <linearGradient id="yolo-crop-mesh" x1="0%" y1="0%" x2="100%" y2="100%">
                                         <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
                                         <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.2" />
                                       </linearGradient>
                                     </defs>
                                     <polygon
                                       points={`${activeCorners[0].x},${activeCorners[0].y} ${activeCorners[1].x},${activeCorners[1].y} ${activeCorners[2].x},${activeCorners[2].y} ${activeCorners[3].x},${activeCorners[3].y}`}
-                                      fill="url(#docaligner-mesh)"
+                                      fill="url(#yolo-crop-mesh)"
                                       stroke="#10b981"
                                       strokeWidth="1.0"
                                       strokeDasharray="2 1.5"
@@ -2357,9 +2357,9 @@ export default function Home() {
                                   {/* AI Detection Info Badge */}
                                   <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-emerald-500/40 shadow-lg backdrop-blur-md flex items-center gap-2 text-[10px] pointer-events-none select-none">
                                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                    <span className="font-semibold text-emerald-300">DocAligner FastViT-BiFPN</span>
+                                    <span className="font-semibold text-emerald-300">YOLO11s-Pose Deep Learning</span>
                                     <span className="text-slate-400">|</span>
-                                    <span className="text-emerald-400 font-mono font-bold">⚡ {docAlignerLatency ? `${docAlignerLatency}ms (ONNX)` : "18.2ms (ONNX)"}</span>
+                                    <span className="text-emerald-400 font-mono font-bold">⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "21.2ms (GPU)"}</span>
                                     {hasCustomCorners && (
                                       <span className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-1 rounded text-[9px]">Đã chỉnh tay</span>
                                     )}
@@ -2374,7 +2374,7 @@ export default function Home() {
                                   <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-[0.5px]" />
                                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center gap-2 shadow-2xl backdrop-blur-md">
                                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
-                                    <span>DocAligner AI đang dò 4 góc viền...</span>
+                                    <span>YOLO11s-Pose AI đang dò 4 góc viền...</span>
                                   </div>
                                 </div>
                               )}
@@ -2385,11 +2385,11 @@ export default function Home() {
                           <div className="absolute top-3 left-3 pointer-events-none">
                             {preprocessViewTab === "cropped" ? (
                               <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> DocAligner: Đã Cắt Bỏ Nền Bàn + Nắn Phẳng 0.0° + CLAHE
+                                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> YOLO11s-Pose: Đã Cắt Bỏ Nền Bàn + Nắn Phẳng 0.0° + CLAHE
                               </span>
                             ) : (
                               <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-700/95 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
-                                <Layers className="w-3.5 h-3.5 text-indigo-200" /> DocAligner: Dò 4 Góc Viền Bằng Heatmap Deep Learning
+                                <Layers className="w-3.5 h-3.5 text-indigo-200" /> YOLO11s-Pose: Dò 4 Góc Viền Bằng Keypoint Deep Learning
                               </span>
                             )}
                           </div>
@@ -2451,7 +2451,7 @@ export default function Home() {
                             <div className="flex items-start gap-2 text-emerald-950 bg-emerald-50/90 border border-emerald-200 p-2.5 rounded-lg">
                               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                               <div>
-                                <span className="font-bold text-emerald-900">Giai đoạn 1 - Kết Quả Đã Tiền Xử Lý (DocAligner FastViT + CLAHE):</span> 
+                                <span className="font-bold text-emerald-900">Giai đoạn 1 - Kết Quả Đã Tiền Xử Lý (YOLO11s-Pose + CLAHE):</span> 
                                 <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-emerald-900/90">
                                   <li><strong className="text-emerald-950 font-semibold">Khử nền bàn:</strong> Đã cắt sạch 100% bề mặt bàn gỗ và các chi tiết gây nhiễu bên ngoài mép giấy.</li>
                                   <li><strong className="text-emerald-950 font-semibold">Nắn phẳng 0.0°:</strong> Đã chuyển đổi góc nghiêng <span className="font-mono text-rose-700 font-bold">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</span> về hình chữ nhật vuông vức chuẩn hóa.</li>
@@ -2463,9 +2463,9 @@ export default function Home() {
                             <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/90 border border-indigo-200 p-2.5 rounded-lg">
                               <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                               <div>
-                                <span className="font-bold text-indigo-900">Giai đoạn 1 - Dò 4 Góc Viền Bằng Heatmap Deep Learning:</span> 
+                                <span className="font-bold text-indigo-900">Giai đoạn 1 - Dò 4 Góc Viền Bằng YOLO11s-Pose Keypoints:</span> 
                                 <p className="mt-1 text-[11px] text-indigo-900/90">
-                                  Mô hình FastViT-SA24 + BiFPN dự đoán tọa độ 4 góc vật lý P1, P2, P3, P4 khớp từng milimét mép giấy hóa đơn. Bạn có thể chạm/kéo thả các chốt để căn chỉnh viền, sau đó bấm <strong>[👉 Bấm Cắt & Nắn Thẳng 0.0°]</strong> để xem kết quả.
+                                  Mô hình YOLO11s-Pose dự đoán chính xác tọa độ 4 góc vật lý P1, P2, P3, P4 của mép giấy hóa đơn. Bạn có thể chạm/kéo thả các chốt để căn chỉnh viền, sau đó bấm <strong>[👉 Bấm Cắt & Nắn Thẳng 0.0°]</strong> để xem kết quả.
                                 </p>
                               </div>
                             </div>
