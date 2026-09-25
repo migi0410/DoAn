@@ -370,34 +370,16 @@ def reconcile_priceless_lines(items: List[Dict[str, Any]], total_cost_str: str =
                 "price": price if price else ("0" if is_explicit_zero(amount) else ""),
                 "amount": amount
             })
-
-    # Arithmetic reconciliation: xử lý trường hợp dòng phụ bị model bốc nhầm số tiền của dòng kế tiếp
-    declared = clean_currency(total_cost_str)
-    if declared > 0 and len(merged) >= 2:
-        calc = sum(clean_currency(x.get("amount", "")) for x in merged)
-        diff = calc - declared
-        
-        # Case A: Model nhân đôi tiền (calc > declared và 2 dòng cùng giá)
-        if diff > 0:
-            for i in range(len(merged) - 1):
-                amt_i = clean_currency(merged[i].get("amount", ""))
-                amt_next = clean_currency(merged[i + 1].get("amount", ""))
-                new_calc = calc - amt_i
-                if amt_i > 0 and amt_i == amt_next and abs(new_calc - declared) <= 2000.0 and i > 0:
-                    merged[i - 1]["name"] = f"{merged[i - 1]['name']} {merged[i]['name']}".strip()
-                    merged.pop(i)
-                    break
-
-        # Case B: Model gán nhầm tiền cho dòng phụ, khiến dòng chính bên dưới bị khuyết tiền
-        for i in range(len(merged) - 1):
-            amt_i = clean_currency(merged[i].get("amount", ""))
-            amt_next = clean_currency(merged[i + 1].get("amount", ""))
-            if amt_i > 0 and amt_next == 0 and is_empty_value(merged[i + 1].get("amount")) and i > 0:
-                merged[i - 1]["name"] = f"{merged[i - 1]['name']} {merged[i]['name']}".strip()
-                merged[i + 1]["price"] = merged[i]["price"]
-                merged[i + 1]["amount"] = merged[i]["amount"]
-                merged.pop(i)
-                break
+    # Case B: Dòng phụ bị model bốc nhầm số tiền của dòng chính kế tiếp, khiến dòng chính bị khuyết tiền
+    for i in range(len(merged) - 1):
+        amt_i = clean_currency(merged[i].get("amount", ""))
+        amt_next = clean_currency(merged[i + 1].get("amount", ""))
+        if amt_i > 0 and amt_next == 0 and is_empty_value(merged[i + 1].get("amount")) and i > 0:
+            merged[i - 1]["name"] = f"{merged[i - 1]['name']} {merged[i]['name']}".strip()
+            merged[i + 1]["price"] = merged[i]["price"]
+            merged[i + 1]["amount"] = merged[i]["amount"]
+            merged.pop(i)
+            break
 
     return merged
 
