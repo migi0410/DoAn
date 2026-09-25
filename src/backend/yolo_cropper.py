@@ -30,7 +30,9 @@ class YOLOInvoiceCropper:
             weights_path,
             os.path.join(os.path.dirname(__file__), "weights", "yolo11s_pose_crop.pt"),
             os.path.join(os.path.dirname(__file__), "..", "trained_models", "yolo11s_pose_crop.pt"),
-            os.path.join(os.path.dirname(__file__), "..", "runs", "pose", "invoice_crop", "weights", "best.pt")
+            os.path.join(os.path.dirname(__file__), "..", "runs", "pose", "invoice_crop", "weights", "best.pt"),
+            "/home/haderax/DoAn/backend/weights/yolo11s_pose_crop.pt",
+            "/home/haderax/DoAn/yolo_train/runs/pose/runs/pose/invoice_crop_yolo11s-2/weights/best.pt"
         ]
 
         resolved_path = None

@@ -562,7 +562,10 @@ def get_yolo_cropper():
     global _YOLO_CROPPER
     if _YOLO_CROPPER is None:
         try:
-            from backend.yolo_cropper import get_yolo_cropper as _init_yolo_cropper
+            try:
+                from backend.yolo_cropper import get_yolo_cropper as _init_yolo_cropper
+            except ImportError:
+                from yolo_cropper import get_yolo_cropper as _init_yolo_cropper
             _YOLO_CROPPER = _init_yolo_cropper()
         except Exception as e:
             print(f"[YOLO11s-Pose] Singleton init: {e}")
