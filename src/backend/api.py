@@ -277,15 +277,37 @@ SAMPLE_RECEIPTS = [
     }
 ]
 
-def clean_currency(val_str: str) -> float:
-    """Parses Vietnamese currency strings like '104.000', '104,000 VND', '104000' to float."""
+def clean_currency(val_str: str, allow_negative: bool = True) -> float:
+    """Parses Vietnamese currency strings like '104.000', '-20.000', '(20.000)' to float."""
     if not val_str:
         return 0.0
-    cleaned = re.sub(r"[^\d]", "", str(val_str))
+    s = str(val_str).strip()
+    is_negative = False
+    if allow_negative:
+        if s.startswith("-") or "- " in s or (s.startswith("(") and s.endswith(")")):
+            is_negative = True
+    cleaned = re.sub(r"[^\d]", "", s)
     try:
-        return float(cleaned) if cleaned else 0.0
+        val = float(cleaned) if cleaned else 0.0
+        return -val if is_negative else val
     except ValueError:
         return 0.0
+
+def is_discount_item(it: Dict[str, Any]) -> bool:
+    """
+    Checks if an item represents a discount, voucher, or coupon.
+    Covers both explicit negative amounts and textual discount descriptions.
+    """
+    name = str(it.get("name", "")).lower()
+    raw_amt = str(it.get("amount", "")).strip()
+    if raw_amt.startswith("-") or "- " in raw_amt or (raw_amt.startswith("(") and raw_amt.endswith(")")):
+        return True
+    discount_keywords = [
+        "giảm giá", "giam gia", "voucher", "chiết khấu", "chiet khau",
+        "khuyến mãi", "khuyen mai", "khuyến mại", "coupon", "mã giảm",
+        "ma giam", "discount", "trừ tiền", "tru tien", "tiền giảm", "tien giam"
+    ]
+    return any(kw in name for kw in discount_keywords)
 
 def is_continuation_line(name: str, prev_name: str = "") -> bool:
     s = name.strip()
@@ -384,13 +406,21 @@ def reconcile_priceless_lines(items: List[Dict[str, Any]], total_cost_str: str =
     return merged
 
 def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> ValidationReport:
-    """Computes |TOTAL_COST - sum(ITEM_AMOUNT)| to detect hallucinations."""
-    declared = clean_currency(total_cost_str)
-    calculated = sum(clean_currency(it.get("amount", "")) for it in items)
+    """Computes |TOTAL_COST - sum(ITEM_AMOUNT)| to detect hallucinations, subtracting discounts properly."""
+    declared = abs(clean_currency(total_cost_str, allow_negative=False))
+    calculated = 0.0
+    for it in items:
+        raw_amt = it.get("amount", "")
+        parsed = clean_currency(raw_amt, allow_negative=True)
+        if is_discount_item(it):
+            calculated -= abs(parsed)
+        else:
+            calculated += parsed
+
     discrepancy = abs(declared - calculated)
     
     # Exact discrepancy check
-    is_valid = declared > 0 and calculated > 0 and (discrepancy <= 1.0)
+    is_valid = declared > 0 and (discrepancy <= 1.0)
     
     if is_valid:
         msg = f"✓ Khớp số học 100%: Tổng thanh toán ({declared:,.0f} đ) khớp chính xác với Tổng các món ({calculated:,.0f} đ)"
@@ -586,7 +616,7 @@ async def api_preprocess_image(
     img = None
     original_url = ""
 
-    if file and file.filename:
+    if file is not None and hasattr(file, "filename") and file.filename:
         ext = file.filename.split(".")[-1].lower() if "." in file.filename else "jpg"
         save_filename = f"upload_{file_id}.{ext}"
         raw_path = os.path.join(UPLOAD_DIR, save_filename)

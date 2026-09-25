@@ -1668,12 +1668,33 @@ export default function Home() {
     setEditableData((prev) => ({ ...prev, ITEMS: updated }));
   };
 
+  const isDiscountItem = (it: any) => {
+    const rawAmt = String(it?.amount || "").trim();
+    if (rawAmt.startsWith("-") || rawAmt.includes("- ") || (rawAmt.startsWith("(") && rawAmt.endsWith(")"))) {
+      return true;
+    }
+    const name = String(it?.name || "").toLowerCase();
+    const discountKeywords = [
+      "giảm giá", "giam gia", "voucher", "chiết khấu", "chiet khau",
+      "khuyến mãi", "khuyen mai", "khuyến mại", "coupon", "mã giảm",
+      "ma giam", "discount", "trừ tiền", "tru tien", "tiền giảm", "tien giam"
+    ];
+    return discountKeywords.some((kw) => name.includes(kw));
+  };
+
   const calculateItemsTotal = () => {
     let sum = 0;
     for (const it of items) {
-      const numStr = String(it.amount || "").replace(/[^0-9]/g, "");
+      const rawAmt = String(it.amount || "").trim();
+      const numStr = rawAmt.replace(/[^0-9]/g, "");
       const num = parseFloat(numStr);
-      if (!isNaN(num)) sum += num;
+      if (!isNaN(num)) {
+        if (isDiscountItem(it)) {
+          sum -= num;
+        } else {
+          sum += num;
+        }
+      }
     }
     return sum;
   };
