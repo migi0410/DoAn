@@ -266,22 +266,22 @@ const DEFAULT_HISTORY_RECORDS = [
 // Fallback corner coordinates used ONLY when backend server is offline (e.g. standalone Vercel preview)
 const DOCALIGNER_FALLBACK_CORNERS: Record<string, { label: string; x: number; y: number }[]> = {
   sample_winmart: [
-    { label: "P1 (Top-Left)", x: 1.9, y: 5.2 },
-    { label: "P2 (Top-Right)", x: 98.2, y: 5.2 },
-    { label: "P3 (Bottom-Right)", x: 98.8, y: 76.7 },
-    { label: "P4 (Bottom-Left)", x: 0.3, y: 75.9 }
+    { label: "P1 (Top-Left)", x: 17.4, y: 13.9 },
+    { label: "P2 (Top-Right)", x: 89.3, y: 17.2 },
+    { label: "P3 (Bottom-Right)", x: 82.6, y: 86.1 },
+    { label: "P4 (Bottom-Left)", x: 10.7, y: 82.8 }
   ],
   sample_highland: [
-    { label: "P1 (Top-Left)", x: 3.0, y: 6.1 },
-    { label: "P2 (Top-Right)", x: 95.6, y: 2.0 },
-    { label: "P3 (Bottom-Right)", x: 90.5, y: 93.7 },
-    { label: "P4 (Bottom-Left)", x: 2.6, y: 95.5 }
+    { label: "P1 (Top-Left)", x: 11.0, y: 7.2 },
+    { label: "P2 (Top-Right)", x: 80.9, y: 4.8 },
+    { label: "P3 (Bottom-Right)", x: 89.0, y: 92.8 },
+    { label: "P4 (Bottom-Left)", x: 19.1, y: 95.2 }
   ],
   sample_circlek: [
-    { label: "P1 (Top-Left)", x: 1.6, y: 3.9 },
-    { label: "P2 (Top-Right)", x: 94.1, y: 4.2 },
-    { label: "P3 (Bottom-Right)", x: 94.8, y: 95.5 },
-    { label: "P4 (Bottom-Left)", x: 6.2, y: 95.8 }
+    { label: "P1 (Top-Left)", x: 19.8, y: 7.6 },
+    { label: "P2 (Top-Right)", x: 89.6, y: 10.6 },
+    { label: "P3 (Bottom-Right)", x: 80.2, y: 92.4 },
+    { label: "P4 (Bottom-Left)", x: 10.4, y: 89.4 }
   ],
   sample_phuclong: [
     { label: "P1 (Top-Left)", x: 18.5, y: 8.7 },
@@ -290,10 +290,10 @@ const DOCALIGNER_FALLBACK_CORNERS: Record<string, { label: string; x: number; y:
     { label: "P4 (Bottom-Left)", x: 20.8, y: 89.1 }
   ],
   sample_viettel: [
-    { label: "P1 (Top-Left)", x: 1.9, y: 1.9 },
-    { label: "P2 (Top-Right)", x: 94.0, y: 1.2 },
-    { label: "P3 (Bottom-Right)", x: 97.6, y: 96.5 },
-    { label: "P4 (Bottom-Left)", x: 4.0, y: 96.7 }
+    { label: "P1 (Top-Left)", x: 16.6, y: 12.0 },
+    { label: "P2 (Top-Right)", x: 88.4, y: 14.5 },
+    { label: "P3 (Bottom-Right)", x: 83.4, y: 88.0 },
+    { label: "P4 (Bottom-Left)", x: 11.6, y: 85.5 }
   ]
 };
 
@@ -467,7 +467,14 @@ const generateWarpedImage = async (corners: { label?: string; x: number; y: numb
   if (!imgSrc || !corners || corners.length !== 4) return null;
   return new Promise((resolve) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    if (imgSrc.startsWith("http://") || imgSrc.startsWith("https://")) {
+      try {
+        const url = new URL(imgSrc);
+        if (typeof window !== "undefined" && url.origin !== window.location.origin) {
+          img.crossOrigin = "anonymous";
+        }
+      } catch {}
+    }
     img.onload = () => {
       try {
         const origW = img.naturalWidth || img.width || 800;
@@ -493,7 +500,10 @@ const generateWarpedImage = async (corners: { label?: string; x: number; y: numb
         resolve(null);
       }
     };
-    img.onerror = () => resolve(null);
+    img.onerror = (e) => {
+      console.warn("Warp image load error:", e);
+      resolve(null);
+    };
     img.src = imgSrc;
   });
 };
@@ -511,7 +521,7 @@ export default function Home() {
   const [isServerOnline, setIsServerOnline] = useState<boolean | null>(null);
   const [gpuInfo, setGpuInfo] = useState<any>(null);
   const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed">("preprocessed");
-  const [preprocessViewTab, setPreprocessViewTab] = useState<"cropped" | "contour" | "compare">("cropped");
+  const [preprocessViewTab, setPreprocessViewTab] = useState<"cropped" | "contour" | "compare">("compare");
   const [preprocessedUrl, setPreprocessedUrl] = useState<string | null>(null);
   const [detectedAngle, setDetectedAngle] = useState<number | null>(null);
   const [showQuadContour, setShowQuadContour] = useState<boolean>(false);
@@ -816,7 +826,14 @@ export default function Home() {
   // Client-side quick corner detection from image canvas
   const autoDetectCornersFromImage = (imgSrc: string) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    if (imgSrc.startsWith("http://") || imgSrc.startsWith("https://")) {
+      try {
+        const url = new URL(imgSrc);
+        if (typeof window !== "undefined" && url.origin !== window.location.origin) {
+          img.crossOrigin = "anonymous";
+        }
+      } catch {}
+    }
     img.onload = () => {
       try {
         const w = img.naturalWidth || 600;
@@ -1006,7 +1023,8 @@ export default function Home() {
           setHasCustomCorners(false);
 
           if (!res.data.preprocessed_url) {
-            const rawSrc = f ? URL.createObjectURL(f) : (sid && currentSample ? `${API_BASE}/templates_images/${currentSample.rawFile}` : preview || "");
+            const sampleObj = sid ? PRESET_SAMPLES.find((s) => s.id === sid) : null;
+            const rawSrc = f ? (preview || "") : (sampleObj ? `${API_BASE}/templates_images/${sampleObj.rawFile}` : preview || "");
             if (rawSrc) {
               generateWarpedImage(corners, rawSrc).then((cropped) => {
                 if (cropped) setPreprocessedUrl(cropped);
@@ -1014,18 +1032,27 @@ export default function Home() {
             }
           }
         }
-        setPreprocessViewTab("cropped");
+        setPreprocessViewTab("compare");
       }
     } catch (e) {
       console.warn("Live DocAligner offline, using verified fallback:", e);
+      const sampleObj = sid ? PRESET_SAMPLES.find((s) => s.id === sid) : null;
       if (sid && DOCALIGNER_FALLBACK_CORNERS[sid]) {
         const corners = [...DOCALIGNER_FALLBACK_CORNERS[sid]];
         setDetectedCorners(corners);
         setHasCustomCorners(false);
-        const rawSrc = `${API_BASE}/templates_images/${currentSample?.rawFile}`;
-        generateWarpedImage(corners, rawSrc).then((cropped) => {
-          if (cropped) setPreprocessedUrl(cropped);
-        });
+        if (sampleObj) {
+          setPreprocessedUrl(`${API_BASE}/templates_images/${sampleObj.preprocessedFile}`);
+          setDetectedAngle(sampleObj.skewAngle);
+        }
+        const rawSrc = sampleObj ? `${API_BASE}/templates_images/${sampleObj.rawFile}` : "";
+        if (rawSrc) {
+          generateWarpedImage(corners, rawSrc).then((cropped) => {
+            if (cropped) setPreprocessedUrl(cropped);
+          });
+        }
+      } else if (preview) {
+        autoDetectCornersFromImage(preview);
       }
     } finally {
       setIsPreprocessing(false);
@@ -1035,8 +1062,6 @@ export default function Home() {
   const handleFile = useCallback(async (f: File) => {
     setFile(f);
     setSelectedSampleId(null);
-    const objUrl = URL.createObjectURL(f);
-    setPreview(objUrl);
     setPreprocessedUrl(null);
     setDetectedAngle(-3.5);
     setDetectedCorners(null);
@@ -1044,7 +1069,7 @@ export default function Home() {
     setDocAlignerLatency(null);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
-    setPreprocessViewTab("cropped");
+    setPreprocessViewTab("compare");
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -1053,7 +1078,16 @@ export default function Home() {
     setZoomLevel(1);
     setRotation(0);
 
-    autoDetectCornersFromImage(objUrl);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        setPreview(dataUrl);
+        autoDetectCornersFromImage(dataUrl);
+      }
+    };
+    reader.readAsDataURL(f);
+
     executePreprocess(f, null);
   }, []);
 
@@ -1079,7 +1113,7 @@ export default function Home() {
     setDetectedAngle(sample.skewAngle);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
-    setPreprocessViewTab("cropped");
+    setPreprocessViewTab("compare");
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -1094,13 +1128,17 @@ export default function Home() {
   useEffect(() => {
     const defaultSample = PRESET_SAMPLES[0];
     setSelectedSampleId(defaultSample.id);
-    setDetectedCorners(null);
+    if (DOCALIGNER_FALLBACK_CORNERS[defaultSample.id]) {
+      setDetectedCorners([...DOCALIGNER_FALLBACK_CORNERS[defaultSample.id]]);
+    } else {
+      setDetectedCorners(null);
+    }
     setPreview(`${API_BASE}/templates_images/${defaultSample.rawFile}`);
     setPreprocessedUrl(`${API_BASE}/templates_images/${defaultSample.preprocessedFile}`);
     setDetectedAngle(defaultSample.skewAngle);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
-    setPreprocessViewTab("cropped");
+    setPreprocessViewTab("compare");
 
     executePreprocess(null, defaultSample.id);
   }, []);
@@ -1897,6 +1935,28 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => {
+                          setPreprocessViewTab("compare");
+                          setImageViewMode("preprocessed");
+                          setShowQuadContour(false);
+                          if (!preprocessedUrl && preview && activeCorners.length === 4) {
+                            generateWarpedImage(activeCorners, preview).then((w) => {
+                              if (w) setPreprocessedUrl(w);
+                            });
+                          }
+                        }}
+                        className={`py-2 px-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          preprocessViewTab === "compare"
+                            ? "bg-emerald-600 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                        }`}
+                      >
+                        <GitCompare className="w-3.5 h-3.5" />
+                        <span>⚡ So Sánh Trước / Sau</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
                           setPreprocessViewTab("cropped");
                           setImageViewMode("preprocessed");
                           setShowQuadContour(false);
@@ -1913,7 +1973,7 @@ export default function Home() {
                         }`}
                       >
                         <Sparkles className="w-3.5 h-3.5" />
-                        <span>✂️ Đã Cắt (0.0°)</span>
+                        <span>✂️ Chỉ Xem Đã Cắt (0.0°)</span>
                       </button>
 
                       <button
@@ -1931,28 +1991,6 @@ export default function Home() {
                       >
                         <Layers className="w-3.5 h-3.5" />
                         <span>📐 Dò 4 Góc Viền</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPreprocessViewTab("compare");
-                          setImageViewMode("preprocessed");
-                          setShowQuadContour(false);
-                          if (!preprocessedUrl && preview && activeCorners.length === 4) {
-                            generateWarpedImage(activeCorners, preview).then((w) => {
-                              if (w) setPreprocessedUrl(w);
-                            });
-                          }
-                        }}
-                        className={`py-2 px-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                          preprocessViewTab === "compare"
-                            ? "bg-emerald-600 text-white shadow-xs"
-                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-                        }`}
-                      >
-                        <GitCompare className="w-3.5 h-3.5" />
-                        <span>⚡ So Sánh</span>
                       </button>
                     </div>
 
