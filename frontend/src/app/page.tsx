@@ -367,6 +367,73 @@ function FormattedMessage({ content, isUser }: { content: string; isUser: boolea
   );
 }
 
+function cleanCurrencyNum(val: any): number {
+  if (!val) return 0;
+  const cleaned = String(val).replace(/[^\d]/g, "");
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+}
+
+// Client-side multi-line item reconciliation engine:
+// Automatically merges multi-line item drops (rớt hàng / rớt dòng) into single unified items.
+function reconcileFrontendItems(
+  rawItems: any[],
+  totalCostStr = ""
+): Array<{ name: string; qty: string; price: string; amount: string }> {
+  if (!Array.isArray(rawItems) || rawItems.length === 0) return [];
+
+  const summaryRegex = /^(?:tổng|tong|thanh\s*toán|tiền\s*mặt|tiền\s*thừa|điểm\s*tích)/i;
+  const filtered = rawItems
+    .map((it) => ({
+      name: String(it.name || it.ITEM_NAME || "").trim(),
+      qty: String(it.qty || it.ITEM_QTY || "1").trim() || "1",
+      price: String(it.price || it.ITEM_PRICE || "").trim(),
+      amount: String(it.amount || it.ITEM_AMOUNT || "").trim(),
+    }))
+    .filter((it) => it.name && !summaryRegex.test(it.name));
+
+  if (filtered.length <= 1) return filtered;
+
+  const hasEmptyAmount = filtered.some((it) => cleanCurrencyNum(it.amount) === 0);
+  if (!hasEmptyAmount) return filtered;
+
+  const reconciled: Array<{ name: string; qty: string; price: string; amount: string }> = [];
+  for (const it of filtered) {
+    const amt = cleanCurrencyNum(it.amount);
+    if (amt > 0) {
+      reconciled.push({ ...it });
+    } else {
+      if (reconciled.length > 0) {
+        reconciled[reconciled.length - 1].name = `${reconciled[reconciled.length - 1].name} ${it.name}`.replace(/\s+/g, " ").trim();
+      } else {
+        reconciled.push({ ...it });
+      }
+    }
+  }
+
+  if (reconciled.length >= 2 && cleanCurrencyNum(reconciled[0].amount) === 0 && cleanCurrencyNum(reconciled[1].amount) > 0) {
+    reconciled[1].name = `${reconciled[0].name} ${reconciled[1].name}`.replace(/\s+/g, " ").trim();
+    reconciled.shift();
+  }
+
+  const declared = cleanCurrencyNum(totalCostStr);
+  if (declared > 0) {
+    const sum = reconciled.reduce((acc, it) => acc + cleanCurrencyNum(it.amount), 0);
+    const diff = declared - sum;
+    if (diff > 0) {
+      for (const it of reconciled) {
+        if (cleanCurrencyNum(it.amount) === 0) {
+          it.amount = Math.round(diff).toLocaleString("vi-VN");
+          if (!it.price) it.price = it.amount;
+          break;
+        }
+      }
+    }
+  }
+
+  return reconciled;
+}
+
 // Helper: Canvas 2D Homography Perspective Transformation with Triangulated Mesh
 function warpQuadToCanvas(
   img: HTMLImageElement,
@@ -609,7 +676,11 @@ export default function Home() {
 
   useEffect(() => {
     if (result) {
-      setEditableData(JSON.parse(JSON.stringify(result)));
+      const cloned = JSON.parse(JSON.stringify(result));
+      if (Array.isArray(cloned.ITEMS)) {
+        cloned.ITEMS = reconcileFrontendItems(cloned.ITEMS, cloned.TOTAL_COST);
+      }
+      setEditableData(cloned);
       setIsEditing(false);
     }
   }, [result]);
@@ -1473,12 +1544,15 @@ export default function Home() {
   const getItemsList = () => {
     const rawItems = editableData.ITEMS;
     if (Array.isArray(rawItems)) {
-      return rawItems.map((it: any) => ({
-        name: it.name || it.ITEM_NAME || "",
-        qty: String(it.qty || it.ITEM_QTY || "1"),
-        price: String(it.price || it.ITEM_PRICE || ""),
-        amount: String(it.amount || it.ITEM_AMOUNT || ""),
-      }));
+      if (isEditing) {
+        return rawItems.map((it: any) => ({
+          name: it.name || it.ITEM_NAME || "",
+          qty: String(it.qty || it.ITEM_QTY || "1"),
+          price: String(it.price || it.ITEM_PRICE || ""),
+          amount: String(it.amount || it.ITEM_AMOUNT || ""),
+        }));
+      }
+      return reconcileFrontendItems(rawItems, editableData.TOTAL_COST);
     }
     return [];
   };
@@ -2629,7 +2703,7 @@ export default function Home() {
                           <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 text-[11px] uppercase tracking-wider">
                             <tr>
                               <th className="py-2.5 px-3 font-semibold text-center w-10">STT</th>
-                              <th className="py-2.5 px-3 font-semibold">Tên mặt hàng</th>
+                              <th className="py-2.5 px-3 font-semibold min-w-[200px]">Tên mặt hàng</th>
                               <th className="py-2.5 px-3 font-semibold text-center w-16">SL</th>
                               <th className="py-2.5 px-3 font-semibold text-right w-28">Đơn giá (đ)</th>
                               <th className="py-2.5 px-3 font-semibold text-right w-28">Thành tiền (đ)</th>
@@ -2653,10 +2727,12 @@ export default function Home() {
                                         type="text"
                                         value={it.name}
                                         onChange={(e) => handleItemChange(idx, "name", e.target.value)}
-                                        className="w-full bg-white border border-indigo-300 rounded px-2 py-1 text-xs text-slate-900"
+                                        className="w-full bg-white border border-indigo-300 rounded px-2 py-1 text-xs text-slate-900 break-words"
                                       />
                                     ) : (
-                                      <span className="font-medium text-slate-900">{it.name || "—"}</span>
+                                      <div className="font-medium text-slate-900 leading-snug break-words max-w-[320px]">
+                                        {it.name || "—"}
+                                      </div>
                                     )}
                                   </td>
                                   <td className="py-2.5 px-3 text-center">

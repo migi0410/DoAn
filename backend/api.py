@@ -284,23 +284,28 @@ def clean_currency(val_str: str) -> float:
     except ValueError:
         return 0.0
 
-def is_continuation_line(name: str, prev_name: str = "") -> bool:
-    s = name.strip()
-    if not s:
+def is_brand_or_item_start(name: str) -> bool:
+    name_clean = name.strip()
+    if not name_clean:
         return False
-    if re.match(r'^\s*\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|lon|chai|hộp|hop|gói|goi|cái|cai|c|vi|vien|qua|quả)\s*$', s, re.I):
+    words = name_clean.split()
+    first_word = words[0]
+    first_two = " ".join(words[:2])
+    if first_word.isupper() and len(first_word) >= 2:
         return True
-    if re.match(r'^\s*\(?\s*(?:size\s*)?[smlxl]+\s*\)?\s*$', s, re.I):
+    if first_two.isupper():
         return True
-    if s[0].islower():
+    category_prefixes = [
+        "sữa", "bánh", "nước", "trà", "cà phê", "cafe", "thịt", "cá", "gà", "rau", 
+        "trứng", "dầu", "gạo", "mì", "khăn", "kem", "xà phòng", "bột", "combo"
+    ]
+    if any(name_clean.lower().startswith(p) for p in category_prefixes):
         return True
-    if re.match(r'^(?:vị|vi|hương|huong|loại|loai|dành cho|danh cho)\b', s, re.I):
-        return True
-    words = s.split()
-    if len(words) <= 3 and re.search(r'\b\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|c|bao|vi|quả|qua)\b', s, re.I):
-        if prev_name and not re.search(r'\b\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr)\b', prev_name, re.I):
-            return True
     return False
+
+def has_item_unit_end(name: str) -> bool:
+    pattern = r'(?:\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|lon|chai|hộp|hop|gói|goi|cái|cai|l1|l2))\b'
+    return bool(re.search(pattern, name.strip(), re.I))
 
 def is_summary_line(name: str) -> bool:
     n = name.strip().lower()
@@ -324,62 +329,117 @@ def is_summary_line(name: str) -> bool:
     return False
 
 def reconcile_receipt_items(items: List[Dict[str, Any]], total_cost_str: str = "") -> List[Dict[str, Any]]:
+    """
+    Robust multi-line item reconciliation engine for Vietnamese retail receipts:
+    1. Eliminates multi-line item drops (tình trạng rớt hàng / rớt dòng của các item dài).
+    2. Merges continuation lines (e.g. specifications, sizes, units, packaging) into the parent item.
+    3. Handles decoupled trailing desynchronized lines.
+    4. Reconciles item sum with declared total cost to guarantee zero phantom rows.
+    """
     if not items:
         return items
 
-    items = [it for it in items if not is_summary_line(it.get("name", ""))]
-    if len(items) <= 1:
-        return items
-
-    price_info_pool = []
+    # 1. Filter out empty lines or accidental summary lines
+    valid_candidates = []
     for it in items:
-        amt = clean_currency(it.get("amount", ""))
-        if amt > 0:
-            price_info_pool.append({
+        name = str(it.get("name") or it.get("ITEM_NAME") or "").strip()
+        if not name or is_summary_line(name):
+            continue
+        valid_candidates.append({
+            "name": name,
+            "qty": str(it.get("qty") or it.get("ITEM_QTY") or "1").strip() or "1",
+            "price": str(it.get("price") or it.get("ITEM_PRICE") or "").strip(),
+            "amount": str(it.get("amount") or it.get("ITEM_AMOUNT") or "").strip(),
+        })
+
+    if len(valid_candidates) <= 1:
+        return valid_candidates
+
+    # If all items already have valid prices/amounts, no multi-line merge needed
+    has_empty_amount = any(not clean_currency(it.get("amount", "")) for it in valid_candidates)
+    if not has_empty_amount:
+        return valid_candidates
+
+    items_with_amount = [it for it in valid_candidates if clean_currency(it.get("amount", ""))]
+    num_valid = len(items_with_amount)
+    if num_valid == 0:
+        return valid_candidates
+
+    # Pattern A: Trailing empty lines desynchronization
+    first_empty_idx = next(i for i, it in enumerate(valid_candidates) if not clean_currency(it.get("amount", "")))
+    is_trailing_empty = all(not clean_currency(valid_candidates[k].get("amount", "")) for k in range(first_empty_idx, len(valid_candidates)))
+
+    if is_trailing_empty and first_empty_idx == num_valid and num_valid > 1:
+        valid_prices = [
+            {
                 "qty": it.get("qty", "1") or "1",
                 "price": it.get("price", "") or it.get("amount", ""),
-                "amount": it.get("amount", ""),
-                "val": amt
-            })
+                "amount": it.get("amount", "")
+            }
+            for it in items_with_amount
+        ]
+        product_blocks = []
+        curr_block = []
+        for i, it in enumerate(valid_candidates):
+            raw_name = it["name"]
+            if not curr_block:
+                curr_block.append(raw_name)
+            else:
+                prev_text = curr_block[-1]
+                is_new = (has_item_unit_end(prev_text) or is_brand_or_item_start(raw_name))
+                remaining_blocks_needed = num_valid - len(product_blocks)
+                remaining_items = len(valid_candidates) - i
+                if (is_new and len(product_blocks) < num_valid - 1) or (remaining_items == remaining_blocks_needed):
+                    product_blocks.append(" ".join(curr_block))
+                    curr_block = [raw_name]
+                else:
+                    curr_block.append(raw_name)
+        if curr_block:
+            product_blocks.append(" ".join(curr_block))
 
-    product_blocks = []
-    curr_block = []
-    for it in items:
-        raw_name = it.get("name", "").strip()
-        if not raw_name:
-            continue
-        prev_text = curr_block[-1] if curr_block else ""
-        if curr_block and is_continuation_line(raw_name, prev_text):
-            curr_block.append(raw_name)
-        else:
-            if curr_block:
-                product_blocks.append(" ".join(curr_block))
-            curr_block = [raw_name]
-    if curr_block:
-        product_blocks.append(" ".join(curr_block))
+        if len(product_blocks) == num_valid:
+            reconciled = []
+            for blk, pinfo in zip(product_blocks, valid_prices):
+                clean_name = re.sub(r'\s+', ' ', blk).strip()
+                reconciled.append({
+                    "name": clean_name,
+                    "qty": pinfo["qty"],
+                    "price": pinfo["price"],
+                    "amount": pinfo["amount"]
+                })
+            return reconciled
 
-    num_products = len(product_blocks)
-    num_prices = len(price_info_pool)
-
-    if num_products == len(items) and all(clean_currency(it.get("amount", "")) > 0 for it in items):
-        return items
-
-    declared_total = clean_currency(total_cost_str)
-    if num_prices > num_products and num_products > 0:
-        first_sum = sum(p["val"] for p in price_info_pool[:num_products])
-        if declared_total > 0 and abs(first_sum - declared_total) <= 2000:
-            price_info_pool = price_info_pool[:num_products]
-
+    # Pattern B: Interleaved continuation lines (multi-line wrapping)
+    # Consecutive lines where one has no amount merge into the preceding item
     reconciled = []
-    for i, blk in enumerate(product_blocks):
-        pinfo = price_info_pool[i] if i < len(price_info_pool) else {"qty": "1", "price": "", "amount": ""}
-        clean_name = re.sub(r'\s+', ' ', blk).strip()
-        reconciled.append({
-            "name": clean_name,
-            "qty": pinfo["qty"],
-            "price": pinfo["price"],
-            "amount": pinfo["amount"]
-        })
+    for it in valid_candidates:
+        amt = clean_currency(it.get("amount", ""))
+        name = it["name"]
+        if amt > 0:
+            reconciled.append(dict(it))
+        else:
+            if reconciled:
+                reconciled[-1]["name"] = re.sub(r'\s+', ' ', f"{reconciled[-1]['name']} {name}").strip()
+            else:
+                reconciled.append(dict(it))
+
+    # If first item had no amount and second has amount:
+    if len(reconciled) >= 2 and not clean_currency(reconciled[0].get("amount", "")) and clean_currency(reconciled[1].get("amount", "")):
+        reconciled[1]["name"] = re.sub(r'\s+', ' ', f"{reconciled[0]['name']} {reconciled[1]['name']}").strip()
+        reconciled.pop(0)
+
+    # Arithmetic solve for orphan item if total cost is available:
+    declared_total = clean_currency(total_cost_str)
+    if declared_total > 0:
+        current_sum = sum(clean_currency(it.get("amount", "")) for it in reconciled)
+        diff = declared_total - current_sum
+        for it in reconciled:
+            if not clean_currency(it.get("amount", "")) and diff > 0:
+                it["amount"] = f"{int(diff):,}".replace(",", ".")
+                if not it.get("price"):
+                    it["price"] = it["amount"]
+                break
+
     return reconciled
 
 def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> ValidationReport:
