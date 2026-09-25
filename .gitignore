@@ -101,5 +101,7 @@ sftp_cmds.txt
 # YOLO11s Training runs and datasets
 runs/
 dataset_yolo_crop/
+dataset_yolo_real_mcocr/
+mcocr_full_gemini_labels.json
 test.txt
 .agents/
