@@ -354,13 +354,13 @@ def reconcile_priceless_lines(items: List[Dict[str, Any]], total_cost_str: str =
         if is_summary_line(name):
             continue
 
-        # Dòng rớt hàng: hoàn toàn KHÔNG CÓ số lượng và KHÔNG CÓ thành tiền/đơn giá (kể cả số 0 cũng không có)
-        is_qty_empty = is_empty_value(qty)
+        # Dòng rớt hàng: hoàn toàn KHÔNG CÓ thành tiền và đơn giá (kể cả số 0 cũng không có)
+        # Bất kể số lượng trống hay model tự điền '1', nếu không có giá tiền thì 100% là phần nối tiếp của món phía trên
         is_price_empty = is_empty_value(price) and is_empty_value(amount)
         if is_explicit_zero(amount) or is_explicit_zero(price):
             is_price_empty = False
 
-        if is_qty_empty and is_price_empty and merged:
+        if is_price_empty and merged:
             if name and not name.lower().startswith("tổng"):
                 merged[-1]["name"] = f"{merged[-1]['name']} {name}".strip()
         else:
