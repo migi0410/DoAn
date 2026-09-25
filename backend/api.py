@@ -323,64 +323,38 @@ def is_summary_line(name: str) -> bool:
             return True
     return False
 
-def reconcile_receipt_items(items: List[Dict[str, Any]], total_cost_str: str = "") -> List[Dict[str, Any]]:
+def reconcile_priceless_lines(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Hướng 2: Chỉ gộp dòng khi các dòng kế tiếp KHÔNG có giá tiền / thành tiền thực tế trên ảnh.
+    Nếu dòng kế tiếp có thành tiền (> 0) hoặc đơn giá (> 0), TUYỆT ĐỐI giữ nguyên là món độc lập.
+    """
     if not items:
         return items
-
-    items = [it for it in items if not is_summary_line(it.get("name", ""))]
-    if len(items) <= 1:
-        return items
-
-    price_info_pool = []
+    merged: List[Dict[str, Any]] = []
     for it in items:
-        amt = clean_currency(it.get("amount", ""))
-        if amt > 0:
-            price_info_pool.append({
-                "qty": it.get("qty", "1") or "1",
-                "price": it.get("price", "") or it.get("amount", ""),
-                "amount": it.get("amount", ""),
-                "val": amt
-            })
+        name = str(it.get("name", "")).strip()
+        qty = str(it.get("qty", "")).strip()
+        price = str(it.get("price", "")).strip()
+        amount = str(it.get("amount", "")).strip()
 
-    product_blocks = []
-    curr_block = []
-    for it in items:
-        raw_name = it.get("name", "").strip()
-        if not raw_name:
+        if is_summary_line(name):
             continue
-        prev_text = curr_block[-1] if curr_block else ""
-        if curr_block and is_continuation_line(raw_name, prev_text):
-            curr_block.append(raw_name)
+
+        val_amount = clean_currency(amount)
+        val_price = clean_currency(price)
+
+        # Chỉ gộp nếu dòng này hoàn toàn KHÔNG có thành tiền lẫn đơn giá, và đã có món trước đó
+        if val_amount == 0 and val_price == 0 and merged:
+            if name and not name.lower().startswith("tổng"):
+                merged[-1]["name"] = f"{merged[-1]['name']} {name}".strip()
         else:
-            if curr_block:
-                product_blocks.append(" ".join(curr_block))
-            curr_block = [raw_name]
-    if curr_block:
-        product_blocks.append(" ".join(curr_block))
-
-    num_products = len(product_blocks)
-    num_prices = len(price_info_pool)
-
-    if num_products == len(items) and all(clean_currency(it.get("amount", "")) > 0 for it in items):
-        return items
-
-    declared_total = clean_currency(total_cost_str)
-    if num_prices > num_products and num_products > 0:
-        first_sum = sum(p["val"] for p in price_info_pool[:num_products])
-        if declared_total > 0 and abs(first_sum - declared_total) <= 2000:
-            price_info_pool = price_info_pool[:num_products]
-
-    reconciled = []
-    for i, blk in enumerate(product_blocks):
-        pinfo = price_info_pool[i] if i < len(price_info_pool) else {"qty": "1", "price": "", "amount": ""}
-        clean_name = re.sub(r'\s+', ' ', blk).strip()
-        reconciled.append({
-            "name": clean_name,
-            "qty": pinfo["qty"],
-            "price": pinfo["price"],
-            "amount": pinfo["amount"]
-        })
-    return reconciled
+            merged.append({
+                "name": name,
+                "qty": qty if qty else "1",
+                "price": price,
+                "amount": amount
+            })
+    return merged
 
 def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> ValidationReport:
     """Computes |TOTAL_COST - sum(ITEM_AMOUNT)| to detect hallucinations."""
@@ -772,10 +746,11 @@ async def predict_receipt(
             }
 
     raw_items_unmodified = [dict(it) for it in extraction.get("ITEMS", [])]
-    # Pure 100% direct model output - Zero external merging / post-processing
-    extraction["ITEMS"] = raw_items_unmodified
+    # Hướng 2: Chỉ gộp dòng khi các dòng phụ kế tiếp hoàn toàn KHÔNG có giá tiền / thành tiền thực tế trên ảnh
+    reconciled_items = reconcile_priceless_lines(extraction.get("ITEMS", []))
+    extraction["ITEMS"] = reconciled_items
 
-    validation = validate_arithmetic(extraction.get("TOTAL_COST", ""), raw_items_unmodified)
+    validation = validate_arithmetic(extraction.get("TOTAL_COST", ""), reconciled_items)
 
     raw_elapsed = time.time() - start_time
     target_latency = selected_meta["latency_s"]
@@ -806,7 +781,7 @@ async def predict_receipt(
         "inference_source": inference_source,
         "raw_output": raw_output,
         "raw_items": raw_items_unmodified,
-        "reconciled": False,
+        "reconciled": len(reconciled_items) != len(raw_items_unmodified),
         "image_url": image_url,
         "annotated_image_url": annotated_url,
         "extraction": extraction,
