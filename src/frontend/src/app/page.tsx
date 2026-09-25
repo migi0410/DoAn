@@ -508,6 +508,120 @@ const generateWarpedImage = async (corners: { label?: string; x: number; y: numb
   });
 };
 
+// Helper function to safely convert data URL to Blob
+const dataUrlToBlob = (dataUrl: string): Blob => {
+  const parts = dataUrl.split(",");
+  const mime = parts[0].match(/:(.*?);/)?.[1] || "image/jpeg";
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+};
+
+/**
+ * Takes an image source (data URL, blob URL, or image URL), applies rotation,
+ * resizes to max dimension (1600px) for optimal VLM performance and fast mobile upload,
+ * and returns a standard File object ready for FormData.
+ */
+const prepareImageForPredict = async (
+  srcUrl: string,
+  rotationDegrees: number = 0,
+  fallbackFilename: string = "receipt_processed.jpg"
+): Promise<File | null> => {
+  if (!srcUrl) return null;
+  return new Promise((resolve) => {
+    const img = new Image();
+    if (srcUrl.startsWith("http://") || srcUrl.startsWith("https://")) {
+      try {
+        const url = new URL(srcUrl);
+        if (typeof window !== "undefined" && url.origin !== window.location.origin) {
+          img.crossOrigin = "anonymous";
+        }
+      } catch {}
+    }
+    img.onload = () => {
+      try {
+        const rot = ((rotationDegrees % 360) + 360) % 360;
+        const origW = img.naturalWidth || img.width || 800;
+        const origH = img.naturalHeight || img.height || 1000;
+
+        const isSwap = rot === 90 || rot === 270;
+        let targetW = isSwap ? origH : origW;
+        let targetH = isSwap ? origW : origH;
+
+        // Downscale to max 1600px for optimal speed and zero VLM quality loss
+        const maxDim = 1600;
+        if (Math.max(targetW, targetH) > maxDim) {
+          const ratio = maxDim / Math.max(targetW, targetH);
+          targetW = Math.round(targetW * ratio);
+          targetH = Math.round(targetH * ratio);
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+
+        ctx.save();
+        if (rot === 90) {
+          ctx.translate(targetW, 0);
+          ctx.rotate((90 * Math.PI) / 180);
+          ctx.drawImage(img, 0, 0, origW, origH, 0, 0, targetH, targetW);
+        } else if (rot === 180) {
+          ctx.translate(targetW, targetH);
+          ctx.rotate((180 * Math.PI) / 180);
+          ctx.drawImage(img, 0, 0, origW, origH, 0, 0, targetW, targetH);
+        } else if (rot === 270) {
+          ctx.translate(0, targetH);
+          ctx.rotate((270 * Math.PI) / 180);
+          ctx.drawImage(img, 0, 0, origW, origH, 0, 0, targetH, targetW);
+        } else {
+          ctx.drawImage(img, 0, 0, origW, origH, 0, 0, targetW, targetH);
+        }
+        ctx.restore();
+
+        const cleanName = fallbackFilename.replace(/\.[^/.]+$/, "") + ".jpg";
+        if (canvas.toBlob) {
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(new File([blob], cleanName, { type: "image/jpeg", lastModified: Date.now() }));
+              } else {
+                try {
+                  const b = dataUrlToBlob(canvas.toDataURL("image/jpeg", 0.88));
+                  resolve(new File([b], cleanName, { type: "image/jpeg", lastModified: Date.now() }));
+                } catch {
+                  resolve(null);
+                }
+              }
+            },
+            "image/jpeg",
+            0.88
+          );
+        } else {
+          const b = dataUrlToBlob(canvas.toDataURL("image/jpeg", 0.88));
+          resolve(new File([b], cleanName, { type: "image/jpeg", lastModified: Date.now() }));
+        }
+      } catch (err) {
+        console.warn("prepareImageForPredict canvas error:", err);
+        resolve(null);
+      }
+    };
+    img.onerror = (e) => {
+      console.warn("prepareImageForPredict image load error:", e);
+      resolve(null);
+    };
+    img.src = srcUrl;
+  });
+};
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [selectedSampleId, setSelectedSampleId] = useState<string | null>(null);
@@ -588,13 +702,13 @@ export default function Home() {
   useEffect(() => {
     const checkServer = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/api/gpu_status`, { timeout: 2500 });
+        const res = await axios.get(`${API_BASE}/api/gpu_status`, { timeout: 6000 });
         if (res.data && res.data.online) {
           setIsServerOnline(true);
           setGpuInfo(res.data);
           return;
         }
-        const r2 = await axios.get(`${API_BASE}/api/models`, { timeout: 2000 });
+        const r2 = await axios.get(`${API_BASE}/api/models`, { timeout: 5000 });
         setIsServerOnline(r2.status === 200);
         setGpuInfo(null);
       } catch {
@@ -628,19 +742,38 @@ export default function Home() {
     setResult(null);
     setValidation(null);
 
+    // Fast check: If currently marked offline, ping backend once to confirm before giving up
+    let serverAvailable = isServerOnline;
+    if (!serverAvailable) {
+      try {
+        const ping = await axios.get(`${API_BASE}/api/gpu_status`, { timeout: 4000 });
+        if (ping.data?.online) {
+          serverAvailable = true;
+          setIsServerOnline(true);
+          setGpuInfo(ping.data);
+        }
+      } catch {}
+    }
+
     // Try live GPU inference if server is online
-    if (isServerOnline) {
+    if (serverAvailable) {
       try {
         const fd = new FormData();
         if (f) {
-          fd.append("file", f);
+          // Priority: preprocessedUrl (cropped/docaligner) > preview (original data URL)
+          const activeSrc = (imageViewMode === "preprocessed" && preprocessedUrl) ? preprocessedUrl : (preview || preprocessedUrl);
+          let fileToSend: File | null = null;
+          if (activeSrc) {
+            fileToSend = await prepareImageForPredict(activeSrc, rotation, f.name || "receipt.jpg");
+          }
+          fd.append("file", fileToSend || f);
         } else if (sid) {
           fd.append("sample_id", sid);
         }
         fd.append("model", m);
         fd.append("schema_version", "v2");
 
-        const res = await axios.post(`${API_BASE}/api/predict`, fd, { timeout: 15000 });
+        const res = await axios.post(`${API_BASE}/api/predict`, fd, { timeout: 60000 });
         if (res.data?.success) {
           setResult(res.data.extraction);
           setValidation(res.data.validation);
@@ -651,7 +784,18 @@ export default function Home() {
           return;
         }
       } catch (e: any) {
-        console.warn("Live inference failed, checking fallback:", e);
+        console.warn("Live inference failed:", e);
+        if (f) {
+          setLoading(false);
+          if (e.code === "ECONNABORTED" || e.message?.toLowerCase().includes("timeout")) {
+            alert("Mạng di động hoặc xử lý trên GPU mất quá nhiều thời gian (>60s). Vui lòng thử bấm 'Trích xuất' lại!");
+          } else if (e.response?.data?.detail) {
+            alert(`Lỗi máy chủ GPU: ${e.response.data.detail}`);
+          } else {
+            alert("Không thể kết nối tới GPU Pop!_OS hoặc phiên làm việc bị ngắt. Vui lòng kiểm tra lại mạng!");
+          }
+          return;
+        }
       }
     }
 
@@ -999,11 +1143,16 @@ export default function Home() {
     try {
       const fd = new FormData();
       if (f) {
-        fd.append("file", f);
+        let prepFileToSend: File | null = f;
+        if (f.size > 1024 * 1024 && preview) {
+          const opt = await prepareImageForPredict(preview, 0, f.name || "receipt.jpg");
+          if (opt) prepFileToSend = opt;
+        }
+        fd.append("file", prepFileToSend || f);
       } else if (sid) {
         fd.append("sample_id", sid);
       }
-      const res = await axios.post(`${API_BASE}/api/preprocess`, fd, { timeout: 8000 });
+      const res = await axios.post(`${API_BASE}/api/preprocess`, fd, { timeout: 25000 });
       if (res.data?.success) {
         if (res.data.preprocessed_url) {
           setPreprocessedUrl(`${API_BASE}${res.data.preprocessed_url}`);
@@ -1079,16 +1228,17 @@ export default function Home() {
     setRotation(0);
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const dataUrl = e.target?.result as string;
       if (dataUrl) {
         setPreview(dataUrl);
         autoDetectCornersFromImage(dataUrl);
+        // Optimize image (downscale 12MB phone camera photo to ~250KB) before sending to /api/preprocess
+        const optFile = await prepareImageForPredict(dataUrl, 0, f.name || "receipt.jpg");
+        executePreprocess(optFile || f, null);
       }
     };
     reader.readAsDataURL(f);
-
-    executePreprocess(f, null);
   }, []);
 
   const handleDrop = (e: React.DragEvent) => {
@@ -1226,21 +1376,29 @@ export default function Home() {
 
     if (isServerOnline) {
       try {
+        let fileToSend: File | null = null;
+        if (file) {
+          const activeSrc = (imageViewMode === "preprocessed" && preprocessedUrl) ? preprocessedUrl : (preview || preprocessedUrl);
+          if (activeSrc) {
+            fileToSend = await prepareImageForPredict(activeSrc, rotation, file.name || "receipt.jpg");
+          }
+        }
+
         const fd1 = new FormData();
-        if (file) fd1.append("file", file);
+        if (file) fd1.append("file", fileToSend || file);
         if (selectedSampleId) fd1.append("sample_id", selectedSampleId);
         fd1.append("model", model);
         fd1.append("schema_version", "v2");
 
         const fd2 = new FormData();
-        if (file) fd2.append("file", file);
+        if (file) fd2.append("file", fileToSend || file);
         if (selectedSampleId) fd2.append("sample_id", selectedSampleId);
         fd2.append("model", compareModel);
         fd2.append("schema_version", "v2");
 
         const [r1, r2] = await Promise.all([
-          axios.post(`${API_BASE}/api/predict`, fd1, { timeout: 15000 }),
-          axios.post(`${API_BASE}/api/predict`, fd2, { timeout: 15000 }),
+          axios.post(`${API_BASE}/api/predict`, fd1, { timeout: 60000 }),
+          axios.post(`${API_BASE}/api/predict`, fd2, { timeout: 60000 }),
         ]);
         setCompareResult({ left: r1.data, right: r2.data });
         setCompareLoading(false);
