@@ -323,10 +323,21 @@ def is_summary_line(name: str) -> bool:
             return True
     return False
 
-def reconcile_priceless_lines(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def is_empty_value(val_str: str) -> bool:
+    """Kiểm tra xem trường giá trị có bị khuyết/để trống trên ảnh hay không."""
+    s = str(val_str).strip()
+    return s in ["", "-", "—", "khuyết", "None", "null"]
+
+def is_explicit_zero(val_str: str) -> bool:
+    """Kiểm tra xem trường giá trị có phải là số 0 in rõ ràng trên hóa đơn (như món 0 đ, topping 0 đ) hay không."""
+    s = str(val_str).strip()
+    return s in ["0", "0.0", "0,0", "0 đ", "0đ", "0.000", "0,000"]
+
+def reconcile_priceless_lines(items: List[Dict[str, Any]], total_cost_str: str = "") -> List[Dict[str, Any]]:
     """
-    Hướng 2: Chỉ gộp dòng khi các dòng kế tiếp KHÔNG có giá tiền / thành tiền thực tế trên ảnh.
-    Nếu dòng kế tiếp có thành tiền (> 0) hoặc đơn giá (> 0), TUYỆT ĐỐI giữ nguyên là món độc lập.
+    1. Phân biệt rõ giữa món 0 đồng (như Khoai Mon S có giá '0' và SL '1' -> TÁCH RIÊNG) 
+       với dòng rớt hàng/dòng phụ thực sự (hoàn toàn KHÔNG có SL và KHÔNG có giá tiền -> GỘP VÀO MÓN TRÊN).
+    2. Đối soát số học nếu model bị trượt mắt bốc nhầm số tiền của dòng kế tiếp.
     """
     if not items:
         return items
@@ -340,20 +351,51 @@ def reconcile_priceless_lines(items: List[Dict[str, Any]]) -> List[Dict[str, Any
         if is_summary_line(name):
             continue
 
-        val_amount = clean_currency(amount)
-        val_price = clean_currency(price)
+        # Dòng rớt hàng: hoàn toàn KHÔNG CÓ số lượng và KHÔNG CÓ thành tiền/đơn giá (kể cả số 0 cũng không có)
+        is_qty_empty = is_empty_value(qty)
+        is_price_empty = is_empty_value(price) and is_empty_value(amount)
+        if is_explicit_zero(amount) or is_explicit_zero(price):
+            is_price_empty = False
 
-        # Chỉ gộp nếu dòng này hoàn toàn KHÔNG có thành tiền lẫn đơn giá, và đã có món trước đó
-        if val_amount == 0 and val_price == 0 and merged:
+        if is_qty_empty and is_price_empty and merged:
             if name and not name.lower().startswith("tổng"):
                 merged[-1]["name"] = f"{merged[-1]['name']} {name}".strip()
         else:
             merged.append({
                 "name": name,
                 "qty": qty if qty else "1",
-                "price": price,
+                "price": price if price else ("0" if is_explicit_zero(amount) else ""),
                 "amount": amount
             })
+
+    # Arithmetic reconciliation: xử lý trường hợp dòng phụ bị model bốc nhầm số tiền của dòng kế tiếp
+    declared = clean_currency(total_cost_str)
+    if declared > 0 and len(merged) >= 2:
+        calc = sum(clean_currency(x.get("amount", "")) for x in merged)
+        diff = calc - declared
+        
+        # Case A: Model nhân đôi tiền (calc > declared và 2 dòng cùng giá)
+        if diff > 0:
+            for i in range(len(merged) - 1):
+                amt_i = clean_currency(merged[i].get("amount", ""))
+                amt_next = clean_currency(merged[i + 1].get("amount", ""))
+                new_calc = calc - amt_i
+                if amt_i > 0 and amt_i == amt_next and abs(new_calc - declared) <= 2000.0 and i > 0:
+                    merged[i - 1]["name"] = f"{merged[i - 1]['name']} {merged[i]['name']}".strip()
+                    merged.pop(i)
+                    break
+
+        # Case B: Model gán nhầm tiền cho dòng phụ, khiến dòng chính bên dưới bị khuyết tiền
+        for i in range(len(merged) - 1):
+            amt_i = clean_currency(merged[i].get("amount", ""))
+            amt_next = clean_currency(merged[i + 1].get("amount", ""))
+            if amt_i > 0 and amt_next == 0 and is_empty_value(merged[i + 1].get("amount")) and i > 0:
+                merged[i - 1]["name"] = f"{merged[i - 1]['name']} {merged[i]['name']}".strip()
+                merged[i + 1]["price"] = merged[i]["price"]
+                merged[i + 1]["amount"] = merged[i]["amount"]
+                merged.pop(i)
+                break
+
     return merged
 
 def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> ValidationReport:

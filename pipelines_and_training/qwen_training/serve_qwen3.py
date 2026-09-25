@@ -38,7 +38,7 @@ active_adapter = "v2"
 available_adapters = []
 is_loading = False
 
-PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn tiếng Việt. Hãy đọc kỹ hình ảnh và trích xuất thông tin vào định dạng JSON sau:
+PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn. Hãy đọc kỹ hình ảnh và trích xuất thông tin vào định dạng JSON sau:
 {
   "SELLER": "Tên cửa hàng hoặc công ty",
   "ADDRESS": "Địa chỉ",
@@ -54,11 +54,13 @@ PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn 
   "TOTAL_COST": "Tổng tiền thanh toán cuối cùng"
 }
 Quy tắc bắt buộc:
-1. NGUYÊN TẮC GIÓNG HÀNG THEO CỘT THÀNH TIỀN: Mỗi phần tử trong mảng ITEMS bắt buộc phải tương ứng với đúng MỘT dòng in thành tiền ở cột Thành tiền (T. Tiền). Tuyệt đối không lặp lại cùng một số tiền cho 2 phần tử khác nhau.
-2. NGUYÊN TẮC GHÉP DÒNG: Nếu tên của một món hàng dài bị in rớt xuống 2 hoặc 3 dòng (ví dụ: 'NAM DƯƠNG Sốt' xuống dòng 'Dầu Dấm Trộn' xuống dòng 'Salad 250g'; hoặc 'WINECO Xà lách' xuống dòng 'lolo xanh L1 300g') mà các dòng dưới KHÔNG có in số tiền mới ở cột Thành tiền, BẮT BUỘC phải ghép tất cả các dòng đó lại thành MỘT tên món duy nhất ('NAM DƯƠNG Sốt Dầu Dấm Trộn Salad 250g', 'WINECO Xà lách lolo xanh L1 300g') ứng với đúng số tiền thực tế của món đó.
-3. TUYỆT ĐỐI KHÔNG tách các dòng tiếp nối thành các món riêng và TUYỆT ĐỐI KHÔNG bốc số tiền của món bên dưới gán cho món bên trên.
-4. Dòng khuyến mãi / giảm giá (như 'KM: -3,100') nằm dưới món hàng phải gộp vào món hàng đó, không tạo thêm món.
-5. QUY TẮC NGUYÊN VĂN (VERBATIM): Sao chép chính xác 100% từng ký tự như in trên ảnh hóa đơn. Nếu chữ in trên hóa đơn là KHÔNG DẤU (ví dụ: 'SUA TUOI', 'CA TIM', 'XUONG HEO') thì BẮT BUỘC giữ nguyên KHÔNG DẤU ('SUA TUOI', 'CA TIM', 'XUONG HEO'). TUYỆT ĐỐI KHÔNG tự ý suy đoán, không tự thêm dấu tiếng Việt và không tự sửa chính tả."""
+1. QUY TẮC NGUYÊN VĂN (VERBATIM): Sao chép chính xác 100% từng ký tự như in trên ảnh hóa đơn. Nếu chữ in trên hóa đơn là KHÔNG DẤU (ví dụ: 'Tra Sen Vang', 'Cookies va Cream', 'Khoai Mon', 'Tran Chau', 'SUA TUOI') thì BẮT BUỘC giữ nguyên 100% KHÔNG DẤU. TUYỆT ĐỐI KHÔNG tự ý suy đoán, không tự thêm dấu tiếng Việt và không tự sửa chính tả. Nếu chữ in có dấu tiếng Việt thì giữ nguyên có dấu.
+2. QUY TẮC NHẬN DIỆN MÓN HÀNG THEO CỘT SỐ LƯỢNG (SL) VÀ GIÁ TIỀN:
+   - DÒNG MÓN HÀNG MỚI: Mỗi dòng có in số lượng ở cột SL (ví dụ số '1', '2'...) HOẶC có in giá tiền/thành tiền (kể cả số '0' như món 'Khoai Mon S' có giá '0') thì BẮT BUỘC TÁCH THÀNH MỘT ITEM RIÊNG.
+     Ví dụ: 'Khoai Mon S' có in số '1' ở cột SL và số '0' ở cột giá tiền nên PHẢI LÀ MỘT ITEM RIÊNG ('name': 'Khoai Mon S', 'qty': '1', 'price': '0', 'amount': '0').
+   - DÒNG PHỤ / DÒNG NỐI TIẾP: Dòng nào thụt lề, KHÔNG CÓ số lượng ở cột SL và KHÔNG CÓ giá tiền ở cột bên phải (ví dụ: 'Dầu Dấm Trộn Salad 250g' dưới 'NAM DƯƠNG Sốt'; hoặc 'thanh trung' dưới 'MỌC CHÂU Sữa') thì BẮT BUỘC ghép vào tên món ngay phía trên nó.
+   - TUYỆT ĐỐI KHÔNG bốc số tiền của món bên dưới gán cho món bên trên.
+3. Dòng khuyến mãi / giảm giá (như 'KM: -3,100') nằm dưới món hàng phải gộp vào món hàng đó, không tạo thêm món riêng."""
 
 def get_vram_usage():
     if torch.cuda.is_available():
