@@ -62,7 +62,9 @@ Quy tắc bắt buộc:
      * Ví dụ 'K-food Rong biển cuộn cơm' xuống 'roasted laver 23g' (giá 29.000) -> BẮT BUỘC ghép thành một tên duy nhất 'K-food Rong biển cuộn cơm roasted laver 23g' với giá 29.000. Tuyệt đối không tách 'roasted laver 23g' thành món riêng!
      * Ví dụ 'Tảo cuộn cơm Sushi Nori Yaki' xuống '20g' (giá 37.000) -> BẮT BUỘC ghép thành một tên duy nhất 'Tảo cuộn cơm Sushi Nori Yaki 20g' với giá 37.000.
      * Ví dụ 'Thanh ngũ cốc Granola' xuống 'Nguyên Khôi 300g' (giá 150.000) -> BẮT BUỘC ghép thành một tên duy nhất 'Thanh ngũ cốc Granola Nguyên Khôi 300g' với giá 150.000.
-     * Ví dụ 'NAM DƯƠNG Sốt' xuống 'Dầu Dấm Trộn Salad 250g' (giá 20,200) -> BẮT BUỘC ghép thành một tên duy nhất 'NAM DƯƠNG Sốt Dầu Dấm Trộn Salad 250g'.
+     * Ví dụ 'NAM DƯƠNG Sốt' xuống 'Dầu Dấm Trộn' xuống 'Salad 250g' (giá 20,200) -> BẮT BUỘC ghép cả 3 dòng thành 'NAM DƯƠNG Sốt Dầu Dấm Trộn Salad 250g' (giá 20,200).
+     * Ví dụ 'MỘC CHÂU Sữa' xuống 'thanh trùng' xuống 'k.đường H 900ml' (giá 40,700) -> BẮT BUỘC ghép cả 3 dòng thành 'MỘC CHÂU Sữa thanh trùng k.đường H 900ml' (giá 40,700). Tuyệt đối không tách 'k.đường H 900ml' thành món riêng và không nhìn chéo xuống dưới bốc số 15,500!
+     * Ví dụ 'WINECO Xà lách' xuống 'lolo xanh L1 300g' (giá 15,500) -> BẮT BUỘC ghép thành 'WINECO Xà lách lolo xanh L1 300g' (giá 15,500). Dòng 'KM: -3,100' là giảm giá, không tạo món mới!
      * Ví dụ 'Tra Sen Vang Tran Chau' xuống topping 'Com va Kem La Dua L' (giá 69.000) -> BẮT BUỘC ghép thành một tên duy nhất 'Tra Sen Vang Tran Chau Com va Kem La Dua L'.
    - TUYỆT ĐỐI KHÔNG tách dòng không có tiền thành món riêng, và TUYỆT ĐỐI KHÔNG nhìn chéo xuống dòng dưới để bốc tiền gán cho dòng rớt phía trên.
    - Dòng có ghi rõ số lượng và số tiền là 0 (ví dụ '1 Khoai Mon S 0') thì vẫn là một món độc lập với amount là '0'.
