@@ -2067,29 +2067,6 @@ export default function Home() {
                                   alt="Ảnh gốc trước xử lý"
                                   className="rounded shadow-xs max-w-full max-h-[350px] object-contain pointer-events-none"
                                 />
-                                {/* Visual quad indicator */}
-                                <div className="absolute inset-0 select-none pointer-events-none">
-                                  <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                    <polygon
-                                      points={`${activeCorners[0].x},${activeCorners[0].y} ${activeCorners[1].x},${activeCorners[1].y} ${activeCorners[2].x},${activeCorners[2].y} ${activeCorners[3].x},${activeCorners[3].y}`}
-                                      fill="rgba(245, 158, 11, 0.2)"
-                                      stroke="#f59e0b"
-                                      strokeWidth="1.2"
-                                      strokeDasharray="2 1.5"
-                                    />
-                                  </svg>
-                                  {activeCorners.map((pt, pIdx) => (
-                                    <div
-                                      key={pIdx}
-                                      className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
-                                      style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
-                                    >
-                                      <div className="w-4 h-4 rounded-full bg-amber-500 border border-white text-[8px] font-black text-white flex items-center justify-center shadow-md">
-                                        {pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
                               </div>
                             </div>
                           </div>
