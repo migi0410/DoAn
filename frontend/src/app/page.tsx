@@ -634,6 +634,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("extract");
   const [isServerOnline, setIsServerOnline] = useState<boolean | null>(null);
   const [gpuInfo, setGpuInfo] = useState<any>(null);
+  const [inferenceSource, setInferenceSource] = useState<string | null>(null);
   const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed">("preprocessed");
   const [preprocessViewTab, setPreprocessViewTab] = useState<"cropped" | "contour" | "compare">("compare");
   const [preprocessedUrl, setPreprocessedUrl] = useState<string | null>(null);
@@ -778,6 +779,7 @@ export default function Home() {
           setResult(res.data.extraction);
           setValidation(res.data.validation);
           setLatency(res.data.latency_seconds);
+          setInferenceSource(res.data.inference_source_name || (res.data.is_fallback ? "PopOS Tailscale (Backup)" : "RunPod Cloud (RTX 3090 Ti)"));
           setServerImageUrl(res.data.image_url);
           setImageViewMode("preprocessed");
           setLoading(false);
@@ -788,11 +790,11 @@ export default function Home() {
         if (f) {
           setLoading(false);
           if (e.code === "ECONNABORTED" || e.message?.toLowerCase().includes("timeout")) {
-            alert("Mạng di động hoặc xử lý trên GPU mất quá nhiều thời gian (>60s). Vui lòng thử bấm 'Trích xuất' lại!");
+            alert("Mạng hoặc xử lý trên GPU mất quá nhiều thời gian (>60s). Vui lòng thử bấm 'Trích xuất' lại!");
           } else if (e.response?.data?.detail) {
             alert(`Lỗi máy chủ GPU: ${e.response.data.detail}`);
           } else {
-            alert("Không thể kết nối tới GPU Pop!_OS hoặc phiên làm việc bị ngắt. Vui lòng kiểm tra lại mạng!");
+            alert("Không thể kết nối tới máy chủ GPU (RunPod 3090 Ti / PopOS) hoặc phiên làm việc bị ngắt. Vui lòng kiểm tra lại mạng!");
           }
           return;
         }
@@ -821,7 +823,7 @@ export default function Home() {
 
     // Custom uploaded file when GPU is offline
     if (f) {
-      alert("GPU hiện đang ngoại tuyến. Vui lòng bật máy GPU Pop!_OS để quét ảnh mới, hoặc chọn các mẫu hóa đơn có sẵn để trải nghiệm đầy đủ tính năng.");
+      alert("GPU hiện đang ngoại tuyến. Vui lòng bật máy chủ GPU (RunPod 3090 Ti hoặc PopOS) để quét ảnh mới, hoặc chọn các mẫu hóa đơn có sẵn để trải nghiệm.");
     }
     setLoading(false);
   };
@@ -1441,7 +1443,7 @@ export default function Home() {
     }
 
     if (file) {
-      alert("GPU hiện đang ngoại tuyến. Vui lòng bật máy GPU Pop!_OS để so sánh ảnh mới tải lên, hoặc chọn các mẫu hóa đơn có sẵn.");
+      alert("GPU hiện đang ngoại tuyến. Vui lòng bật máy chủ GPU (RunPod 3090 Ti hoặc PopOS) để so sánh ảnh mới tải lên, hoặc chọn các mẫu hóa đơn có sẵn.");
     }
     setCompareLoading(false);
   };
@@ -1953,15 +1955,31 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${
               isServerOnline
-                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                ? (gpuInfo?.is_fallback
+                    ? "bg-amber-50 border-amber-300 text-amber-800"
+                    : "bg-emerald-50 border-emerald-300 text-emerald-800")
                 : isServerOnline === false
                 ? "bg-slate-100 border-slate-200 text-slate-600"
                 : "bg-slate-100 border-slate-200 text-slate-500"
-            }`}>
+            }`}
+            title={gpuInfo ? `${gpuInfo.gpu} (${gpuInfo.host}) - Ping: ${gpuInfo.ping_ms}ms` : undefined}
+            >
               <span className={`w-2 h-2 rounded-full ${
-                isServerOnline ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : isServerOnline === false ? "bg-slate-400" : "bg-slate-400 animate-pulse"
+                isServerOnline
+                  ? (gpuInfo?.is_fallback
+                      ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)] animate-pulse"
+                      : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]")
+                  : isServerOnline === false ? "bg-slate-400" : "bg-slate-400 animate-pulse"
               }`} />
-              <span>{isServerOnline ? "GPU: Trực tuyến" : isServerOnline === false ? "GPU: Ngoại tuyến" : "GPU: Đang kiểm tra..."}</span>
+              <span>
+                {isServerOnline
+                  ? (gpuInfo?.is_fallback
+                      ? "PopOS (Fallback): Trực tuyến"
+                      : (gpuInfo?.host ? `${gpuInfo.host}: Trực tuyến` : "RunPod 3090 Ti: Trực tuyến"))
+                  : isServerOnline === false
+                  ? "GPU: Ngoại tuyến"
+                  : "GPU: Đang kiểm tra..."}
+              </span>
             </div>
           </div>
           
@@ -2661,9 +2679,20 @@ export default function Home() {
                           Quy Trình 3 Giai Đoạn End-to-End
                         </span>
                       </div>
-                      <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
-                        Tổng thời gian: {latency ? latency.toFixed(2) : "0.92"}s
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {inferenceSource && (
+                          <span className={`text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full border ${
+                            inferenceSource.includes("PopOS")
+                              ? "bg-amber-100 text-amber-800 border-amber-300"
+                              : "bg-emerald-100 text-emerald-800 border-emerald-300"
+                          }`}>
+                            {inferenceSource.includes("PopOS") ? "⚡ Nguồn: PopOS (Fallback)" : "⚡ Nguồn: RunPod RTX 3090 Ti"}
+                          </span>
+                        )}
+                        <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                          Tổng thời gian: {latency ? latency.toFixed(2) : "0.92"}s
+                        </span>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -2695,7 +2724,7 @@ export default function Home() {
                           <Layers className="w-3.5 h-3.5 text-purple-500" /> Suy Luận VLM
                         </div>
                         <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                          Qwen3-VL 8B (LoRA v2) Vision Transformer trích xuất JSON
+                          {inferenceSource ? `${inferenceSource} • Qwen3-VL 8B (LoRA v2)` : "Qwen3-VL 8B (LoRA v2) Vision Transformer trích xuất JSON"}
                         </p>
                       </div>
 

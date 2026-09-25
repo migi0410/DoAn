@@ -1,5 +1,8 @@
 import os
 import sys
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+load_dotenv()
 import json
 import time
 import uuid
@@ -498,51 +501,75 @@ def get_samples():
     return {"samples": res}
 
 
-POPOS_API_URL = os.getenv("POPOS_API_URL", "http://100.80.138.26:8000")
+POPOS_API_URL = os.getenv("POPOS_API_URL", "https://omlfvzmqlnr5zg-8000.proxy.runpod.net")
+BACKUP_GPU_URL = os.getenv("BACKUP_GPU_URL", "http://100.80.138.26:8000")
+
+def get_active_gpu_url() -> tuple:
+    """Finds the currently available GPU endpoint (RunPod RTX 3090 Ti primary -> PopOS backup)."""
+    endpoints = [
+        (POPOS_API_URL, "RunPod Cloud (RTX 3090 Ti)", "NVIDIA GeForce RTX 3090 Ti (24GB Cloud)"),
+        (BACKUP_GPU_URL, "PopOS Tailscale (Backup)", "NVIDIA GeForce RTX 5060 Ti (16GB)")
+    ]
+    for url, host_lbl, gpu_lbl in endpoints:
+        if not url:
+            continue
+        try:
+            r = requests.get(f"{url}/health", timeout=2.5)
+            if r.status_code == 200:
+                return url, host_lbl, gpu_lbl, r.json()
+        except Exception:
+            continue
+    return None, None, None, None
 
 @app.get("/api/gpu_status")
 def get_gpu_status():
-    """Checks connection to PopOS RTX 5060 Ti GPU server and retrieves VRAM stats."""
-    try:
-        t0 = time.time()
-        r = requests.get(f"{POPOS_API_URL}/health", timeout=3)
-        if r.status_code == 200:
-            data = r.json()
-            return {
-                "online": True,
-                "host": "100.80.138.26",
-                "gpu": "NVIDIA GeForce RTX 5060 Ti (16GB)",
-                "active_version": data.get("active_version", "v2"),
-                "status": data.get("status", "ready"),
-                "vram_allocated_mb": data.get("vram_allocated_mb", 0.0),
-                "vram_reserved_mb": data.get("vram_reserved_mb", 0.0),
-                "available_adapters": data.get("available_adapters", ["v2", "base"]),
-                "ping_ms": round((time.time() - t0) * 1000, 1)
-            }
-    except Exception as e:
-        pass
+    """Checks connection to RunPod RTX 3090 Ti (or PopOS backup) and retrieves VRAM stats."""
+    t0 = time.time()
+    url, host_lbl, gpu_lbl, data = get_active_gpu_url()
+    if data is not None:
+        is_fb = (url == BACKUP_GPU_URL)
+        return {
+            "online": True,
+            "host": host_lbl,
+            "gpu": gpu_lbl,
+            "active_version": data.get("active_version", "v2"),
+            "status": data.get("status", "ready"),
+            "vram_allocated_mb": data.get("vram_allocated_mb", 0.0),
+            "vram_reserved_mb": data.get("vram_reserved_mb", 0.0),
+            "available_adapters": data.get("available_adapters", ["v2", "base"]),
+            "ping_ms": round((time.time() - t0) * 1000, 1),
+            "api_url": url,
+            "is_fallback": is_fb,
+            "source_type": "backup_popos" if is_fb else "primary_runpod"
+        }
     return {
         "online": False,
-        "host": "100.80.138.26",
-        "gpu": "NVIDIA GeForce RTX 5060 Ti (16GB)",
+        "host": "RunPod RTX 3090 Ti / PopOS",
+        "gpu": "NVIDIA GeForce RTX 3090 Ti / 5060 Ti",
         "status": "offline",
-        "error": "Chưa kết nối được máy PopOS qua Tailscale"
+        "error": "Không thể kết nối máy chủ GPU (RunPod 3090 Ti hoặc PopOS)",
+        "is_fallback": False,
+        "source_type": "offline"
     }
 
 @app.post("/api/gpu/unload")
 def api_unload_gpu_vram():
-    """Sends command to kick model from PopOS VRAM."""
+    """Sends command to kick model from active GPU VRAM."""
+    active_url, _, _, _ = get_active_gpu_url()
+    target_url = active_url or POPOS_API_URL
     try:
-        r = requests.post(f"{POPOS_API_URL}/unload", timeout=15)
+        r = requests.post(f"{target_url}/unload", timeout=15)
         return r.json()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/gpu/switch_adapter")
 def api_switch_adapter(target: str = Form(...)):
-    """Sends command to switch active adapter on PopOS."""
+    """Sends command to switch active adapter on active GPU."""
+    active_url, _, _, _ = get_active_gpu_url()
+    target_url = active_url or POPOS_API_URL
     try:
-        r = requests.post(f"{POPOS_API_URL}/switch_adapter", data={"target": target}, timeout=15)
+        r = requests.post(f"{target_url}/switch_adapter", data={"target": target}, timeout=15)
         return r.json()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -726,47 +753,58 @@ async def predict_receipt(
     raw_output = None
     inference_source = "local_profile"
 
-    extraction: Dict[str, Any] = {}
-    actual_latency = None
-    raw_output = None
-    inference_source = "local_profile"
-
     try:
-        print(f"🚀 [PopOS Forward] Sending {img_path} to {POPOS_API_URL}/extract ...")
-        with open(img_path, "rb") as f_img:
-            resp = requests.post(
-                f"{POPOS_API_URL}/extract",
-                files={"file": (os.path.basename(img_path), f_img, "image/jpeg")},
-                data={"model_id": model},
-                timeout=(1.5, 90)
-            )
-        if resp.status_code == 200:
-            popos_data = resp.json()
-            if popos_data.get("success") and "data" in popos_data:
-                raw_data = popos_data["data"]
-                actual_latency = float(popos_data.get("latency_s", round(time.time() - start_time, 2)))
-                raw_output = popos_data.get("raw")
-                inference_source = "popos_gpu_rtx5060ti"
-                
-                items_parsed = []
-                if "ITEMS" in raw_data and isinstance(raw_data["ITEMS"], list):
-                    for it in raw_data["ITEMS"]:
-                        items_parsed.append({
-                            "name": str(it.get("name", "")),
-                            "qty": str(it.get("qty", "")),
-                            "price": str(it.get("price", "")),
-                            "amount": str(it.get("amount", ""))
-                        })
-                extraction = {
-                    "SELLER": str(raw_data.get("SELLER", "")),
-                    "ADDRESS": str(raw_data.get("ADDRESS", "")),
-                    "TIMESTAMP": str(raw_data.get("TIMESTAMP", "")),
-                    "TOTAL_COST": str(raw_data.get("TOTAL_COST", "")),
-                    "ITEMS": items_parsed
-                }
-                print(f"✅ [PopOS Success] Real GPU extraction in {actual_latency}s: {len(items_parsed)} items")
+        endpoints_to_try = [
+            (POPOS_API_URL, "runpod_gpu_rtx3090ti", "RunPod Cloud RTX 3090 Ti (Chính)"),
+            (BACKUP_GPU_URL, "popos_gpu_rtx5060ti", "PopOS Backup RTX 5060 Ti (Dự phòng)")
+        ]
+        popos_data = None
+        for gpu_url, src_label, host_label in endpoints_to_try:
+            if not gpu_url:
+                continue
+            try:
+                print(f"🚀 [GPU Forward] Sending {img_path} to {host_label} ({gpu_url}/extract) ...")
+                with open(img_path, "rb") as f_img:
+                    resp = requests.post(
+                        f"{gpu_url}/extract",
+                        files={"file": (os.path.basename(img_path), f_img, "image/jpeg")},
+                        data={"model_id": model},
+                        timeout=(3.0, 90)
+                    )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data.get("success") and "data" in data:
+                        popos_data = data
+                        inference_source = src_label
+                        break
+            except Exception as e_forward:
+                print(f"⚠️ [GPU Forward Warning] {host_label} failed: {e_forward}. Trying next endpoint...")
+                continue
+
+        if popos_data is not None:
+            raw_data = popos_data["data"]
+            actual_latency = float(popos_data.get("latency_s", round(time.time() - start_time, 2)))
+            raw_output = popos_data.get("raw")
+            
+            items_parsed = []
+            if "ITEMS" in raw_data and isinstance(raw_data["ITEMS"], list):
+                for it in raw_data["ITEMS"]:
+                    items_parsed.append({
+                        "name": str(it.get("name", "")),
+                        "qty": str(it.get("qty", "")),
+                        "price": str(it.get("price", "")),
+                        "amount": str(it.get("amount", ""))
+                    })
+            extraction = {
+                "SELLER": str(raw_data.get("SELLER", "")),
+                "ADDRESS": str(raw_data.get("ADDRESS", "")),
+                "TIMESTAMP": str(raw_data.get("TIMESTAMP", "")),
+                "TOTAL_COST": str(raw_data.get("TOTAL_COST", "")),
+                "ITEMS": items_parsed
+            }
+            print(f"✅ [GPU Success] Real GPU extraction via {inference_source} in {actual_latency}s: {len(items_parsed)} items")
     except Exception as e:
-        print(f"⚠️ [PopOS Warning] Remote GPU inference error: {e}. Falling back smoothly.")
+        print(f"⚠️ [GPU Warning] Remote GPU inference error: {e}. Falling back smoothly.")
 
     if not extraction:
         if matched_sample:
@@ -822,6 +860,8 @@ async def predict_receipt(
         "schema_version": schema_version,
         "latency_seconds": actual_latency if actual_latency is not None else simulated_latency,
         "inference_source": inference_source,
+        "inference_source_name": "RunPod Cloud (NVIDIA RTX 3090 Ti)" if inference_source == "runpod_gpu_rtx3090ti" else ("PopOS Tailscale (NVIDIA RTX 5060 Ti - Backup)" if inference_source == "popos_gpu_rtx5060ti" else "Bộ dữ liệu chuẩn Ground Truth"),
+        "is_fallback": (inference_source == "popos_gpu_rtx5060ti"),
         "raw_output": raw_output,
         "raw_items": raw_items_unmodified,
         "reconciled": len(reconciled_items) != len(raw_items_unmodified),

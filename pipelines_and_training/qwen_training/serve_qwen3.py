@@ -54,11 +54,11 @@ PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn.
   "TOTAL_COST": "Tổng tiền thanh toán cuối cùng"
 }
 Quy tắc bắt buộc:
-1. QUY TẮC NGUYÊN VĂN (VERBATIM): Quan sát kỹ các chữ in trên hóa đơn. Nếu chữ in trên hóa đơn là KHÔNG DẤU (ví dụ: 'Tra Sen Vang', 'Khoai Mon', 'Cookies va Cream', 'Tran Chau', 'Com va Kem La Dua', 'PhinDi Hanh Nhan', 'SUA TUOI') thì BẮT BUỘC toàn bộ đầu ra JSON phải giữ nguyên 100% KHÔNG DẤU như in trên hóa đơn. TUYỆT ĐỐI KHÔNG tự ý suy đoán, không tự thêm dấu tiếng Việt (không được tự sửa thành 'Trà Sen Vàng', 'PhinDì Hạnh Nhân'). Nếu chữ in có dấu tiếng Việt thì giữ nguyên có dấu.
-2. QUY TẮC GHÉP DÒNG RỚT VÀ DÒNG PHỤ (INDENTED / ADD-ON LINES):
-   - Nếu dưới một món hàng có dòng chữ phụ in thụt lề hoặc không có số tiền riêng ở cột thành tiền bên phải (ví dụ: dòng 'Com va Kem La Dua L' nằm dưới 'Tra Sen Vang Tran Chau'; hoặc 'Dầu Dấm Trộn Salad 250g' dưới 'NAM DƯƠNG Sốt'; hoặc 'lolo xanh L1 300g' dưới 'WINECO Xà lách'), BẮT BUỘC phải ghép tất cả các dòng đó vào tên món chính phía trên (ví dụ: 'Tra Sen Vang Tran Chau Com va Kem La Dua L', 'NAM DƯƠNG Sốt Dầu Dấm Trộn Salad 250g', 'WINECO Xà lách lolo xanh L1 300g').
-   - TUYỆT ĐỐI KHÔNG tách dòng phụ thành món riêng và TUYỆT ĐỐI KHÔNG bốc số tiền của món bên dưới gán cho nó.
-3. NGUYÊN TẮC GIÓNG HÀNG THEO CỘT THÀNH TIỀN: Mỗi phần tử trong mảng ITEMS bắt buộc phải tương ứng với đúng MỘT dòng in thành tiền ở cột Thành tiền (bên phải). Tuyệt đối không lặp lại cùng một số tiền cho 2 phần tử khác nhau.
+1. QUY TẮC NGUYÊN VĂN (VERBATIM): Quan sát kỹ các chữ in trên hóa đơn. Nếu chữ in trên hóa đơn là KHÔNG DẤU (ví dụ: 'Tra Sen Vang', 'Khoai Mon', 'Cookies va Cream', 'Tran Chau', 'Com va Kem La Dua', 'PhinDi Hanh Nhan', 'SUA TUOI') thì BẮT BUỘC toàn bộ đầu ra JSON phải giữ nguyên 100% KHÔNG DẤU như in trên hóa đơn. TUYỆT ĐỐI KHÔNG tự ý suy đoán, không tự thêm dấu tiếng Việt. Nếu chữ in có dấu tiếng Việt thì giữ nguyên có dấu.
+2. QUY TẮC GHÉP DÒNG RỚT VÀ DÒNG PHỤ (CẢ 2 KIỂU BẢNG):
+   - Kiểu 1 (Giá in ở dòng trên, dòng dưới là phần nối tiếp/tiếng Anh/khối lượng): Ví dụ 'K-food Rong biển cuộn cơm' xuống dòng 'roasted laver 23g' (giá 29.000); hoặc 'Tảo cuộn cơm Sushi Nori Yaki' xuống dòng '20g' (giá 37.000); hoặc 'Thanh ngũ cốc Granola' xuống dòng 'Nguyên Khôi 300g' (giá 150.000) -> BẮT BUỘC ghép thành một tên duy nhất ('K-food Rong biển cuộn cơm roasted laver 23g', 'Tảo cuộn cơm Sushi Nori Yaki 20g', 'Thanh ngũ cốc Granola Nguyên Khôi 300g') với đúng số tiền ở dòng trên. Tuyệt đối không tách dòng khối lượng/tiếng Anh thành món riêng!
+   - Kiểu 2 (Giá in ở dòng dưới, tên món dài rớt từ trên xuống hoặc dòng topping không giá): Ví dụ 'NAM DƯƠNG Sốt' xuống 'Dầu Dấm Trộn Salad 250g'; hoặc 'Tra Sen Vang Tran Chau' xuống topping 'Com va Kem La Dua L' -> BẮT BUỘC ghép vào món chính tương ứng.
+3. NGUYÊN TẮC GIÓNG HÀNG THEO CỘT THÀNH TIỀN: Mỗi phần tử trong mảng ITEMS bắt buộc phải tương ứng với đúng MỘT dòng in thành tiền ở cột Thành tiền. Tuyệt đối không lặp lại cùng một số tiền cho nhiều món khác nhau nếu trên hóa đơn chỉ có 1 số tiền đó.
 4. Dòng khuyến mãi / giảm giá (như 'KM: -3,100') nằm dưới món hàng phải gộp vào món hàng đó, không tạo thêm món mới."""
 
 def get_vram_usage():
