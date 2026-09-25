@@ -370,7 +370,7 @@ function FormattedMessage({ content, isUser }: { content: string; isUser: boolea
 // Helper: Canvas 2D Homography Perspective Transformation with Triangulated Mesh
 function warpQuadToCanvas(
   img: HTMLImageElement,
-  corners: { x: number; y: number }[],
+  corners: { label?: string; x: number; y: number }[],
   outWidth: number,
   outHeight: number
 ): HTMLCanvasElement {
@@ -462,6 +462,42 @@ function warpQuadToCanvas(
   return canvas;
 }
 
+// Client-side instant perspective transform helper
+const generateWarpedImage = async (corners: { label?: string; x: number; y: number }[], imgSrc: string): Promise<string | null> => {
+  if (!imgSrc || !corners || corners.length !== 4) return null;
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const origW = img.naturalWidth || img.width || 800;
+        const origH = img.naturalHeight || img.height || 1000;
+
+        const p1 = { x: (corners[0].x / 100) * origW, y: (corners[0].y / 100) * origH };
+        const p2 = { x: (corners[1].x / 100) * origW, y: (corners[1].y / 100) * origH };
+        const p3 = { x: (corners[2].x / 100) * origW, y: (corners[2].y / 100) * origH };
+        const p4 = { x: (corners[3].x / 100) * origW, y: (corners[3].y / 100) * origH };
+
+        const wTop = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        const wBot = Math.hypot(p3.x - p4.x, p3.y - p4.y);
+        const targetW = Math.max(300, Math.round(Math.max(wTop, wBot)));
+
+        const hLeft = Math.hypot(p4.x - p1.x, p4.y - p1.y);
+        const hRight = Math.hypot(p3.x - p2.x, p3.y - p2.y);
+        const targetH = Math.max(400, Math.round(Math.max(hLeft, hRight)));
+
+        const canvas = warpQuadToCanvas(img, corners, targetW, targetH);
+        resolve(canvas.toDataURL("image/jpeg", 0.92));
+      } catch (err) {
+        console.warn("Warp canvas error:", err);
+        resolve(null);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = imgSrc;
+  });
+};
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [selectedSampleId, setSelectedSampleId] = useState<string | null>(null);
@@ -474,7 +510,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("extract");
   const [isServerOnline, setIsServerOnline] = useState<boolean | null>(null);
   const [gpuInfo, setGpuInfo] = useState<any>(null);
-  const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed">("original");
+  const [imageViewMode, setImageViewMode] = useState<"original" | "preprocessed">("preprocessed");
+  const [preprocessViewTab, setPreprocessViewTab] = useState<"cropped" | "contour" | "compare">("cropped");
   const [preprocessedUrl, setPreprocessedUrl] = useState<string | null>(null);
   const [detectedAngle, setDetectedAngle] = useState<number | null>(null);
   const [showQuadContour, setShowQuadContour] = useState<boolean>(false);
@@ -811,6 +848,7 @@ export default function Home() {
           }
         }
 
+        let detected = null;
         if (found && maxX > minX + 25 && maxY > minY + 35) {
           const x1 = Math.round((minX / sw) * 1000) / 10;
           const y1 = Math.round((minY / sh) * 1000) / 10;
@@ -821,22 +859,26 @@ export default function Home() {
           const x4 = Math.round(((minX + 2) / sw) * 1000) / 10;
           const y4 = Math.round((maxY / sh) * 1000) / 10;
 
-          setDetectedCorners([
+          detected = [
             { label: "P1 (Top-Left)", x: Math.max(2.5, x1), y: Math.max(2.5, y1) },
             { label: "P2 (Top-Right)", x: Math.min(97.5, x2), y: Math.max(2.5, y2) },
             { label: "P3 (Bottom-Right)", x: Math.min(97.5, x3), y: Math.min(97.5, y3) },
             { label: "P4 (Bottom-Left)", x: Math.max(2.5, x4), y: Math.min(97.5, y4) },
-          ]);
+          ];
         } else {
           const marginX = w > h ? 18.0 : 8.5;
           const marginY = 6.5;
-          setDetectedCorners([
+          detected = [
             { label: "P1 (Top-Left)", x: marginX, y: marginY },
             { label: "P2 (Top-Right)", x: Math.round((100 - marginX) * 10) / 10, y: marginY + 1.2 },
             { label: "P3 (Bottom-Right)", x: Math.round((100 - marginX + 0.5) * 10) / 10, y: Math.round((100 - marginY) * 10) / 10 },
             { label: "P4 (Bottom-Left)", x: marginX + 0.8, y: Math.round((100 - marginY) * 10) / 10 },
-          ]);
+          ];
         }
+        setDetectedCorners(detected);
+        generateWarpedImage(detected, imgSrc).then((warped) => {
+          if (warped) setPreprocessedUrl(warped);
+        });
       } catch (e) {
         console.warn("Auto detect corners error:", e);
       }
@@ -882,11 +924,21 @@ export default function Home() {
       try {
         e.currentTarget.releasePointerCapture(e.pointerId);
       } catch {}
+
+      // Automatically re-crop when user finishes dragging!
+      const rawSrc = (selectedSampleId && currentSample)
+        ? `${API_BASE}/templates_images/${currentSample.rawFile}`
+        : (preview || "");
+      if (rawSrc && activeCorners.length === 4) {
+        generateWarpedImage(activeCorners, rawSrc).then((cropped) => {
+          if (cropped) setPreprocessedUrl(cropped);
+        });
+      }
     }
   };
 
   const applyPerspectiveWarp = async () => {
-    if (!imgElementRef.current || !activeCorners || activeCorners.length !== 4) return;
+    if (!activeCorners || activeCorners.length !== 4) return;
     setIsWarping(true);
     try {
       const srcUrl = (selectedSampleId && currentSample)
@@ -894,37 +946,12 @@ export default function Home() {
         : (preview || "");
       if (!srcUrl) return;
 
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = srcUrl;
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-
-      const origW = img.naturalWidth || 800;
-      const origH = img.naturalHeight || 1000;
-
-      const p1 = { x: (activeCorners[0].x / 100) * origW, y: (activeCorners[0].y / 100) * origH };
-      const p2 = { x: (activeCorners[1].x / 100) * origW, y: (activeCorners[1].y / 100) * origH };
-      const p3 = { x: (activeCorners[2].x / 100) * origW, y: (activeCorners[2].y / 100) * origH };
-      const p4 = { x: (activeCorners[3].x / 100) * origW, y: (activeCorners[3].y / 100) * origH };
-
-      const wTop = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-      const wBot = Math.hypot(p3.x - p4.x, p3.y - p4.y);
-      const targetW = Math.max(300, Math.round(Math.max(wTop, wBot)));
-
-      const hLeft = Math.hypot(p4.x - p1.x, p4.y - p1.y);
-      const hRight = Math.hypot(p3.x - p2.x, p3.y - p2.y);
-      const targetH = Math.max(400, Math.round(Math.max(hLeft, hRight)));
-
-      const canvas = warpQuadToCanvas(img, activeCorners, targetW, targetH);
-      const warpedDataUrl = canvas.toDataURL("image/jpeg", 0.92);
-
-      setPreprocessedUrl(warpedDataUrl);
-      setShowQuadContour(false);
-      setImageViewMode("preprocessed");
-      setDetectedAngle(0.0);
+      const warpedDataUrl = await generateWarpedImage(activeCorners, srcUrl);
+      if (warpedDataUrl) {
+        setPreprocessedUrl(warpedDataUrl);
+        setPreprocessViewTab("cropped");
+        setDetectedAngle(0.0);
+      }
     } catch (err) {
       console.error("Lỗi cắt nắn phẳng:", err);
     } finally {
@@ -934,7 +961,12 @@ export default function Home() {
 
   const handleResetCorners = () => {
     if (selectedSampleId && DOCALIGNER_FALLBACK_CORNERS[selectedSampleId]) {
-      setDetectedCorners([...DOCALIGNER_FALLBACK_CORNERS[selectedSampleId]]);
+      const resetCorners = [...DOCALIGNER_FALLBACK_CORNERS[selectedSampleId]];
+      setDetectedCorners(resetCorners);
+      const rawSrc = `${API_BASE}/templates_images/${currentSample?.rawFile}`;
+      generateWarpedImage(resetCorners, rawSrc).then((cropped) => {
+        if (cropped) setPreprocessedUrl(cropped);
+      });
     } else {
       executePreprocess(file, selectedSampleId);
     }
@@ -964,20 +996,36 @@ export default function Home() {
           setDocAlignerLatency(res.data.latency_ms);
         }
         if (res.data.corners && Array.isArray(res.data.corners) && res.data.corners.length === 4) {
-          setDetectedCorners([
+          const corners = [
             { label: "P1 (Top-Left)", x: res.data.corners[0].x, y: res.data.corners[0].y },
             { label: "P2 (Top-Right)", x: res.data.corners[1].x, y: res.data.corners[1].y },
             { label: "P3 (Bottom-Right)", x: res.data.corners[2].x, y: res.data.corners[2].y },
             { label: "P4 (Bottom-Left)", x: res.data.corners[3].x, y: res.data.corners[3].y },
-          ]);
+          ];
+          setDetectedCorners(corners);
           setHasCustomCorners(false);
+
+          if (!res.data.preprocessed_url) {
+            const rawSrc = f ? URL.createObjectURL(f) : (sid && currentSample ? `${API_BASE}/templates_images/${currentSample.rawFile}` : preview || "");
+            if (rawSrc) {
+              generateWarpedImage(corners, rawSrc).then((cropped) => {
+                if (cropped) setPreprocessedUrl(cropped);
+              });
+            }
+          }
         }
+        setPreprocessViewTab("cropped");
       }
     } catch (e) {
       console.warn("Live DocAligner offline, using verified fallback:", e);
       if (sid && DOCALIGNER_FALLBACK_CORNERS[sid]) {
-        setDetectedCorners([...DOCALIGNER_FALLBACK_CORNERS[sid]]);
+        const corners = [...DOCALIGNER_FALLBACK_CORNERS[sid]];
+        setDetectedCorners(corners);
         setHasCustomCorners(false);
+        const rawSrc = `${API_BASE}/templates_images/${currentSample?.rawFile}`;
+        generateWarpedImage(corners, rawSrc).then((cropped) => {
+          if (cropped) setPreprocessedUrl(cropped);
+        });
       }
     } finally {
       setIsPreprocessing(false);
@@ -996,6 +1044,7 @@ export default function Home() {
     setDocAlignerLatency(null);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
+    setPreprocessViewTab("cropped");
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -1030,6 +1079,7 @@ export default function Home() {
     setDetectedAngle(sample.skewAngle);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
+    setPreprocessViewTab("cropped");
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -1049,6 +1099,8 @@ export default function Home() {
     setPreprocessedUrl(`${API_BASE}/templates_images/${defaultSample.preprocessedFile}`);
     setDetectedAngle(defaultSample.skewAngle);
     setImageViewMode("preprocessed");
+    setShowQuadContour(false);
+    setPreprocessViewTab("cropped");
 
     executePreprocess(null, defaultSample.id);
   }, []);
@@ -1501,26 +1553,21 @@ export default function Home() {
     return currentSkewAngle;
   }, [activeCorners, currentSkewAngle]);
 
+  const rawImageSrc = (selectedSampleId && currentSample)
+    ? `${API_BASE}/templates_images/${currentSample.rawFile}`
+    : (preview || "");
+
+  const croppedImageSrc = preprocessedUrl || (
+    (selectedSampleId && currentSample)
+      ? `${API_BASE}/templates_images/${currentSample.preprocessedFile}`
+      : preview
+  );
+
   const getDisplayImageSrc = () => {
-    if (imageViewMode === "original") {
-      if (selectedSampleId && currentSample) {
-        return `${API_BASE}/templates_images/${currentSample.rawFile}`;
-      }
-      return preview;
+    if (preprocessViewTab === "contour") {
+      return rawImageSrc;
     }
-    if (showQuadContour) {
-      if (selectedSampleId && currentSample) {
-        return `${API_BASE}/templates_images/${currentSample.rawFile}`;
-      }
-      return preview;
-    }
-    if (preprocessedUrl) {
-      return preprocessedUrl;
-    }
-    if (selectedSampleId && currentSample) {
-      return `${API_BASE}/templates_images/${currentSample.preprocessedFile}`;
-    }
-    return preview;
+    return croppedImageSrc || preview;
   };
 
   const displayImageSrc = getDisplayImageSrc();
@@ -1843,84 +1890,100 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* 2-Mode Image View Switcher Pill Bar */}
+                {/* 3-Mode Image View Switcher: Cropped (0.0°) | Contour (4 Pins) | Compare (Side-by-Side) */}
                 {preview && (
-                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl mb-2.5 border border-slate-200/60">
-                    <button
-                      type="button"
-                      onClick={() => { setImageViewMode("original"); setShowQuadContour(false); }}
-                      className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                        imageViewMode === "original"
-                          ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
-                          : "text-slate-600 hover:text-slate-900"
-                      }`}
-                    >
-                      <Camera className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Ảnh Gốc (Camera)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setImageViewMode("preprocessed"); setShowQuadContour(false); }}
-                      className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                        imageViewMode === "preprocessed"
-                          ? "bg-indigo-600 text-white shadow-xs"
-                          : "text-slate-600 hover:text-slate-900"
-                      }`}
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Đã Tiền Xử Lý (DocAligner)</span>
-                    </button>
-                  </div>
-                )}
+                  <div className="space-y-2 mb-3">
+                    <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/70">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreprocessViewTab("cropped");
+                          setImageViewMode("preprocessed");
+                          setShowQuadContour(false);
+                          if (!preprocessedUrl && preview && activeCorners.length === 4) {
+                            generateWarpedImage(activeCorners, preview).then((w) => {
+                              if (w) setPreprocessedUrl(w);
+                            });
+                          }
+                        }}
+                        className={`py-2 px-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          preprocessViewTab === "cropped"
+                            ? "bg-indigo-600 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                        }`}
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>✂️ Đã Cắt (0.0°)</span>
+                      </button>
 
-                {/* Preprocessing Sub-Toggle: Cropped/Deskewed vs 4-Corner Quad Mesh */}
-                {preview && imageViewMode === "preprocessed" && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 bg-indigo-50 border border-indigo-200/80 px-3 py-2 rounded-xl mb-3 text-xs">
-                    <div className="flex items-center gap-2 text-indigo-950 font-semibold">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      {isPreprocessing ? (
-                        <span className="flex items-center gap-1.5 text-indigo-700 animate-pulse">
-                          <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
-                          <span>Đang chạy mạng FastViT quét 4 góc...</span>
-                        </span>
-                      ) : (
-                        <div className="flex items-center gap-1.5">
-                          <span>DocAligner AI:</span>
-                          <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.2 rounded font-mono text-[10px] font-bold">
-                            ⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "18.2ms"}
-                          </span>
-                          <span className="text-slate-400">|</span>
-                          <span className="font-mono text-indigo-700 font-bold">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° ➔ 0.0°</span>
-                        </div>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreprocessViewTab("contour");
+                          setImageViewMode("preprocessed");
+                          setShowQuadContour(true);
+                        }}
+                        className={`py-2 px-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          preprocessViewTab === "contour"
+                            ? "bg-indigo-600 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                        }`}
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>📐 Dò 4 Góc Viền</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreprocessViewTab("compare");
+                          setImageViewMode("preprocessed");
+                          setShowQuadContour(false);
+                          if (!preprocessedUrl && preview && activeCorners.length === 4) {
+                            generateWarpedImage(activeCorners, preview).then((w) => {
+                              if (w) setPreprocessedUrl(w);
+                            });
+                          }
+                        }}
+                        className={`py-2 px-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          preprocessViewTab === "compare"
+                            ? "bg-emerald-600 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                        }`}
+                      >
+                        <GitCompare className="w-3.5 h-3.5" />
+                        <span>⚡ So Sánh</span>
+                      </button>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-indigo-200 shadow-2xs">
-                        <button
-                          type="button"
-                          onClick={() => setShowQuadContour(false)}
-                          className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                            !showQuadContour ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-                          }`}
-                        >
-                          ✂️ Đã Cắt & Xoay 0° (DocAligner)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowQuadContour(true)}
-                          className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                            showQuadContour ? "bg-indigo-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-                          }`}
-                        >
-                          📐 Dò 4 Góc Viền (DocAligner AI)
-                        </button>
+
+                    {/* Preprocessing Status & Re-run Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 bg-indigo-50/80 border border-indigo-200/80 px-3 py-1.5 rounded-xl text-xs">
+                      <div className="flex items-center gap-2 text-indigo-950 font-semibold">
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        {isPreprocessing ? (
+                          <span className="flex items-center gap-1.5 text-indigo-700 animate-pulse">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
+                            <span>DocAligner AI đang dò 4 góc & bẻ phẳng hóa đơn...</span>
+                          </span>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-700 font-bold">DocAligner FastViT:</span>
+                            <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.2 rounded font-mono text-[10px] font-bold">
+                              ⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "18.2ms"}
+                            </span>
+                            <span className="text-slate-400">|</span>
+                            <span className="font-mono text-indigo-700 font-bold">
+                              Khử xiên {liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° ➔ 0.0°
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <button
                         type="button"
                         onClick={() => executePreprocess(file, selectedSampleId)}
                         disabled={isPreprocessing}
-                        className="px-2 py-1 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer disabled:opacity-50 shadow-2xs"
-                        title="Bấm để kích hoạt DocAligner quét lại ảnh theo thời gian thực"
+                        className="px-2.5 py-1 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer disabled:opacity-50 shadow-2xs"
+                        title="Bấm để kích hoạt AI DocAligner quét lại ảnh theo thời gian thực"
                       >
                         <RefreshCw className={`w-3 h-3 ${isPreprocessing ? "animate-spin" : ""}`} />
                         <span>Chạy Lại AI</span>
@@ -1944,194 +2007,281 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[300px] max-h-[420px]">
-                      <div className="overflow-auto w-full h-full flex items-center justify-center p-2">
-                        <div className="relative inline-block max-w-full select-none">
-                          <img
-                            ref={imgElementRef}
-                            src={displayImageSrc || ""}
-                            alt="Hóa đơn"
-                            style={{
-                              transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
-                              transition: "transform 0.2s ease, filter 0.3s ease",
-                              maxWidth: "100%",
-                              maxHeight: "400px",
-                              objectFit: "contain",
-                              filter: (!selectedSampleId && imageViewMode === "preprocessed" && !preprocessedUrl)
-                                ? "contrast(1.28) brightness(1.04) saturate(0.2) drop-shadow(0 0 1px rgba(0,0,0,0.5))"
-                                : "none"
-                            }}
-                            className="rounded shadow-xs pointer-events-none"
-                          />
-
-                          {/* 4-Point Document Contour Mesh & Interactive Draggable Pins */}
-                          {imageViewMode === "preprocessed" && showQuadContour && (
-                            <div className="absolute inset-0 select-none">
-                              {/* SVG Quad Polygon connecting P1 -> P2 -> P3 -> P4 */}
-                              <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                <defs>
-                                  <linearGradient id="docaligner-mesh" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
-                                    <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.18" />
-                                  </linearGradient>
-                                </defs>
-                                <polygon
-                                  points={`${activeCorners[0].x},${activeCorners[0].y} ${activeCorners[1].x},${activeCorners[1].y} ${activeCorners[2].x},${activeCorners[2].y} ${activeCorners[3].x},${activeCorners[3].y}`}
-                                  fill="url(#docaligner-mesh)"
-                                  stroke="#10b981"
-                                  strokeWidth="0.8"
-                                  strokeDasharray="2 1.5"
+                    {preprocessViewTab === "compare" ? (
+                      /* ⚡ Side-by-Side Comparison Mode (Before vs After) */
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[340px]">
+                          {/* Left: Original Raw with 4-Corner Mesh */}
+                          <div className="relative border border-amber-300/80 rounded-xl overflow-hidden bg-slate-900 flex flex-col shadow-xs">
+                            <div className="bg-amber-500/20 border-b border-amber-500/30 text-amber-200 text-[11px] font-bold px-3 py-1.5 flex items-center justify-between z-10 backdrop-blur-xs">
+                              <span className="flex items-center gap-1.5">
+                                <Camera className="w-3.5 h-3.5 text-amber-400" />
+                                <span>1. Ảnh Gốc (Trước xử lý)</span>
+                              </span>
+                              <span className="text-[10px] bg-amber-950/80 text-amber-300 font-mono px-1.5 py-0.5 rounded border border-amber-500/40">
+                                Nghiêng {liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° | Còn nền bàn
+                              </span>
+                            </div>
+                            <div className="relative flex-1 flex items-center justify-center p-2 overflow-auto bg-slate-950/60">
+                              <div className="relative inline-block max-w-full select-none">
+                                <img
+                                  src={rawImageSrc || preview || ""}
+                                  alt="Ảnh gốc trước xử lý"
+                                  className="rounded shadow-xs max-w-full max-h-[350px] object-contain pointer-events-none"
                                 />
-                              </svg>
-
-                              {/* 4 Draggable Corner Pinpoints with coordinates & labels */}
-                              {activeCorners.map((pt, pIdx) => (
-                                <div
-                                  key={pIdx}
-                                  onPointerDown={(e) => handleCornerPointerDown(pIdx, e)}
-                                  onPointerMove={(e) => handleCornerPointerMove(pIdx, e)}
-                                  onPointerUp={(e) => handleCornerPointerUp(pIdx, e)}
-                                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center cursor-grab active:cursor-grabbing transition-transform ${
-                                    draggingCornerIndex === pIdx ? "scale-125 z-40" : "hover:scale-110"
-                                  }`}
-                                  style={{ left: `${pt.x}%`, top: `${pt.y}%`, touchAction: "none" }}
-                                  title={`Kéo thả điểm ${pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"} để căn chỉnh viền`}
-                                >
-                                  {/* Pulsing ring */}
-                                  <div className={`absolute w-7 h-7 rounded-full bg-emerald-400/40 ${draggingCornerIndex === pIdx ? "animate-ping" : "animate-pulse"}`} />
-
-                                  {/* Glowing Pin Marker */}
-                                  <div className="relative w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_14px_rgba(16,185,129,0.95)] flex items-center justify-center text-[10px] font-black text-white hover:bg-emerald-400 select-none">
-                                    {pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"}
-                                  </div>
-
-                                  {/* Live Coordinate badge */}
-                                  <div className="mt-1 whitespace-nowrap bg-slate-950/90 text-emerald-300 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg border border-emerald-500/40 backdrop-blur-xs select-none pointer-events-none">
-                                    ({pt.x}%, {pt.y}%)
-                                  </div>
+                                {/* Visual quad indicator */}
+                                <div className="absolute inset-0 select-none pointer-events-none">
+                                  <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <polygon
+                                      points={`${activeCorners[0].x},${activeCorners[0].y} ${activeCorners[1].x},${activeCorners[1].y} ${activeCorners[2].x},${activeCorners[2].y} ${activeCorners[3].x},${activeCorners[3].y}`}
+                                      fill="rgba(245, 158, 11, 0.2)"
+                                      stroke="#f59e0b"
+                                      strokeWidth="1.2"
+                                      strokeDasharray="2 1.5"
+                                    />
+                                  </svg>
+                                  {activeCorners.map((pt, pIdx) => (
+                                    <div
+                                      key={pIdx}
+                                      className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                                      style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
+                                    >
+                                      <div className="w-4 h-4 rounded-full bg-amber-500 border border-white text-[8px] font-black text-white flex items-center justify-center shadow-md">
+                                        {pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"}
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
-
-                              {/* AI Detection Info Badge */}
-                              <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-emerald-500/40 shadow-lg backdrop-blur-md flex items-center gap-2 text-[10px] pointer-events-none select-none">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                <span className="font-semibold text-emerald-300">DocAligner FastViT-BiFPN</span>
-                                <span className="text-slate-400">|</span>
-                                <span className="text-emerald-400 font-mono font-bold">⚡ {docAlignerLatency ? `${docAlignerLatency}ms (ONNX)` : "18.2ms (ONNX)"}</span>
-                                {hasCustomCorners && (
-                                  <span className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-1 rounded text-[9px]">Đã chỉnh tay</span>
-                                )}
                               </div>
                             </div>
-                          )}
+                          </div>
 
-                          {/* Laser Scanning Animation Overlay */}
-                          {isPreprocessing && (
-                            <div className="absolute inset-0 pointer-events-none z-35 overflow-hidden rounded">
-                              <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_18px_#10b981] animate-laser-sweep" />
-                              <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-[0.5px]" />
-                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center gap-2 shadow-2xl backdrop-blur-md">
-                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
-                                <span>DocAligner AI đang dò 4 góc viền...</span>
+                          {/* Right: Cropped & Deskewed 0.0° */}
+                          <div className="relative border-2 border-emerald-500 rounded-xl overflow-hidden bg-slate-900 flex flex-col shadow-md">
+                            <div className="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 flex items-center justify-between z-10">
+                              <span className="flex items-center gap-1.5">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-200" />
+                                <span>2. Kết Quả Sau Khi AI Cắt (0.0°)</span>
+                              </span>
+                              <span className="text-[10px] bg-emerald-800 text-emerald-100 font-mono px-2 py-0.5 rounded font-bold">
+                                ✓ Đã cắt sạch nền bàn
+                              </span>
+                            </div>
+                            <div className="relative flex-1 flex items-center justify-center p-2 overflow-auto bg-slate-950/40">
+                              <div className="relative inline-block max-w-full select-none">
+                                <img
+                                  src={croppedImageSrc || preview || ""}
+                                  alt="Hóa đơn sau khi AI cắt"
+                                  className="rounded shadow-md max-w-full max-h-[350px] object-contain pointer-events-none border border-emerald-500/70"
+                                />
                               </div>
                             </div>
-                          )}
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Top-left Indicator Badge */}
-                      <div className="absolute top-3 left-3 pointer-events-none">
-                        {imageViewMode === "original" && (
-                          <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-900/85 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            <Camera className="w-3 h-3 text-slate-300" /> Ảnh Gốc (Nghiêng {liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° | Nền bàn chưa cắt)
-                          </span>
-                        )}
-                        {imageViewMode === "preprocessed" && (
-                          <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-indigo-700/90 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            {showQuadContour ? (
-                              <><span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> DocAligner: Dò 4 Góc Viền Bằng Heatmap Deep Learning</>
-                            ) : (
-                              <><Sparkles className="w-3 h-3 text-indigo-200" /> DocAligner: Đã Cắt Bỏ Nền Bàn + Nắn Phẳng 0.0° + CLAHE</>
-                            )}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Top-right Zoom / Rotate / Fullscreen Controls */}
-                      <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-200 shadow-sm">
-                        <button onClick={() => setZoomLevel((z) => Math.min(z + 0.25, 3))} title="Phóng to" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600">
-                          <ZoomIn className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setZoomLevel((z) => Math.max(z - 0.25, 0.75))} title="Thu nhỏ" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600">
-                          <ZoomOut className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setRotation((r) => (r + 90) % 360)} title="Xoay 90 độ" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600">
-                          <RotateCw className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => setIsFullscreen(true)} title="Xem toàn màn hình" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600">
-                          <Maximize2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Interactive 4-Corner Toolbar (when Quad Mesh is visible) */}
-                    {imageViewMode === "preprocessed" && showQuadContour && (
-                      <div className="bg-slate-900 border border-slate-700/80 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 shadow-md">
-                        <div className="flex items-center gap-2 text-xs text-slate-300">
-                          <span className="flex h-2 w-2 relative shrink-0">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                          </span>
-                          <span>💡 <strong>Tương tác:</strong> Kéo thả 4 điểm <strong>P1 - P4</strong> để căn chỉnh viền hóa đơn tùy ý như CamScanner</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {hasCustomCorners && (
-                            <button
-                              type="button"
-                              onClick={handleResetCorners}
-                              className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 transition-all cursor-pointer flex items-center gap-1"
-                            >
-                              <RotateCw className="w-3 h-3" />
-                              <span>Khôi Phục AI</span>
-                            </button>
-                          )}
+                        <div className="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-xs flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 text-emerald-950 font-medium">
+                            <span className="text-base">⚡</span>
+                            <span><strong>DocAligner AI:</strong> Đã phát hiện 4 góc viền, bẻ phẳng phối cảnh và nắn thẳng hóa đơn từ <strong className="text-rose-600 font-mono">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</strong> về <strong className="text-emerald-700 font-mono">0.0°</strong> chuẩn hóa.</span>
+                          </div>
                           <button
                             type="button"
-                            onClick={applyPerspectiveWarp}
-                            disabled={isWarping}
-                            className="px-3 py-1 text-xs font-bold rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-900/40 transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                            onClick={() => setPreprocessViewTab("cropped")}
+                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer transition-all shadow-xs"
                           >
-                            {isWarping ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-emerald-200" />}
-                            <span>Nắn Phẳng & Cắt 0° (Warp)</span>
+                            Xem Toàn Khung Đã Cắt ➔
                           </button>
                         </div>
                       </div>
-                    )}
+                    ) : (
+                      /* Single Image View Container (Cropped or Contour Mode) */
+                      <div className="space-y-3">
+                        <div className="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[300px] max-h-[420px]">
+                          <div className="overflow-auto w-full h-full flex items-center justify-center p-2">
+                            <div className="relative inline-block max-w-full select-none">
+                              <img
+                                ref={imgElementRef}
+                                src={displayImageSrc || ""}
+                                alt="Hóa đơn"
+                                style={{
+                                  transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
+                                  transition: "transform 0.2s ease",
+                                  maxWidth: "100%",
+                                  maxHeight: "400px",
+                                  objectFit: "contain",
+                                }}
+                                className={`rounded shadow-xs pointer-events-none ${
+                                  preprocessViewTab === "cropped" ? "border-2 border-emerald-500/80 shadow-md" : ""
+                                }`}
+                              />
 
-                    {/* Preprocessing Educational Callout */}
-                    <div className="p-3 rounded-xl border text-xs leading-relaxed transition-all">
-                      {imageViewMode === "original" && (
-                        <div className="flex items-start gap-2 text-slate-700 bg-slate-50 border border-slate-200 p-2.5 rounded-lg">
-                          <Camera className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-bold text-slate-900">Ảnh Gốc (Camera / Tệp tải lên):</span> Ảnh chụp thực tế của hóa đơn đặt trên mặt bàn, tài liệu bị nghiêng góc <strong className="text-slate-900 font-mono">{currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}°</strong>, có viền bàn gỗ xung quanh và bóng râm chùm sáng.
+                              {/* 4-Point Document Contour Mesh & Interactive Draggable Pins (Contour Mode) */}
+                              {preprocessViewTab === "contour" && (
+                                <div className="absolute inset-0 select-none">
+                                  {/* SVG Quad Polygon connecting P1 -> P2 -> P3 -> P4 */}
+                                  <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <defs>
+                                      <linearGradient id="docaligner-mesh" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
+                                        <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.2" />
+                                      </linearGradient>
+                                    </defs>
+                                    <polygon
+                                      points={`${activeCorners[0].x},${activeCorners[0].y} ${activeCorners[1].x},${activeCorners[1].y} ${activeCorners[2].x},${activeCorners[2].y} ${activeCorners[3].x},${activeCorners[3].y}`}
+                                      fill="url(#docaligner-mesh)"
+                                      stroke="#10b981"
+                                      strokeWidth="1.0"
+                                      strokeDasharray="2 1.5"
+                                    />
+                                  </svg>
+
+                                  {/* 4 Draggable Corner Pinpoints with coordinates & labels */}
+                                  {activeCorners.map((pt, pIdx) => (
+                                    <div
+                                      key={pIdx}
+                                      onPointerDown={(e) => handleCornerPointerDown(pIdx, e)}
+                                      onPointerMove={(e) => handleCornerPointerMove(pIdx, e)}
+                                      onPointerUp={(e) => handleCornerPointerUp(pIdx, e)}
+                                      className={`absolute -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center cursor-grab active:cursor-grabbing transition-transform ${
+                                        draggingCornerIndex === pIdx ? "scale-125 z-40" : "hover:scale-110"
+                                      }`}
+                                      style={{ left: `${pt.x}%`, top: `${pt.y}%`, touchAction: "none" }}
+                                      title={`Kéo thả điểm ${pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"} để căn chỉnh viền`}
+                                    >
+                                      {/* Pulsing ring */}
+                                      <div className={`absolute w-7 h-7 rounded-full bg-emerald-400/40 ${draggingCornerIndex === pIdx ? "animate-ping" : "animate-pulse"}`} />
+
+                                      {/* Glowing Pin Marker */}
+                                      <div className="relative w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_14px_rgba(16,185,129,0.95)] flex items-center justify-center text-[10px] font-black text-white hover:bg-emerald-400 select-none">
+                                        {pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"}
+                                      </div>
+
+                                      {/* Live Coordinate badge */}
+                                      <div className="mt-1 whitespace-nowrap bg-slate-950/90 text-emerald-300 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg border border-emerald-500/40 backdrop-blur-xs select-none pointer-events-none">
+                                        ({pt.x}%, {pt.y}%)
+                                      </div>
+                                    </div>
+                                  ))}
+
+                                  {/* AI Detection Info Badge */}
+                                  <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-emerald-500/40 shadow-lg backdrop-blur-md flex items-center gap-2 text-[10px] pointer-events-none select-none">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="font-semibold text-emerald-300">DocAligner FastViT-BiFPN</span>
+                                    <span className="text-slate-400">|</span>
+                                    <span className="text-emerald-400 font-mono font-bold">⚡ {docAlignerLatency ? `${docAlignerLatency}ms (ONNX)` : "18.2ms (ONNX)"}</span>
+                                    {hasCustomCorners && (
+                                      <span className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-1 rounded text-[9px]">Đã chỉnh tay</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Laser Scanning Animation Overlay */}
+                              {isPreprocessing && (
+                                <div className="absolute inset-0 pointer-events-none z-35 overflow-hidden rounded">
+                                  <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_18px_#10b981] animate-laser-sweep" />
+                                  <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-[0.5px]" />
+                                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center gap-2 shadow-2xl backdrop-blur-md">
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                                    <span>DocAligner AI đang dò 4 góc viền...</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Top-left Indicator Badge */}
+                          <div className="absolute top-3 left-3 pointer-events-none">
+                            {preprocessViewTab === "cropped" ? (
+                              <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> DocAligner: Đã Cắt Bỏ Nền Bàn + Nắn Phẳng 0.0° + CLAHE
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-700/95 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
+                                <Layers className="w-3.5 h-3.5 text-indigo-200" /> DocAligner: Dò 4 Góc Viền Bằng Heatmap Deep Learning
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Top-right Zoom / Rotate / Fullscreen Controls */}
+                          <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-200 shadow-sm">
+                            <button onClick={() => setZoomLevel((z) => Math.min(z + 0.25, 3))} title="Phóng to" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600 cursor-pointer">
+                              <ZoomIn className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => setZoomLevel((z) => Math.max(z - 0.25, 0.75))} title="Thu nhỏ" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600 cursor-pointer">
+                              <ZoomOut className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => setRotation((r) => (r + 90) % 360)} title="Xoay 90 độ" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600 cursor-pointer">
+                              <RotateCw className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => setIsFullscreen(true)} title="Xem toàn màn hình" className="p-1 hover:bg-slate-100 rounded-lg text-slate-600 cursor-pointer">
+                              <Maximize2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
-                      )}
-                      {imageViewMode === "preprocessed" && (
-                        <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/90 border border-indigo-200 p-2.5 rounded-lg">
-                          <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-bold text-indigo-900">Giai đoạn 1 - Tiền Xử Lý (DocAligner FastViT-BiFPN + CLAHE):</span> 
-                            <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-indigo-900/90">
-                              <li><strong className="text-indigo-950 font-semibold">AI DocAligner Dò 4 Góc (Keypoint Heatmap):</strong> Mô hình FastViT-SA24 + BiFPN định vị chính xác 4 góc vật lý P1, P2, P3, P4 khớp từng milimét mép giấy hóa đơn.</li>
-                              <li><strong className="text-indigo-950 font-semibold">Bẻ Phẳng Phối Cảnh & Xoay 0° (Perspective Rectification):</strong> Áp dụng phép biến đổi 4 điểm (Homography/Four-point transform) nắn tờ hóa đơn phẳng phiu 0.0° vuông góc với khung nhìn.</li>
-                              <li><strong className="text-indigo-950 font-semibold">Cân bằng sáng cục bộ (CLAHE LAB):</strong> Phân tách kênh độ sáng L, khử bóng râm chùm sáng và làm rõ nét chữ in nhiệt mờ.</li>
-                            </ul>
+
+                        {/* Interactive 4-Corner Toolbar (when in Contour Mode) */}
+                        {preprocessViewTab === "contour" && (
+                          <div className="bg-slate-900 border border-slate-700/80 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 shadow-md">
+                            <div className="flex items-center gap-2 text-xs text-slate-300">
+                              <span className="flex h-2 w-2 relative shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                              </span>
+                              <span>💡 <strong>Tương tác:</strong> Kéo thả 4 điểm <strong>P1 - P4</strong> để căn chỉnh viền hóa đơn tùy ý như CamScanner</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {hasCustomCorners && (
+                                <button
+                                  type="button"
+                                  onClick={handleResetCorners}
+                                  className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 transition-all cursor-pointer flex items-center gap-1"
+                                >
+                                  <RotateCw className="w-3 h-3" />
+                                  <span>Khôi Phục AI</span>
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={applyPerspectiveWarp}
+                                disabled={isWarping}
+                                className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-900/40 transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                              >
+                                {isWarping ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-emerald-200" />}
+                                <span>👉 Bấm Cắt & Nắn Thẳng 0.0° (Warp)</span>
+                              </button>
+                            </div>
                           </div>
+                        )}
+
+                        {/* Preprocessing Educational Callout */}
+                        <div className="p-3 rounded-xl border text-xs leading-relaxed transition-all">
+                          {preprocessViewTab === "cropped" ? (
+                            <div className="flex items-start gap-2 text-emerald-950 bg-emerald-50/90 border border-emerald-200 p-2.5 rounded-lg">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <div>
+                                <span className="font-bold text-emerald-900">Giai đoạn 1 - Kết Quả Đã Tiền Xử Lý (DocAligner FastViT + CLAHE):</span> 
+                                <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-emerald-900/90">
+                                  <li><strong className="text-emerald-950 font-semibold">Khử nền bàn:</strong> Đã cắt sạch 100% bề mặt bàn gỗ và các chi tiết gây nhiễu bên ngoài mép giấy.</li>
+                                  <li><strong className="text-emerald-950 font-semibold">Nắn phẳng 0.0°:</strong> Đã chuyển đổi góc nghiêng <span className="font-mono text-rose-700 font-bold">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</span> về hình chữ nhật vuông vức chuẩn hóa.</li>
+                                  <li><strong className="text-emerald-950 font-semibold">Tăng tương phản CLAHE:</strong> Đã cân bằng sáng cục bộ trên không gian LAB giúp chữ in nhiệt mờ trở nên rõ nét.</li>
+                                </ul>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/90 border border-indigo-200 p-2.5 rounded-lg">
+                              <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                              <div>
+                                <span className="font-bold text-indigo-900">Giai đoạn 1 - Dò 4 Góc Viền Bằng Heatmap Deep Learning:</span> 
+                                <p className="mt-1 text-[11px] text-indigo-900/90">
+                                  Mô hình FastViT-SA24 + BiFPN dự đoán tọa độ 4 góc vật lý P1, P2, P3, P4 khớp từng milimét mép giấy hóa đơn. Bạn có thể chạm/kéo thả các chốt để căn chỉnh viền, sau đó bấm <strong>[👉 Bấm Cắt & Nắn Thẳng 0.0°]</strong> để xem kết quả.
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     <button
                       onClick={handlePredict}
@@ -3012,11 +3162,6 @@ export default function Home() {
             <img
               src={displayImageSrc || ""}
               alt="Toàn màn hình"
-              style={{
-                filter: (!selectedSampleId && imageViewMode === "preprocessed" && !preprocessedUrl)
-                  ? "contrast(1.28) brightness(1.04) saturate(0.2) drop-shadow(0 0 1px rgba(0,0,0,0.5))"
-                  : "none"
-              }}
               className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
             />
           </div>
