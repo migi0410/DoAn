@@ -772,10 +772,10 @@ async def predict_receipt(
             }
 
     raw_items_unmodified = [dict(it) for it in extraction.get("ITEMS", [])]
-    reconciled_items = reconcile_receipt_items(extraction.get("ITEMS", []), extraction.get("TOTAL_COST", ""))
-    extraction["ITEMS"] = reconciled_items
+    # Pure 100% direct model output - Zero external merging / post-processing
+    extraction["ITEMS"] = raw_items_unmodified
 
-    validation = validate_arithmetic(extraction.get("TOTAL_COST", ""), reconciled_items)
+    validation = validate_arithmetic(extraction.get("TOTAL_COST", ""), raw_items_unmodified)
 
     raw_elapsed = time.time() - start_time
     target_latency = selected_meta["latency_s"]
@@ -806,7 +806,7 @@ async def predict_receipt(
         "inference_source": inference_source,
         "raw_output": raw_output,
         "raw_items": raw_items_unmodified,
-        "reconciled": len(reconciled_items) != len(raw_items_unmodified),
+        "reconciled": False,
         "image_url": image_url,
         "annotated_image_url": annotated_url,
         "extraction": extraction,
