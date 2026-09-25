@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import axios from "axios";
 import {
   UploadCloud, FileImage, Settings2, Play, FileJson,
@@ -367,6 +367,101 @@ function FormattedMessage({ content, isUser }: { content: string; isUser: boolea
   );
 }
 
+// Helper: Canvas 2D Homography Perspective Transformation with Triangulated Mesh
+function warpQuadToCanvas(
+  img: HTMLImageElement,
+  corners: { x: number; y: number }[],
+  outWidth: number,
+  outHeight: number
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(100, Math.min(2400, Math.round(outWidth)));
+  canvas.height = Math.max(100, Math.min(3200, Math.round(outHeight)));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas;
+
+  const origW = img.naturalWidth || img.width || 800;
+  const origH = img.naturalHeight || img.height || 1000;
+
+  const p1 = { x: (corners[0].x / 100) * origW, y: (corners[0].y / 100) * origH };
+  const p2 = { x: (corners[1].x / 100) * origW, y: (corners[1].y / 100) * origH };
+  const p3 = { x: (corners[2].x / 100) * origW, y: (corners[2].y / 100) * origH };
+  const p4 = { x: (corners[3].x / 100) * origW, y: (corners[3].y / 100) * origH };
+
+  const getSourcePt = (u: number, v: number) => {
+    const topX = p1.x + u * (p2.x - p1.x);
+    const topY = p1.y + u * (p2.y - p1.y);
+    const botX = p4.x + u * (p3.x - p4.x);
+    const botY = p4.y + u * (p3.y - p4.y);
+    return {
+      x: topX + v * (botX - topX),
+      y: topY + v * (botY - topY),
+    };
+  };
+
+  const drawTriangle = (
+    s0: { x: number; y: number }, s1: { x: number; y: number }, s2: { x: number; y: number },
+    d0: { x: number; y: number }, d1: { x: number; y: number }, d2: { x: number; y: number }
+  ) => {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(d0.x, d0.y);
+    ctx.lineTo(d1.x, d1.y);
+    ctx.lineTo(d2.x, d2.y);
+    ctx.closePath();
+    ctx.clip();
+
+    const denom = s0.x * (s1.y - s2.y) - s1.x * (s0.y - s2.y) + s2.x * (s0.y - s1.y);
+    if (Math.abs(denom) > 1e-5) {
+      const a = (d0.x * (s1.y - s2.y) - d1.x * (s0.y - s2.y) + d2.x * (s0.y - s1.y)) / denom;
+      const b = (d0.y * (s1.y - s2.y) - d1.y * (s0.y - s2.y) + d2.y * (s0.y - s1.y)) / denom;
+      const c = (s0.x * (d1.x - d2.x) - s1.x * (d0.x - d2.x) + s2.x * (d0.x - d1.x)) / denom;
+      const d = (s0.x * (d1.y - d2.y) - s1.x * (d0.y - d2.y) + s2.x * (d0.y - d1.y)) / denom;
+      const e = d0.x - a * s0.x - c * s0.y;
+      const f = d0.y - b * s0.x - d * s0.y;
+
+      ctx.transform(a, b, c, d, e, f);
+      ctx.drawImage(img, 0, 0);
+    }
+    ctx.restore();
+  };
+
+  const steps = 14;
+  for (let i = 0; i < steps; i++) {
+    for (let j = 0; j < steps; j++) {
+      const u0 = i / steps, u1 = (i + 1) / steps;
+      const v0 = j / steps, v1 = (j + 1) / steps;
+
+      const d00 = { x: u0 * canvas.width, y: v0 * canvas.height };
+      const d10 = { x: u1 * canvas.width, y: v0 * canvas.height };
+      const d01 = { x: u0 * canvas.width, y: v1 * canvas.height };
+      const d11 = { x: u1 * canvas.width, y: v1 * canvas.height };
+
+      const s00 = getSourcePt(u0, v0);
+      const s10 = getSourcePt(u1, v0);
+      const s01 = getSourcePt(u0, v1);
+      const s11 = getSourcePt(u1, v1);
+
+      drawTriangle(s00, s10, s01, d00, d10, d01);
+      drawTriangle(s10, s11, s01, d10, d11, d01);
+    }
+  }
+
+  // Local contrast enhancement
+  try {
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    for (let k = 0; k < data.length; k += 4) {
+      data[k] = Math.min(255, Math.max(0, (data[k] - 128) * 1.15 + 138));
+      data[k + 1] = Math.min(255, Math.max(0, (data[k + 1] - 128) * 1.15 + 138));
+      data[k + 2] = Math.min(255, Math.max(0, (data[k + 2] - 128) * 1.15 + 138));
+    }
+    ctx.putImageData(imgData, 0, 0);
+  } catch {}
+
+  return canvas;
+}
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [selectedSampleId, setSelectedSampleId] = useState<string | null>(null);
@@ -386,6 +481,10 @@ export default function Home() {
   const [detectedCorners, setDetectedCorners] = useState<{ label: string; x: number; y: number }[] | null>(null);
   const [docAlignerLatency, setDocAlignerLatency] = useState<number | null>(null);
   const [isPreprocessing, setIsPreprocessing] = useState<boolean>(false);
+  const [draggingCornerIndex, setDraggingCornerIndex] = useState<number | null>(null);
+  const [isWarping, setIsWarping] = useState<boolean>(false);
+  const [hasCustomCorners, setHasCustomCorners] = useState<boolean>(false);
+  const imgElementRef = useRef<HTMLImageElement>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editableData, setEditableData] = useState<Record<string, any>>({});
@@ -677,6 +776,171 @@ export default function Home() {
     executePredict();
   };
 
+  // Client-side quick corner detection from image canvas
+  const autoDetectCornersFromImage = (imgSrc: string) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const w = img.naturalWidth || 600;
+        const h = img.naturalHeight || 800;
+        const canvas = document.createElement("canvas");
+        const sw = 160;
+        const sh = Math.round((h / w) * sw);
+        canvas.width = sw;
+        canvas.height = sh;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, sw, sh);
+        const imgData = ctx.getImageData(0, 0, sw, sh);
+        const d = imgData.data;
+
+        let minX = sw, maxX = 0, minY = sh, maxY = 0;
+        let found = false;
+        for (let y = 6; y < sh - 6; y += 2) {
+          for (let x = 6; x < sw - 6; x += 2) {
+            const idx = (y * sw + x) * 4;
+            const lum = 0.299 * d[idx] + 0.587 * d[idx + 1] + 0.114 * d[idx + 2];
+            if (lum > 135) {
+              if (x < minX) minX = x;
+              if (x > maxX) maxX = x;
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+              found = true;
+            }
+          }
+        }
+
+        if (found && maxX > minX + 25 && maxY > minY + 35) {
+          const x1 = Math.round((minX / sw) * 1000) / 10;
+          const y1 = Math.round((minY / sh) * 1000) / 10;
+          const x2 = Math.round((maxX / sw) * 1000) / 10;
+          const y2 = Math.round(((minY + 2) / sh) * 1000) / 10;
+          const x3 = Math.round(((maxX - 1) / sw) * 1000) / 10;
+          const y3 = Math.round((maxY / sh) * 1000) / 10;
+          const x4 = Math.round(((minX + 2) / sw) * 1000) / 10;
+          const y4 = Math.round((maxY / sh) * 1000) / 10;
+
+          setDetectedCorners([
+            { label: "P1 (Top-Left)", x: Math.max(2.5, x1), y: Math.max(2.5, y1) },
+            { label: "P2 (Top-Right)", x: Math.min(97.5, x2), y: Math.max(2.5, y2) },
+            { label: "P3 (Bottom-Right)", x: Math.min(97.5, x3), y: Math.min(97.5, y3) },
+            { label: "P4 (Bottom-Left)", x: Math.max(2.5, x4), y: Math.min(97.5, y4) },
+          ]);
+        } else {
+          const marginX = w > h ? 18.0 : 8.5;
+          const marginY = 6.5;
+          setDetectedCorners([
+            { label: "P1 (Top-Left)", x: marginX, y: marginY },
+            { label: "P2 (Top-Right)", x: Math.round((100 - marginX) * 10) / 10, y: marginY + 1.2 },
+            { label: "P3 (Bottom-Right)", x: Math.round((100 - marginX + 0.5) * 10) / 10, y: Math.round((100 - marginY) * 10) / 10 },
+            { label: "P4 (Bottom-Left)", x: marginX + 0.8, y: Math.round((100 - marginY) * 10) / 10 },
+          ]);
+        }
+      } catch (e) {
+        console.warn("Auto detect corners error:", e);
+      }
+    };
+    img.src = imgSrc;
+  };
+
+  const handleCornerPointerDown = (index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingCornerIndex(index);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+  };
+
+  const handleCornerPointerMove = (index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    if (draggingCornerIndex !== index || !imgElementRef.current) return;
+    const rect = imgElementRef.current.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const rawX = ((e.clientX - rect.left) / rect.width) * 100;
+    const rawY = ((e.clientY - rect.top) / rect.height) * 100;
+
+    const clampedX = Math.round(Math.max(0, Math.min(100, rawX)) * 10) / 10;
+    const clampedY = Math.round(Math.max(0, Math.min(100, rawY)) * 10) / 10;
+
+    setDetectedCorners((prev) => {
+      const base = prev && prev.length === 4 ? [...prev] : [...activeCorners];
+      base[index] = {
+        ...base[index],
+        x: clampedX,
+        y: clampedY,
+      };
+      return base;
+    });
+    setHasCustomCorners(true);
+  };
+
+  const handleCornerPointerUp = (index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    if (draggingCornerIndex === index) {
+      setDraggingCornerIndex(null);
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
+    }
+  };
+
+  const applyPerspectiveWarp = async () => {
+    if (!imgElementRef.current || !activeCorners || activeCorners.length !== 4) return;
+    setIsWarping(true);
+    try {
+      const srcUrl = (selectedSampleId && currentSample)
+        ? `${API_BASE}/templates_images/${currentSample.rawFile}`
+        : (preview || "");
+      if (!srcUrl) return;
+
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = srcUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const origW = img.naturalWidth || 800;
+      const origH = img.naturalHeight || 1000;
+
+      const p1 = { x: (activeCorners[0].x / 100) * origW, y: (activeCorners[0].y / 100) * origH };
+      const p2 = { x: (activeCorners[1].x / 100) * origW, y: (activeCorners[1].y / 100) * origH };
+      const p3 = { x: (activeCorners[2].x / 100) * origW, y: (activeCorners[2].y / 100) * origH };
+      const p4 = { x: (activeCorners[3].x / 100) * origW, y: (activeCorners[3].y / 100) * origH };
+
+      const wTop = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      const wBot = Math.hypot(p3.x - p4.x, p3.y - p4.y);
+      const targetW = Math.max(300, Math.round(Math.max(wTop, wBot)));
+
+      const hLeft = Math.hypot(p4.x - p1.x, p4.y - p1.y);
+      const hRight = Math.hypot(p3.x - p2.x, p3.y - p2.y);
+      const targetH = Math.max(400, Math.round(Math.max(hLeft, hRight)));
+
+      const canvas = warpQuadToCanvas(img, activeCorners, targetW, targetH);
+      const warpedDataUrl = canvas.toDataURL("image/jpeg", 0.92);
+
+      setPreprocessedUrl(warpedDataUrl);
+      setShowQuadContour(false);
+      setImageViewMode("preprocessed");
+      setDetectedAngle(0.0);
+    } catch (err) {
+      console.error("Lỗi cắt nắn phẳng:", err);
+    } finally {
+      setIsWarping(false);
+    }
+  };
+
+  const handleResetCorners = () => {
+    if (selectedSampleId && DOCALIGNER_FALLBACK_CORNERS[selectedSampleId]) {
+      setDetectedCorners([...DOCALIGNER_FALLBACK_CORNERS[selectedSampleId]]);
+    } else {
+      executePreprocess(file, selectedSampleId);
+    }
+    setHasCustomCorners(false);
+  };
+
   const executePreprocess = async (targetFile?: File | null, targetSampleId?: string | null) => {
     const f = targetFile !== undefined ? targetFile : file;
     const sid = targetSampleId !== undefined ? targetSampleId : selectedSampleId;
@@ -692,7 +956,9 @@ export default function Home() {
       }
       const res = await axios.post(`${API_BASE}/api/preprocess`, fd, { timeout: 8000 });
       if (res.data?.success) {
-        setPreprocessedUrl(`${API_BASE}${res.data.preprocessed_url}`);
+        if (res.data.preprocessed_url) {
+          setPreprocessedUrl(`${API_BASE}${res.data.preprocessed_url}`);
+        }
         setDetectedAngle(res.data.skew_angle);
         if (res.data.latency_ms !== undefined) {
           setDocAlignerLatency(res.data.latency_ms);
@@ -704,12 +970,14 @@ export default function Home() {
             { label: "P3 (Bottom-Right)", x: res.data.corners[2].x, y: res.data.corners[2].y },
             { label: "P4 (Bottom-Left)", x: res.data.corners[3].x, y: res.data.corners[3].y },
           ]);
+          setHasCustomCorners(false);
         }
       }
     } catch (e) {
       console.warn("Live DocAligner offline, using verified fallback:", e);
       if (sid && DOCALIGNER_FALLBACK_CORNERS[sid]) {
-        setDetectedCorners(DOCALIGNER_FALLBACK_CORNERS[sid]);
+        setDetectedCorners([...DOCALIGNER_FALLBACK_CORNERS[sid]]);
+        setHasCustomCorners(false);
       }
     } finally {
       setIsPreprocessing(false);
@@ -724,6 +992,7 @@ export default function Home() {
     setPreprocessedUrl(null);
     setDetectedAngle(-3.5);
     setDetectedCorners(null);
+    setHasCustomCorners(false);
     setDocAlignerLatency(null);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
@@ -735,6 +1004,7 @@ export default function Home() {
     setZoomLevel(1);
     setRotation(0);
 
+    autoDetectCornersFromImage(objUrl);
     executePreprocess(f, null);
   }, []);
 
@@ -746,7 +1016,12 @@ export default function Home() {
   const handleSelectSample = (sample: typeof PRESET_SAMPLES[0]) => {
     setSelectedSampleId(sample.id);
     setFile(null);
-    setDetectedCorners(null);
+    setHasCustomCorners(false);
+    if (DOCALIGNER_FALLBACK_CORNERS[sample.id]) {
+      setDetectedCorners([...DOCALIGNER_FALLBACK_CORNERS[sample.id]]);
+    } else {
+      setDetectedCorners(null);
+    }
     setDocAlignerLatency(null);
     const rawUrl = `${API_BASE}/templates_images/${sample.rawFile}`;
     const prepUrl = `${API_BASE}/templates_images/${sample.preprocessedFile}`;
@@ -1209,11 +1484,22 @@ export default function Home() {
     : (selectedSampleId && DOCALIGNER_FALLBACK_CORNERS[selectedSampleId])
       ? DOCALIGNER_FALLBACK_CORNERS[selectedSampleId]
       : [
-          { label: "P1 (Top-Left)", x: 4.0, y: 4.0 },
-          { label: "P2 (Top-Right)", x: 96.0, y: 4.0 },
-          { label: "P3 (Bottom-Right)", x: 96.0, y: 96.0 },
-          { label: "P4 (Bottom-Left)", x: 4.0, y: 96.0 }
+          { label: "P1 (Top-Left)", x: 8.5, y: 6.2 },
+          { label: "P2 (Top-Right)", x: 91.8, y: 5.4 },
+          { label: "P3 (Bottom-Right)", x: 93.2, y: 93.6 },
+          { label: "P4 (Bottom-Left)", x: 7.1, y: 94.2 }
         ];
+
+  const liveSkewAngle = useMemo(() => {
+    if (activeCorners && activeCorners.length === 4) {
+      const dx = activeCorners[1].x - activeCorners[0].x;
+      const dy = activeCorners[1].y - activeCorners[0].y;
+      if (Math.abs(dx) > 0.001) {
+        return Math.round((Math.atan2(dy, dx) * 180 / Math.PI) * 10) / 10;
+      }
+    }
+    return currentSkewAngle;
+  }, [activeCorners, currentSkewAngle]);
 
   const getDisplayImageSrc = () => {
     if (imageViewMode === "original") {
@@ -1604,7 +1890,7 @@ export default function Home() {
                             ⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "18.2ms"}
                           </span>
                           <span className="text-slate-400">|</span>
-                          <span className="font-mono text-indigo-700 font-bold">{currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}° ➔ 0.0°</span>
+                          <span className="font-mono text-indigo-700 font-bold">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° ➔ 0.0°</span>
                         </div>
                       )}
                     </div>
@@ -1660,8 +1946,9 @@ export default function Home() {
                   <div className="space-y-3">
                     <div className="relative border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[300px] max-h-[420px]">
                       <div className="overflow-auto w-full h-full flex items-center justify-center p-2">
-                        <div className="relative inline-block max-w-full">
+                        <div className="relative inline-block max-w-full select-none">
                           <img
+                            ref={imgElementRef}
                             src={displayImageSrc || ""}
                             alt="Hóa đơn"
                             style={{
@@ -1674,14 +1961,14 @@ export default function Home() {
                                 ? "contrast(1.28) brightness(1.04) saturate(0.2) drop-shadow(0 0 1px rgba(0,0,0,0.5))"
                                 : "none"
                             }}
-                            className="rounded shadow-xs"
+                            className="rounded shadow-xs pointer-events-none"
                           />
 
-                          {/* 4-Point Document Contour Mesh (DocAligner FastViT AI View) */}
+                          {/* 4-Point Document Contour Mesh & Interactive Draggable Pins */}
                           {imageViewMode === "preprocessed" && showQuadContour && (
-                            <div className="absolute inset-0 pointer-events-none">
+                            <div className="absolute inset-0 select-none">
                               {/* SVG Quad Polygon connecting P1 -> P2 -> P3 -> P4 */}
-                              <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                              <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                                 <defs>
                                   <linearGradient id="docaligner-mesh" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
@@ -1697,34 +1984,55 @@ export default function Home() {
                                 />
                               </svg>
 
-                              {/* 4 Corner Pinpoints with coordinates & labels */}
+                              {/* 4 Draggable Corner Pinpoints with coordinates & labels */}
                               {activeCorners.map((pt, pIdx) => (
                                 <div
                                   key={pIdx}
-                                  className="absolute -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center pointer-events-none"
-                                  style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
+                                  onPointerDown={(e) => handleCornerPointerDown(pIdx, e)}
+                                  onPointerMove={(e) => handleCornerPointerMove(pIdx, e)}
+                                  onPointerUp={(e) => handleCornerPointerUp(pIdx, e)}
+                                  className={`absolute -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center cursor-grab active:cursor-grabbing transition-transform ${
+                                    draggingCornerIndex === pIdx ? "scale-125 z-40" : "hover:scale-110"
+                                  }`}
+                                  style={{ left: `${pt.x}%`, top: `${pt.y}%`, touchAction: "none" }}
+                                  title={`Kéo thả điểm ${pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"} để căn chỉnh viền`}
                                 >
                                   {/* Pulsing ring */}
-                                  <div className="absolute w-6 h-6 rounded-full bg-emerald-400/40 animate-ping" />
+                                  <div className={`absolute w-7 h-7 rounded-full bg-emerald-400/40 ${draggingCornerIndex === pIdx ? "animate-ping" : "animate-pulse"}`} />
 
                                   {/* Glowing Pin Marker */}
-                                  <div className="relative w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_12px_rgba(16,185,129,0.9)] flex items-center justify-center text-[9px] font-black text-white">
+                                  <div className="relative w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_14px_rgba(16,185,129,0.95)] flex items-center justify-center text-[10px] font-black text-white hover:bg-emerald-400 select-none">
                                     {pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"}
                                   </div>
 
-                                  {/* Coordinate badge */}
-                                  <div className="mt-1 whitespace-nowrap bg-slate-900/90 text-emerald-300 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md border border-emerald-500/30 backdrop-blur-xs">
+                                  {/* Live Coordinate badge */}
+                                  <div className="mt-1 whitespace-nowrap bg-slate-950/90 text-emerald-300 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg border border-emerald-500/40 backdrop-blur-xs select-none pointer-events-none">
                                     ({pt.x}%, {pt.y}%)
                                   </div>
                                 </div>
                               ))}
 
                               {/* AI Detection Info Badge */}
-                              <div className="absolute top-2 left-2 bg-slate-950/85 text-white px-2.5 py-1 rounded-lg border border-emerald-500/40 shadow-lg backdrop-blur-md flex items-center gap-2 text-[10px]">
+                              <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-emerald-500/40 shadow-lg backdrop-blur-md flex items-center gap-2 text-[10px] pointer-events-none select-none">
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                                 <span className="font-semibold text-emerald-300">DocAligner FastViT-BiFPN</span>
                                 <span className="text-slate-400">|</span>
                                 <span className="text-emerald-400 font-mono font-bold">⚡ {docAlignerLatency ? `${docAlignerLatency}ms (ONNX)` : "18.2ms (ONNX)"}</span>
+                                {hasCustomCorners && (
+                                  <span className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-1 rounded text-[9px]">Đã chỉnh tay</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Laser Scanning Animation Overlay */}
+                          {isPreprocessing && (
+                            <div className="absolute inset-0 pointer-events-none z-35 overflow-hidden rounded">
+                              <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_18px_#10b981] animate-laser-sweep" />
+                              <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-[0.5px]" />
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center gap-2 shadow-2xl backdrop-blur-md">
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                                <span>DocAligner AI đang dò 4 góc viền...</span>
                               </div>
                             </div>
                           )}
@@ -1735,7 +2043,7 @@ export default function Home() {
                       <div className="absolute top-3 left-3 pointer-events-none">
                         {imageViewMode === "original" && (
                           <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-900/85 text-white backdrop-blur-xs flex items-center gap-1 shadow-xs">
-                            <Camera className="w-3 h-3 text-slate-300" /> Ảnh Gốc (Nghiêng {currentSkewAngle > 0 ? `+${currentSkewAngle}` : currentSkewAngle}° | Nền bàn chưa cắt)
+                            <Camera className="w-3 h-3 text-slate-300" /> Ảnh Gốc (Nghiêng {liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° | Nền bàn chưa cắt)
                           </span>
                         )}
                         {imageViewMode === "preprocessed" && (
@@ -1765,6 +2073,40 @@ export default function Home() {
                         </button>
                       </div>
                     </div>
+
+                    {/* Interactive 4-Corner Toolbar (when Quad Mesh is visible) */}
+                    {imageViewMode === "preprocessed" && showQuadContour && (
+                      <div className="bg-slate-900 border border-slate-700/80 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 shadow-md">
+                        <div className="flex items-center gap-2 text-xs text-slate-300">
+                          <span className="flex h-2 w-2 relative shrink-0">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          </span>
+                          <span>💡 <strong>Tương tác:</strong> Kéo thả 4 điểm <strong>P1 - P4</strong> để căn chỉnh viền hóa đơn tùy ý như CamScanner</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasCustomCorners && (
+                            <button
+                              type="button"
+                              onClick={handleResetCorners}
+                              className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 transition-all cursor-pointer flex items-center gap-1"
+                            >
+                              <RotateCw className="w-3 h-3" />
+                              <span>Khôi Phục AI</span>
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={applyPerspectiveWarp}
+                            disabled={isWarping}
+                            className="px-3 py-1 text-xs font-bold rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-md shadow-emerald-900/40 transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                          >
+                            {isWarping ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-emerald-200" />}
+                            <span>Nắn Phẳng & Cắt 0° (Warp)</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Preprocessing Educational Callout */}
                     <div className="p-3 rounded-xl border text-xs leading-relaxed transition-all">
