@@ -278,13 +278,13 @@ SAMPLE_RECEIPTS = [
 ]
 
 def clean_currency(val_str: str, allow_negative: bool = True) -> float:
-    """Parses Vietnamese currency strings like '104.000', '-20.000', '(20.000)' to float."""
+    """Parses Vietnamese currency strings like '104.000', '-20.000', '(20.000)', '–20.000 đ' to float."""
     if not val_str:
         return 0.0
     s = str(val_str).strip()
     is_negative = False
     if allow_negative:
-        if s.startswith("-") or "- " in s or (s.startswith("(") and s.endswith(")")):
+        if re.search(r"[-–—−]", s) or "(" in s:
             is_negative = True
     cleaned = re.sub(r"[^\d]", "", s)
     try:
@@ -296,16 +296,22 @@ def clean_currency(val_str: str, allow_negative: bool = True) -> float:
 def is_discount_item(it: Dict[str, Any]) -> bool:
     """
     Checks if an item represents a discount, voucher, or coupon.
-    Covers both explicit negative amounts and textual discount descriptions.
+    Covers negative amounts in amount/price and textual discount descriptions.
     """
     name = str(it.get("name", "")).lower()
     raw_amt = str(it.get("amount", "")).strip()
-    if raw_amt.startswith("-") or "- " in raw_amt or (raw_amt.startswith("(") and raw_amt.endswith(")")):
+    raw_price = str(it.get("price", "")).strip()
+
+    if re.search(r"[-–—−]", raw_amt) or "(" in raw_amt:
         return True
+    if re.search(r"[-–—−]", raw_price) or "(" in raw_price:
+        return True
+
     discount_keywords = [
         "giảm giá", "giam gia", "voucher", "chiết khấu", "chiet khau",
         "khuyến mãi", "khuyen mai", "khuyến mại", "coupon", "mã giảm",
-        "ma giam", "discount", "trừ tiền", "tru tien", "tiền giảm", "tien giam"
+        "ma giam", "discount", "trừ tiền", "tru tien", "tiền giảm", "tien giam",
+        "hoàn tiền", "hoan tien", "promo", "ưu đãi", "uu dai"
     ]
     return any(kw in name for kw in discount_keywords)
 
@@ -412,7 +418,10 @@ def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> Val
     for it in items:
         raw_amt = it.get("amount", "")
         parsed = clean_currency(raw_amt, allow_negative=True)
-        if is_discount_item(it):
+        if parsed == 0.0 and it.get("price"):
+            parsed = clean_currency(it.get("price"), allow_negative=True)
+
+        if is_discount_item(it) or parsed < 0:
             calculated -= abs(parsed)
         else:
             calculated += parsed

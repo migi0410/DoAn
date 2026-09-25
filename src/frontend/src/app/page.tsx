@@ -701,7 +701,39 @@ export default function Home() {
   const [compareRotation, setCompareRotation] = useState<number>(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const cameraFallbackInputRef = useRef<HTMLInputElement>(null);
+
+  // Camera Viewfinder & Interactive 4-Corner Frame Adjustment States
+  const [cameraModalOpen, setCameraModalOpen] = useState(false);
+  const [cameraMode, setCameraMode] = useState<"viewfinder" | "adjust">("viewfinder");
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraFacing, setCameraFacing] = useState<"environment" | "user">("environment");
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameraCapturedUrl, setCameraCapturedUrl] = useState<string | null>(null);
+  const [cameraCorners, setCameraCorners] = useState<{ label: string; x: number; y: number }[]>([
+    { label: "P1", x: 12, y: 8 },
+    { label: "P2", x: 88, y: 8 },
+    { label: "P3", x: 88, y: 92 },
+    { label: "P4", x: 12, y: 92 },
+  ]);
+  const [cameraDraggingIndex, setCameraDraggingIndex] = useState<number | null>(null);
+  const cameraVideoRef = useRef<HTMLVideoElement | null>(null);
+  const cameraCropImgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((t) => t.stop());
+      }
+    };
+  }, [cameraStream]);
+
+  useEffect(() => {
+    if (cameraVideoRef.current && cameraStream && cameraMode === "viewfinder") {
+      cameraVideoRef.current.srcObject = cameraStream;
+      cameraVideoRef.current.play().catch(() => {});
+    }
+  }, [cameraStream, cameraMode]);
 
   useEffect(() => {
     const checkServer = async () => {
@@ -1213,17 +1245,17 @@ export default function Home() {
     }
   };
 
-  const handleFile = useCallback(async (f: File) => {
+  const handleFile = useCallback(async (f: File, skipPreprocess: boolean = false) => {
     setFile(f);
     setSelectedSampleId(null);
     setPreprocessedUrl(null);
-    setDetectedAngle(-3.5);
+    setDetectedAngle(0);
     setDetectedCorners(null);
     setHasCustomCorners(false);
     setDocAlignerLatency(null);
     setImageViewMode("preprocessed");
     setShowQuadContour(false);
-    setPreprocessViewTab("compare");
+    setPreprocessViewTab(skipPreprocess ? "cropped" : "compare");
     setResult(null);
     setValidation(null);
     setLatency(null);
@@ -1237,10 +1269,25 @@ export default function Home() {
       const dataUrl = e.target?.result as string;
       if (dataUrl) {
         setPreview(dataUrl);
-        autoDetectCornersFromImage(dataUrl);
-        // Optimize image (downscale 12MB phone camera photo to ~250KB) before sending to /api/preprocess
-        const optFile = await prepareImageForPredict(dataUrl, 0, f.name || "receipt.jpg");
-        executePreprocess(optFile || f, null);
+        if (skipPreprocess) {
+          // Bypasses YOLO preprocess! Image is already cropped and perspective-corrected by the user.
+          setPreprocessedUrl(dataUrl);
+          setPreprocessViewTab("cropped");
+          setIsPreprocessing(false);
+          setDetectedCorners([
+            { label: "P1 (Top-Left)", x: 0, y: 0 },
+            { label: "P2 (Top-Right)", x: 100, y: 0 },
+            { label: "P3 (Bottom-Right)", x: 100, y: 100 },
+            { label: "P4 (Bottom-Left)", x: 0, y: 100 },
+          ]);
+          setDetectedAngle(0);
+          setDocAlignerLatency(0);
+        } else {
+          autoDetectCornersFromImage(dataUrl);
+          // Optimize image (downscale 12MB phone camera photo to ~250KB) before sending to /api/preprocess
+          const optFile = await prepareImageForPredict(dataUrl, 0, f.name || "receipt.jpg");
+          executePreprocess(optFile || f, null);
+        }
       }
     };
     reader.readAsDataURL(f);
@@ -1248,7 +1295,190 @@ export default function Home() {
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0], false);
+  };
+
+  // --- CAMERA VIEWFINDER & POST-CAPTURE 4-CORNER ADJUSTMENT HANDLERS ---
+  const startCamera = async (facing: "environment" | "user" = "environment") => {
+    try {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((t) => t.stop());
+      }
+      if (!navigator?.mediaDevices?.getUserMedia) {
+        throw new Error("Trình duyệt không hỗ trợ trực tiếp camera qua getUserMedia.");
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: facing },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      });
+      setCameraStream(stream);
+      setCameraError(null);
+      if (cameraVideoRef.current) {
+        cameraVideoRef.current.srcObject = stream;
+        cameraVideoRef.current.play().catch(() => {});
+      }
+    } catch (err: any) {
+      console.warn("Camera access error:", err);
+      setCameraError(
+        "Không thể mở trực tiếp webcam/camera qua trình duyệt (quyền truy cập bị chặn hoặc không có camera). Vui lòng bấm nút bên dưới để chọn ảnh hoặc chụp qua camera thiết bị."
+      );
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((t) => t.stop());
+      setCameraStream(null);
+    }
+  };
+
+  const openCameraModal = async () => {
+    setCameraModalOpen(true);
+    setCameraMode("viewfinder");
+    setCameraCapturedUrl(null);
+    setCameraError(null);
+    await startCamera(cameraFacing);
+  };
+
+  const closeCameraModal = () => {
+    stopCamera();
+    setCameraModalOpen(false);
+    setCameraCapturedUrl(null);
+    setCameraError(null);
+  };
+
+  const toggleCameraFacing = async () => {
+    const nextFacing = cameraFacing === "environment" ? "user" : "environment";
+    setCameraFacing(nextFacing);
+    await startCamera(nextFacing);
+  };
+
+  const capturePhoto = () => {
+    const video = cameraVideoRef.current;
+    if (!video) return;
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 1280;
+      canvas.height = video.videoHeight || 720;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const shotUrl = canvas.toDataURL("image/jpeg", 0.95);
+      stopCamera();
+      setCameraCapturedUrl(shotUrl);
+      setCameraCorners([
+        { label: "P1", x: 12, y: 8 },
+        { label: "P2", x: 88, y: 8 },
+        { label: "P3", x: 88, y: 92 },
+        { label: "P4", x: 12, y: 92 },
+      ]);
+      setCameraMode("adjust");
+    } catch (err) {
+      console.error("Capture photo error:", err);
+    }
+  };
+
+  const handleCameraFallbackFile = (f: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const url = e.target?.result as string;
+      if (url) {
+        stopCamera();
+        setCameraCapturedUrl(url);
+        setCameraCorners([
+          { label: "P1", x: 10, y: 8 },
+          { label: "P2", x: 90, y: 8 },
+          { label: "P3", x: 90, y: 92 },
+          { label: "P4", x: 10, y: 92 },
+        ]);
+        setCameraMode("adjust");
+      }
+    };
+    reader.readAsDataURL(f);
+  };
+
+  const rotateCameraCapturedImage = () => {
+    if (!cameraCapturedUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalHeight;
+      canvas.height = img.naturalWidth;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((90 * Math.PI) / 180);
+      ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+      setCameraCapturedUrl(canvas.toDataURL("image/jpeg", 0.95));
+      setCameraCorners([
+        { label: "P1", x: 10, y: 8 },
+        { label: "P2", x: 90, y: 8 },
+        { label: "P3", x: 90, y: 92 },
+        { label: "P4", x: 10, y: 92 },
+      ]);
+    };
+    img.src = cameraCapturedUrl;
+  };
+
+  const handleCameraCornerPointerDown = (index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCameraDraggingIndex(index);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+  };
+
+  const handleCameraCornerPointerMove = (index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    if (cameraDraggingIndex !== index || !cameraCropImgRef.current) return;
+    const rect = cameraCropImgRef.current.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const rawX = ((e.clientX - rect.left) / rect.width) * 100;
+    const rawY = ((e.clientY - rect.top) / rect.height) * 100;
+
+    const clampedX = Math.round(Math.max(0, Math.min(100, rawX)) * 10) / 10;
+    const clampedY = Math.round(Math.max(0, Math.min(100, rawY)) * 10) / 10;
+
+    setCameraCorners((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], x: clampedX, y: clampedY };
+      return next;
+    });
+  };
+
+  const handleCameraCornerPointerUp = (index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    if (cameraDraggingIndex === index) {
+      setCameraDraggingIndex(null);
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
+    }
+  };
+
+  const applyCameraCropAndUse = async () => {
+    if (!cameraCapturedUrl) return;
+    try {
+      setIsWarping(true);
+      const warpedUrl = await generateWarpedImage(cameraCorners, cameraCapturedUrl);
+      const finalUrl = warpedUrl || cameraCapturedUrl;
+      const blob = dataUrlToBlob(finalUrl);
+      const file = new File([blob], `camera_receipt_${Date.now()}.jpg`, { type: "image/jpeg" });
+      closeCameraModal();
+      handleFile(file, true); // skipPreprocess = true!
+    } catch (err) {
+      console.error("Error cropping camera image:", err);
+      const blob = dataUrlToBlob(cameraCapturedUrl);
+      const file = new File([blob], `camera_receipt_${Date.now()}.jpg`, { type: "image/jpeg" });
+      closeCameraModal();
+      handleFile(file, true);
+    } finally {
+      setIsWarping(false);
+    }
   };
 
   const handleSelectSample = (sample: typeof PRESET_SAMPLES[0]) => {
@@ -1668,12 +1898,35 @@ export default function Home() {
     setEditableData((prev) => ({ ...prev, ITEMS: updated }));
   };
 
+  const isDiscountItem = (it: any) => {
+    const rawAmt = String(it?.amount || "").trim();
+    const rawPrice = String(it?.price || "").trim();
+    if (/[-–—−]/.test(rawAmt) || rawAmt.includes("(") || /[-–—−]/.test(rawPrice) || rawPrice.includes("(")) {
+      return true;
+    }
+    const name = String(it?.name || "").toLowerCase();
+    const discountKeywords = [
+      "giảm giá", "giam gia", "voucher", "chiết khấu", "chiet khau",
+      "khuyến mãi", "khuyen mai", "khuyến mại", "coupon", "mã giảm",
+      "ma giam", "discount", "trừ tiền", "tru tien", "tiền giảm", "tien giam",
+      "hoàn tiền", "hoan tien", "promo", "ưu đãi", "uu dai"
+    ];
+    return discountKeywords.some((kw) => name.includes(kw));
+  };
+
   const calculateItemsTotal = () => {
     let sum = 0;
     for (const it of items) {
-      const numStr = String(it.amount || "").replace(/[^0-9]/g, "");
+      const rawAmt = String(it.amount || "").trim() || String(it.price || "").trim();
+      const numStr = rawAmt.replace(/[^0-9]/g, "");
       const num = parseFloat(numStr);
-      if (!isNaN(num)) sum += num;
+      if (!isNaN(num)) {
+        if (isDiscountItem(it)) {
+          sum -= Math.abs(num);
+        } else {
+          sum += Math.abs(num);
+        }
+      }
     }
     return sum;
   };
@@ -2273,19 +2526,6 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <div className="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-xs flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 text-emerald-950 font-medium">
-                            <span className="text-base">⚡</span>
-                            <span><strong>YOLO11s-Pose AI:</strong> Đã phát hiện 4 góc viền, bẻ phẳng phối cảnh và nắn thẳng hóa đơn từ <strong className="text-rose-600 font-mono">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</strong> về <strong className="text-emerald-700 font-mono">0.0°</strong> chuẩn hóa.</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setPreprocessViewTab("cropped")}
-                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer transition-all shadow-xs"
-                          >
-                            Xem Toàn Khung Đã Cắt ➔
-                          </button>
-                        </div>
                       </div>
                     ) : (
                       /* Single Image View Container (Cropped or Contour Mode) */
@@ -2454,7 +2694,7 @@ export default function Home() {
                             <div className="flex items-start gap-2 text-emerald-950 bg-emerald-50/90 border border-emerald-200 p-2.5 rounded-lg">
                               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                               <div>
-                                <span className="font-bold text-emerald-900">Giai đoạn 1 - Kết Quả Đã Tiền Xử Lý (YOLO11s-Pose + CLAHE):</span> 
+                                <span className="font-bold text-emerald-900">Kết Quả Đã Tiền Xử Lý (YOLO11s-Pose + CLAHE):</span> 
                                 <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-emerald-900/90">
                                   <li><strong className="text-emerald-950 font-semibold">Khử nền bàn:</strong> Đã cắt sạch 100% bề mặt bàn gỗ và các chi tiết gây nhiễu bên ngoài mép giấy.</li>
                                   <li><strong className="text-emerald-950 font-semibold">Nắn phẳng 0.0°:</strong> Đã chuyển đổi góc nghiêng <span className="font-mono text-rose-700 font-bold">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</span> về hình chữ nhật vuông vức chuẩn hóa.</li>
@@ -2466,7 +2706,7 @@ export default function Home() {
                             <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/90 border border-indigo-200 p-2.5 rounded-lg">
                               <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                               <div>
-                                <span className="font-bold text-indigo-900">Giai đoạn 1 - Dò 4 Góc Viền Bằng YOLO11s-Pose Keypoints:</span> 
+                                <span className="font-bold text-indigo-900">Dò 4 Góc Viền Mép Giấy (YOLO11s-Pose Keypoints):</span> 
                                 <p className="mt-1 text-[11px] text-indigo-900/90">
                                   Mô hình YOLO11s-Pose dự đoán chính xác tọa độ 4 góc vật lý P1, P2, P3, P4 của mép giấy hóa đơn. Bạn có thể chạm/kéo thả các chốt để căn chỉnh viền, sau đó bấm <strong>[👉 Bấm Cắt & Nắn Thẳng 0.0°]</strong> để xem kết quả.
                                 </p>
@@ -2502,14 +2742,16 @@ export default function Home() {
                 <div className="pt-3 border-t border-white/10 space-y-2.5">
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() => cameraInputRef.current?.click()}
-                      className="w-full py-2 px-3 bg-indigo-600/80 hover:bg-indigo-600 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/20"
+                      type="button"
+                      onClick={openCameraModal}
+                      className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
                     >
                       <Camera className="w-3.5 h-3.5" /> Chụp Camera
                     </button>
                     <button
+                      type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                      className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                     >
                       <FileImage className="w-3.5 h-3.5" /> Tải Ảnh Lên
                     </button>
@@ -2520,15 +2762,15 @@ export default function Home() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                    onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0], false)}
                   />
                   <input
-                    ref={cameraInputRef}
+                    ref={cameraFallbackInputRef}
                     type="file"
                     accept="image/*"
                     capture="environment"
                     className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                    onChange={(e) => e.target.files?.[0] && handleCameraFallbackFile(e.target.files[0])}
                   />
 
                   <div>
@@ -2674,78 +2916,26 @@ export default function Home() {
                   )}
 
                   {/* 3-Stage Pipeline Status Inspector */}
-                  <div className="bg-gradient-to-r from-slate-50 via-indigo-50/40 to-slate-50 border border-indigo-100/80 rounded-2xl p-4 shadow-xs">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
-                          Quy Trình 3 Giai Đoạn End-to-End
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {inferenceSource && (
-                          <span className={`text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full border ${
-                            inferenceSource.includes("PopOS")
-                              ? "bg-amber-100 text-amber-800 border-amber-300"
-                              : "bg-emerald-100 text-emerald-800 border-emerald-300"
-                          }`}>
-                            {inferenceSource.includes("PopOS") ? "⚡ Nguồn: PopOS (Fallback)" : "⚡ Nguồn: RunPod RTX 3090 Ti"}
-                          </span>
-                        )}
-                        <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
-                          Tổng thời gian: {latency ? latency.toFixed(2) : "0.92"}s
-                        </span>
-                      </div>
+                  <div className="bg-slate-50 border border-slate-200/90 rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-2xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                      <span className="text-xs font-bold text-slate-800">
+                        Kết Quả Trích Xuất Hóa Đơn AI
+                      </span>
                     </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      {/* Stage 1 */}
-                      <div className="bg-white/90 border border-slate-200/90 rounded-xl p-3 shadow-2xs hover:border-indigo-300 transition-all">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[10px] font-bold uppercase text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
-                            Giai đoạn 1
-                          </span>
-                          <span className="text-[11px] font-mono font-semibold text-slate-500">~0.12s</span>
-                        </div>
-                        <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-indigo-500" /> Tiền Xử Lý Ảnh
-                        </div>
-                        <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                          OpenCV Deskew 0° + CLAHE LAB + Lanczos Rescaling 1536px
-                        </p>
-                      </div>
-
-                      {/* Stage 2 */}
-                      <div className="bg-white/90 border border-slate-200/90 rounded-xl p-3 shadow-2xs hover:border-purple-300 transition-all">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[10px] font-bold uppercase text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">
-                            Giai đoạn 2
-                          </span>
-                          <span className="text-[11px] font-mono font-semibold text-slate-500">~0.75s</span>
-                        </div>
-                        <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                          <Layers className="w-3.5 h-3.5 text-purple-500" /> Suy Luận VLM
-                        </div>
-                        <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                          {inferenceSource ? `${inferenceSource} • Qwen3-VL 8B (LoRA v2)` : "Qwen3-VL 8B (LoRA v2) Vision Transformer trích xuất JSON"}
-                        </p>
-                      </div>
-
-                      {/* Stage 3 */}
-                      <div className="bg-white/90 border border-slate-200/90 rounded-xl p-3 shadow-2xs hover:border-emerald-300 transition-all">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                            Giai đoạn 3
-                          </span>
-                          <span className="text-[11px] font-mono font-semibold text-slate-500">~0.05s</span>
-                        </div>
-                        <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Hậu Xử Lý & Đối Soát
-                        </div>
-                        <p className="text-[11px] text-slate-500 mt-1 leading-snug">
-                          Ghép rớt dòng (Continuation) + BBox Grounding + Đối soát Δ=0
-                        </p>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      {inferenceSource && (
+                        <span className={`text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full border ${
+                          inferenceSource.includes("PopOS")
+                            ? "bg-amber-100 text-amber-800 border-amber-300"
+                            : "bg-emerald-100 text-emerald-800 border-emerald-300"
+                        }`}>
+                          {inferenceSource.includes("PopOS") ? "⚡ Nguồn: PopOS (Fallback)" : "⚡ Nguồn: RunPod RTX 3090 Ti"}
+                        </span>
+                      )}
+                      <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                        Thời gian: {latency ? latency.toFixed(2) : "0.92"}s
+                      </span>
                     </div>
                   </div>
 
@@ -3833,6 +4023,280 @@ export default function Home() {
               alt="Toàn màn hình"
               className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
             />
+          </div>
+        </div>
+      )}
+
+      {/* CAMERA VIEWFINDER & POST-CAPTURE 4-CORNER ADJUSTMENT MODAL */}
+      {cameraModalOpen && (
+        <div className="fixed inset-0 z-[110] bg-slate-950/95 backdrop-blur-md flex flex-col justify-between select-none">
+          {/* Top Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-slate-800 text-white z-20">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 bg-indigo-600/30 border border-indigo-500/40 rounded-lg text-indigo-400">
+                <Camera className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-100">
+                  {cameraMode === "viewfinder" ? "Chụp Ảnh Hóa Đơn Trực Tiếp" : "Nắn Chỉnh Khung 4 Góc Hóa Đơn"}
+                </h4>
+                <p className="text-[11px] text-slate-400">
+                  {cameraMode === "viewfinder"
+                    ? "Canh hóa đơn vào khung viền chữ nhật để chụp rõ nét nhất"
+                    : "Kéo 4 góc P1-P4 theo mép hóa đơn rồi bấm [Cắt & Sử Dụng]"}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={closeCameraModal}
+              className="p-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded-xl transition-all cursor-pointer"
+              title="Đóng camera"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Center Viewport */}
+          <div className="relative flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4 bg-black/60">
+            {cameraMode === "viewfinder" ? (
+              <div className="relative w-full max-w-lg h-full max-h-[78vh] flex items-center justify-center overflow-hidden rounded-2xl bg-black border border-slate-800 shadow-2xl">
+                {/* Live Video Element */}
+                <video
+                  ref={cameraVideoRef}
+                  playsInline
+                  autoPlay
+                  muted
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Guide Frame Overlay with dark outer scrim and 4 L-brackets */}
+                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-6">
+                  {/* Aspect container for typical receipt */}
+                  <div className="relative w-[85%] max-w-[340px] aspect-[9/16] max-h-[90%] border border-dashed border-emerald-400/60 rounded-xl shadow-[0_0_0_9999px_rgba(2,6,23,0.55)]">
+                    {/* Corner L-brackets */}
+                    <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-emerald-400 rounded-tl-lg" />
+                    <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-emerald-400 rounded-tr-lg" />
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-emerald-400 rounded-br-lg" />
+                    <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-emerald-400 rounded-bl-lg" />
+
+                    {/* Center crosshair */}
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-emerald-400/20" />
+                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 border-l border-emerald-400/20" />
+
+                    {/* Helpful instruction badge */}
+                    <div className="absolute top-3 inset-x-2 text-center pointer-events-none">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/85 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold backdrop-blur-xs shadow-lg">
+                        <Sparkles className="w-3 h-3 text-emerald-400" /> Căn mép hóa đơn khớp khung
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Camera Error or Permission Fallback Banner */}
+                {cameraError && (
+                  <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md p-6 flex flex-col items-center justify-center text-center z-30">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 mb-3">
+                      <AlertTriangle className="w-6 h-6" />
+                    </div>
+                    <p className="text-sm text-slate-200 max-w-sm mb-4 leading-relaxed">
+                      {cameraError}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => startCamera(cameraFacing)}
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> Thử Lại Quyền Camera
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => cameraFallbackInputRef.current?.click()}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md"
+                      >
+                        <Camera className="w-3.5 h-3.5" /> Mở Camera Thiết Bị
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* ADJUST MODE: Post-capture Corner & Frame Adjustment */
+              <div className="relative w-full max-w-2xl h-full max-h-[78vh] flex flex-col items-center justify-center overflow-hidden">
+                {/* Quick presets toolbar */}
+                <div className="w-full flex items-center justify-between gap-2 px-3 py-1.5 mb-2 bg-slate-900/90 border border-slate-800 rounded-xl text-xs text-slate-300">
+                  <span className="text-[11px] text-slate-400 hidden sm:inline">Khung canh sẵn:</span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCameraCorners([
+                        { label: "P1", x: 10, y: 8 },
+                        { label: "P2", x: 90, y: 8 },
+                        { label: "P3", x: 90, y: 92 },
+                        { label: "P4", x: 10, y: 92 }
+                      ])}
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium rounded-lg transition-all cursor-pointer border border-slate-700"
+                    >
+                      Khung Chuẩn (80%)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCameraCorners([
+                        { label: "P1", x: 0, y: 0 },
+                        { label: "P2", x: 100, y: 0 },
+                        { label: "P3", x: 100, y: 100 },
+                        { label: "P4", x: 0, y: 100 }
+                      ])}
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium rounded-lg transition-all cursor-pointer border border-slate-700"
+                    >
+                      Tràn Viền (100%)
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={rotateCameraCapturedImage}
+                    className="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 text-[11px] font-medium rounded-lg transition-all cursor-pointer border border-indigo-500/40 flex items-center gap-1"
+                  >
+                    <RotateCw className="w-3 h-3" /> Xoay 90°
+                  </button>
+                </div>
+
+                {/* Captured Image Canvas with 4 Draggable Pinpoints */}
+                <div className="relative max-w-full max-h-[66vh] inline-block rounded-xl overflow-hidden border border-slate-800 shadow-2xl bg-black">
+                  {cameraCapturedUrl && (
+                    <img
+                      ref={cameraCropImgRef}
+                      src={cameraCapturedUrl}
+                      alt="Ảnh hóa đơn vừa chụp"
+                      className="max-w-full max-h-[66vh] object-contain block select-none pointer-events-none"
+                    />
+                  )}
+
+                  {/* SVG Boundary Polygon & Darkened Outside Mask */}
+                  <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <mask id="camera-crop-mask">
+                        <rect width="100" height="100" fill="white" />
+                        <polygon
+                          points={`${cameraCorners[0].x},${cameraCorners[0].y} ${cameraCorners[1].x},${cameraCorners[1].y} ${cameraCorners[2].x},${cameraCorners[2].y} ${cameraCorners[3].x},${cameraCorners[3].y}`}
+                          fill="black"
+                        />
+                      </mask>
+                    </defs>
+                    {/* Outer dimmed scrim */}
+                    <rect width="100" height="100" fill="rgba(2, 6, 23, 0.6)" mask="url(#camera-crop-mask)" />
+                    {/* Receipt quad border */}
+                    <polygon
+                      points={`${cameraCorners[0].x},${cameraCorners[0].y} ${cameraCorners[1].x},${cameraCorners[1].y} ${cameraCorners[2].x},${cameraCorners[2].y} ${cameraCorners[3].x},${cameraCorners[3].y}`}
+                      fill="rgba(16, 185, 129, 0.15)"
+                      stroke="#10b981"
+                      strokeWidth="1.2"
+                      strokeDasharray="3 2"
+                    />
+                  </svg>
+
+                  {/* 4 Interactive Corner Pins */}
+                  {cameraCorners.map((pt, pIdx) => (
+                    <div
+                      key={pIdx}
+                      onPointerDown={(e) => handleCameraCornerPointerDown(pIdx, e)}
+                      onPointerMove={(e) => handleCameraCornerPointerMove(pIdx, e)}
+                      onPointerUp={(e) => handleCameraCornerPointerUp(pIdx, e)}
+                      className={`absolute -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center cursor-grab active:cursor-grabbing transition-transform ${
+                        cameraDraggingIndex === pIdx ? "scale-125 z-40" : "hover:scale-110"
+                      }`}
+                      style={{ left: `${pt.x}%`, top: `${pt.y}%`, touchAction: "none" }}
+                      title={`Kéo thả điểm ${pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"} để nắn chỉnh viền`}
+                    >
+                      <div className={`absolute w-8 h-8 rounded-full bg-emerald-400/40 ${cameraDraggingIndex === pIdx ? "animate-ping" : "animate-pulse"}`} />
+                      <div className="relative w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_12px_rgba(16,185,129,0.95)] flex items-center justify-center text-[10px] font-black text-white hover:bg-emerald-400 select-none">
+                        {pIdx === 0 ? "P1" : pIdx === 1 ? "P2" : pIdx === 2 ? "P3" : "P4"}
+                      </div>
+                      <div className="mt-1 whitespace-nowrap bg-slate-950/90 text-emerald-300 font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-lg border border-emerald-500/40 select-none pointer-events-none">
+                        ({pt.x}%, {pt.y}%)
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Control Bar */}
+          <div className="px-4 py-3.5 bg-slate-900/90 border-t border-slate-800 flex items-center justify-between z-20">
+            {cameraMode === "viewfinder" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={toggleCameraFacing}
+                  className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl transition-all cursor-pointer border border-slate-700 flex items-center gap-2 text-xs font-semibold"
+                  title="Đổi camera trước / sau"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span className="hidden sm:inline">Đổi Camera</span>
+                </button>
+
+                {/* Shutter Button */}
+                <button
+                  type="button"
+                  onClick={capturePhoto}
+                  className="relative group p-1 rounded-full border-4 border-white/80 hover:border-emerald-400 transition-all cursor-pointer shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)]"
+                  title="Chụp ảnh ngay"
+                >
+                  <div className="w-14 h-14 rounded-full bg-white group-hover:bg-emerald-400 transition-all flex items-center justify-center">
+                    <Camera className="w-6 h-6 text-slate-900 group-hover:text-white transition-colors" />
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => cameraFallbackInputRef.current?.click()}
+                  className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl transition-all cursor-pointer border border-slate-700 flex items-center gap-2 text-xs font-semibold"
+                  title="Tải ảnh hoặc chụp qua hệ điều hành"
+                >
+                  <FileImage className="w-4 h-4" />
+                  <span className="hidden sm:inline">Chọn Từ Máy</span>
+                </button>
+              </>
+            ) : (
+              /* ADJUST MODE ACTIONS */
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCameraCapturedUrl(null);
+                    setCameraMode("viewfinder");
+                    startCamera(cameraFacing);
+                  }}
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer border border-slate-700"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Chụp Lại
+                </button>
+
+                <div className="text-[11px] text-emerald-400 font-mono hidden md:block">
+                  ⚡ Tự động nắn thẳng phối cảnh & bỏ qua YOLO preprocess
+                </div>
+
+                <button
+                  type="button"
+                  onClick={applyCameraCropAndUse}
+                  disabled={isWarping}
+                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-950/40 disabled:opacity-50"
+                >
+                  {isWarping ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
+                  Cắt & Sử Dụng Hóa Đơn Này
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
