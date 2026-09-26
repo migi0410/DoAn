@@ -5,8 +5,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv()
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://qwprbxxxbvueozffqhdd.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://rdtyboaufaqbvmnombwp.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkdHlib2F1ZmFxYnZtbm9tYndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0Mzk2MzksImV4cCI6MjEwNjAxNTYzOX0.O4KwKbDzbgRIczD0kIJyiQXzypCWwMMEGEPVCr_Y-vs")
 
 try:
     if SUPABASE_KEY:

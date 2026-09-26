@@ -26,11 +26,11 @@ Hệ thống hỗ trợ cơ chế **Hybrid Database** (Ưu tiên đám mây Supa
 
 ### A. Cơ sở dữ liệu chính: Supabase PostgreSQL (Cloud)
 * **Connection String (URI):**  
-  `postgresql://postgres.qwprbxxxbvueozffqhdd:Hmd0410@2004@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres`
-* **Host:** `aws-0-ap-southeast-1.pooler.supabase.com`
+  `postgresql://postgres:Hmd0410@2004@db.rdtyboaufaqbvmnombwp.supabase.co:5432/postgres`
+* **Host:** `db.rdtyboaufaqbvmnombwp.supabase.co`
 * **Port:** `5432`
 * **Database Name:** `postgres`
-* **User:** `postgres.qwprbxxxbvueozffqhdd`
+* **User:** `postgres`
 * **Password:** `Hmd0410@2004`
 * **SSL Mode:** `require`
 * **Region:** `ap-southeast-1` (AWS Singapore)
@@ -47,14 +47,14 @@ Tất cả các biến môi trường cấu hình dịch vụ bên thứ 3 đư�
 
 ```env
 # 1. Supabase Cloud Storage & Auth Service
-SUPABASE_URL=https://qwprbxxxbvueozffqhdd.supabase.co
-SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3cHJieHh4YnZ1ZW96ZmZxaGRkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTU5NzA4MywiZXhwIjoyMTA1MTczMDgzfQ.PwuArhKLDbeQrg_SLVSFxXqhoIUGJRDbawyVnayrooA
+SUPABASE_URL=https://rdtyboaufaqbvmnombwp.supabase.co
+SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkdHlib2F1ZmFxYnZtbm9tYndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0Mzk2MzksImV4cCI6MjEwNjAxNTYzOX0.O4KwKbDzbgRIczD0kIJyiQXzypCWwMMEGEPVCr_Y-vs
 
 # 2. Database Connection Pooling
-SUPABASE_DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
+SUPABASE_DB_HOST=db.rdtyboaufaqbvmnombwp.supabase.co
 SUPABASE_DB_PORT=5432
 SUPABASE_DB_NAME=postgres
-SUPABASE_DB_USER=postgres.qwprbxxxbvueozffqhdd
+SUPABASE_DB_USER=postgres
 SUPABASE_DB_PASSWORD=Hmd0410@2004
 ```
 

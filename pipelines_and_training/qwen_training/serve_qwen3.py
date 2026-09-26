@@ -25,10 +25,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_ID_BASE = "Qwen/Qwen3-VL-8B-Instruct"
-MODEL_DIR_V2 = "/home/haderax/DoAn/checkpoints_qwen3_vl_qlora_v2/final_lora_checkpoint"
-MODEL_DIR_V1 = "/home/haderax/DoAn/checkpoints_qwen3_vl_qlora/final_lora_checkpoint"
-OLLAMA_URL = "http://localhost:11434/api/generate"
+def find_checkpoint_dir(env_var: str, rel_path: str, fallback_path: str) -> str:
+    """Tự động phát hiện đường dẫn checkpoint linh hoạt giữa RunPod (RTX 3090 Ti), Pop!_OS (RTX 5060 Ti) hoặc biến môi trường."""
+    if os.getenv(env_var):
+        return os.getenv(env_var)
+    cwd_path = os.path.join(os.getcwd(), rel_path)
+    if os.path.exists(cwd_path):
+        return cwd_path
+    for runpod_base in ["/workspace/DoAn", "/workspace"]:
+        runpod_path = os.path.join(runpod_base, rel_path)
+        if os.path.exists(runpod_path):
+            return runpod_path
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    for offset in [".", "..", "../..", "../../.."]:
+        candidate = os.path.abspath(os.path.join(script_dir, offset, rel_path))
+        if os.path.exists(candidate):
+            return candidate
+    return fallback_path
+
+MODEL_ID_BASE = os.getenv("MODEL_ID_BASE", "Qwen/Qwen3-VL-8B-Instruct")
+MODEL_DIR_V2 = find_checkpoint_dir(
+    "MODEL_DIR_V2",
+    "checkpoints_qwen3_vl_qlora_v2/final_lora_checkpoint",
+    "/home/haderax/DoAn/checkpoints_qwen3_vl_qlora_v2/final_lora_checkpoint"
+)
+MODEL_DIR_V1 = find_checkpoint_dir(
+    "MODEL_DIR_V1",
+    "checkpoints_qwen3_vl_qlora/final_lora_checkpoint",
+    "/home/haderax/DoAn/checkpoints_qwen3_vl_qlora/final_lora_checkpoint"
+)
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 
 # Global state
 base_model = None

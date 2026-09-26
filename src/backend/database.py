@@ -10,11 +10,11 @@ load_dotenv()
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 SQLITE_PATH = os.path.join(BASE_DIR, "receipts_history.db")
 
-DB_HOST = os.getenv("SUPABASE_DB_HOST", "aws-0-ap-southeast-1.pooler.supabase.com")
+DB_HOST = os.getenv("SUPABASE_DB_HOST", "db.rdtyboaufaqbvmnombwp.supabase.co")
 DB_PORT = int(os.getenv("SUPABASE_DB_PORT", "5432"))
 DB_NAME = os.getenv("SUPABASE_DB_NAME", "postgres")
-DB_USER = os.getenv("SUPABASE_DB_USER", "postgres.qwprbxxxbvueozffqhdd")
-DB_PASS = os.getenv("SUPABASE_DB_PASSWORD", "")
+DB_USER = os.getenv("SUPABASE_DB_USER", "postgres")
+DB_PASS = os.getenv("SUPABASE_DB_PASSWORD", "Hmd0410@2004")
 
 USE_POSTGRES = True
 
