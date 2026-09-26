@@ -1,0 +1,13 @@
+{
+  "image": "images/winmart_sample_001.jpg",
+  "messages": [
+    {
+      "role": "user",
+      "content": "<image>\nTrích xuất thông tin hóa đơn sang định dạng JSON theo đúng schema sau:\n{\n  \"SELLER\": \"...\",\n  \"ADDRESS\": \"...\",\n  \"TIMESTAMP\": \"...\",\n  \"ITEMS\": [\n    {\"name\": \"...\", \"qty\": \"...\", \"price\": \"...\", \"amount\": \"...\"}\n  ],\n  \"TOTAL_COST\": \"...\"\n}"
+    },
+    {
+      "role": "assistant",
+      "content": "```json\n{\n  \"SELLER\": \"WINMART+\",\n  \"ADDRESS\": \"Số 123 Nguyễn Thị Thập, P. Tân Phú, Quận 7, TP. Hồ Chí Minh\",\n  \"TIMESTAMP\": \"15/09/2026 14:35\",\n  \"ITEMS\": [\n    {\"name\": \"Sữa tươi tiệt trùng Vinamilk 100% 1L\", \"qty\": \"2\", \"price\": \"36.000\", \"amount\": \"72.000\"},\n    {\"name\": \"Bánh mì Sandwich tươi Kinh Đô 250g\", \"qty\": \"1\", \"price\": \"18.500\", \"amount\": \"18.500\"},\n    {\"name\": \"Trứng gà ta Ba Huân hộp 10 quả\", \"qty\": \"1\", \"price\": \"34.000\", \"amount\": \"34.000\"}\n  ],\n  \"TOTAL_COST\": \"124.500\"\n}\n```"
+    }
+  ]
+}

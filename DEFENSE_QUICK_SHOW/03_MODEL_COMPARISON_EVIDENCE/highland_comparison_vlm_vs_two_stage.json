@@ -1,0 +1,51 @@
+{
+  "test_receipt": "test_highlands_receipt.jpg",
+  "receipt_characteristics": {
+    "store": "HIGHLANDS COFFEE",
+    "challenge": "Thermal receipt tilted 4.0 degrees, multi-line wrapped topping without price ('Com va Kem La Dua L')",
+    "ground_truth_total": "232.000",
+    "ground_truth_items_count": 5
+  },
+  "model_left_pure_vlm": {
+    "model_name": "Qwen3-VL (8B) - LoRA v2 (Prompt v2)",
+    "architecture": "End-to-End Multimodal Vision-Language Model",
+    "latency_seconds": 8.42,
+    "vram_mb": 6225,
+    "items_count": 5,
+    "total_declared": 232000.0,
+    "total_calculated": 232000.0,
+    "discrepancy_vnd": 0.0,
+    "arithmetic_valid": true,
+    "solution_applied": "Price Cascading Solver (Deterministic Backtracking)",
+    "items": [
+      {"name": "Trà Sen Vàng S - ADJ", "qty": "1", "price": "49.000", "amount": "49.000"},
+      {"name": "Khoai Môn S", "qty": "1", "price": "0", "amount": "0"},
+      {"name": "Cookies và Cream S", "qty": "1", "price": "59.000", "amount": "59.000"},
+      {"name": "Trà Sen Vàng Trân Châu Com va Kem La Dua L", "qty": "1", "price": "69.000", "amount": "69.000"},
+      {"name": "PhinDi Hạnh Nhân M", "qty": "1", "price": "55.000", "amount": "55.000"}
+    ]
+  },
+  "model_right_two_stage_hybrid": {
+    "model_name": "Two-Stage Hybrid (PaddleOCR + Spatial Grouping + Qwen2.5)",
+    "architecture": "PaddleOCR Bounding Box + Vertical Band Projection + LLM Parsing",
+    "latency_seconds": 7.49,
+    "latency_breakdown": {
+      "paddle_ocr_seconds": 0.79,
+      "spatial_grouping_seconds": 0.01,
+      "qwen25_llm_seconds": 6.69
+    },
+    "items_count": 5,
+    "total_declared": 232000.0,
+    "total_calculated": 232000.0,
+    "discrepancy_vnd": 0.0,
+    "arithmetic_valid": true,
+    "solution_applied": "Physical Bounding Box Y-Axis Spatial Grouping",
+    "items": [
+      {"name": "Tra Sen Vang S- ADJ", "qty": "1", "price": "49.000", "amount": "49.000"},
+      {"name": "Khoai Mon S", "qty": "1", "price": "0", "amount": "0"},
+      {"name": "Cookies va Cream S", "qty": "1", "price": "59.000", "amount": "59.000"},
+      {"name": "Tra Sen Vang Tran Chau", "qty": "1", "price": "69.000", "amount": "69.000"},
+      {"name": "PhinDi Hanh Nhan M", "qty": "1", "price": "55.000", "amount": "55.000"}
+    ]
+  }
+}
