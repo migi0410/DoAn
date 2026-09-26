@@ -2426,39 +2426,13 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* Preprocessing Status & Re-run Bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 bg-indigo-50/80 border border-indigo-200/80 px-3 py-1.5 rounded-xl text-xs">
-                      <div className="flex items-center gap-2 text-indigo-950 font-semibold">
-                        <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                        {isPreprocessing ? (
-                          <span className="flex items-center gap-1.5 text-indigo-700 animate-pulse">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
-                            <span>YOLO11s-Pose AI đang dò 4 góc & bẻ phẳng hóa đơn...</span>
-                          </span>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-700 font-bold">YOLO11s-Pose:</span>
-                            <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.2 rounded font-mono text-[10px] font-bold">
-                              ⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "21.2ms"}
-                            </span>
-                            <span className="text-slate-400">|</span>
-                            <span className="font-mono text-indigo-700 font-bold">
-                              Khử xiên {liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}° ➔ 0.0°
-                            </span>
-                          </div>
-                        )}
+                    {/* Preprocessing Status */}
+                    {isPreprocessing && (
+                      <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl text-xs text-indigo-700 animate-pulse">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600 shrink-0" />
+                        <span>Đang căn chỉnh ảnh...</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => executePreprocess(file, selectedSampleId)}
-                        disabled={isPreprocessing}
-                        className="px-2.5 py-1 bg-white hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer disabled:opacity-50 shadow-2xs"
-                        title="Bấm để kích hoạt AI YOLO11s-Pose quét lại ảnh theo thời gian thực"
-                      >
-                        <RefreshCw className={`w-3 h-3 ${isPreprocessing ? "animate-spin" : ""}`} />
-                        <span>Chạy Lại AI</span>
-                      </button>
-                    </div>
+                    )}
                   </div>
                 )}
 
@@ -2598,15 +2572,12 @@ export default function Home() {
                                   ))}
 
                                   {/* AI Detection Info Badge */}
-                                  <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-emerald-500/40 shadow-lg backdrop-blur-md flex items-center gap-2 text-[10px] pointer-events-none select-none">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                    <span className="font-semibold text-emerald-300">YOLO11s-Pose Deep Learning</span>
-                                    <span className="text-slate-400">|</span>
-                                    <span className="text-emerald-400 font-mono font-bold">⚡ {docAlignerLatency ? `${docAlignerLatency}ms` : "21.2ms (GPU)"}</span>
-                                    {hasCustomCorners && (
-                                      <span className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-1 rounded text-[9px]">Đã chỉnh tay</span>
-                                    )}
-                                  </div>
+                                  {hasCustomCorners && (
+                                    <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-amber-400/40 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-[10px] pointer-events-none select-none">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                      <span className="text-amber-300 font-medium">Đã chỉnh tay</span>
+                                    </div>
+                                  )}
                                 </div>
                               )}
 
@@ -2617,7 +2588,7 @@ export default function Home() {
                                   <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-[0.5px]" />
                                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-xs font-mono font-bold flex items-center gap-2 shadow-2xl backdrop-blur-md">
                                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
-                                    <span>YOLO11s-Pose AI đang dò 4 góc viền...</span>
+                                    <span>Đang dò 4 góc viền...</span>
                                   </div>
                                 </div>
                               )}
@@ -2628,11 +2599,11 @@ export default function Home() {
                           <div className="absolute top-3 left-3 pointer-events-none">
                             {preprocessViewTab === "cropped" ? (
                               <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> YOLO11s-Pose: Đã Cắt Bỏ Nền Bàn + Nắn Phẳng 0.0° + CLAHE
+                                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> Đã Cắt & Nắn Thẳng
                               </span>
                             ) : (
                               <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-700/95 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
-                                <Layers className="w-3.5 h-3.5 text-indigo-200" /> YOLO11s-Pose: Dò 4 Góc Viền Bằng Keypoint Deep Learning
+                                <Layers className="w-3.5 h-3.5 text-indigo-200" /> Căn Chỉnh 4 Góc Viền
                               </span>
                             )}
                           </div>
@@ -2688,32 +2659,7 @@ export default function Home() {
                           </div>
                         )}
 
-                        {/* Preprocessing Educational Callout */}
-                        <div className="p-3 rounded-xl border text-xs leading-relaxed transition-all">
-                          {preprocessViewTab === "cropped" ? (
-                            <div className="flex items-start gap-2 text-emerald-950 bg-emerald-50/90 border border-emerald-200 p-2.5 rounded-lg">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                              <div>
-                                <span className="font-bold text-emerald-900">Kết Quả Đã Tiền Xử Lý (YOLO11s-Pose + CLAHE):</span> 
-                                <ul className="mt-1 space-y-0.5 list-disc list-inside text-[11px] text-emerald-900/90">
-                                  <li><strong className="text-emerald-950 font-semibold">Khử nền bàn:</strong> Đã cắt sạch 100% bề mặt bàn gỗ và các chi tiết gây nhiễu bên ngoài mép giấy.</li>
-                                  <li><strong className="text-emerald-950 font-semibold">Nắn phẳng 0.0°:</strong> Đã chuyển đổi góc nghiêng <span className="font-mono text-rose-700 font-bold">{liveSkewAngle > 0 ? `+${liveSkewAngle}` : liveSkewAngle}°</span> về hình chữ nhật vuông vức chuẩn hóa.</li>
-                                  <li><strong className="text-emerald-950 font-semibold">Tăng tương phản CLAHE:</strong> Đã cân bằng sáng cục bộ trên không gian LAB giúp chữ in nhiệt mờ trở nên rõ nét.</li>
-                                </ul>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-start gap-2 text-indigo-950 bg-indigo-50/90 border border-indigo-200 p-2.5 rounded-lg">
-                              <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-                              <div>
-                                <span className="font-bold text-indigo-900">Dò 4 Góc Viền Mép Giấy (YOLO11s-Pose Keypoints):</span> 
-                                <p className="mt-1 text-[11px] text-indigo-900/90">
-                                  Mô hình YOLO11s-Pose dự đoán chính xác tọa độ 4 góc vật lý P1, P2, P3, P4 của mép giấy hóa đơn. Bạn có thể chạm/kéo thả các chốt để căn chỉnh viền, sau đó bấm <strong>[👉 Bấm Cắt & Nắn Thẳng 0.0°]</strong> để xem kết quả.
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+
                       </div>
                     )}
 
@@ -3243,7 +3189,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Mode Tabs: [YOLO Cắt 0.0°] vs [Ảnh Gốc] */}
+                  {/* Mode Tabs: [Ảnh Đã Cắt] vs [Ảnh Gốc] */}
                   <div className="grid grid-cols-2 bg-slate-950/70 p-1 border-b border-white/10 text-[11px] font-semibold">
                     <button
                       type="button"
@@ -3255,7 +3201,7 @@ export default function Home() {
                       }`}
                     >
                       <CheckCircle2 className="w-3 h-3 text-emerald-200" />
-                      <span>YOLO Cắt 0.0°</span>
+                      <span>Ảnh Đã Cắt</span>
                     </button>
                     <button
                       type="button"
@@ -3299,7 +3245,7 @@ export default function Home() {
                   <div className="bg-slate-950 px-3 py-2 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400">
                     <span className="flex items-center gap-1 text-emerald-400 font-medium">
                       <Sparkles className="w-3 h-3" />
-                      {compareImageViewMode === "cropped" ? "Đã nắn phẳng phối cảnh 0.0° (YOLO11s-Pose)" : `Ảnh gốc (Nghiêng ${liveSkewAngle}°) `}
+                      {compareImageViewMode === "cropped" ? "Ảnh đã nắn phẳng 0.0°" : `Ảnh gốc (Nghiêng ${liveSkewAngle}°) `}
                     </span>
                     <span className="font-mono text-slate-400">
                       Thu phóng: {Math.round(compareZoomLevel * 100)}%
@@ -4278,8 +4224,8 @@ export default function Home() {
                   <RefreshCw className="w-3.5 h-3.5" /> Chụp Lại
                 </button>
 
-                <div className="text-[11px] text-emerald-400 font-mono hidden md:block">
-                  ⚡ Tự động nắn thẳng phối cảnh & bỏ qua YOLO preprocess
+                <div className="text-[11px] text-emerald-400 font-medium hidden md:block">
+                  ⚡ Tự động nắn thẳng & căn chỉnh chuẩn
                 </div>
 
                 <button

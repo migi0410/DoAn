@@ -98,10 +98,10 @@ export async function POST(req: NextRequest) {
         skew_angle: skew,
         corners,
         latency_ms: 21.5,
-        method: "YOLO11s-Pose (Keypoint Corner Detection & Perspective Dewarp)",
+        method: "Căn chỉnh viền & Phối cảnh",
         is_live_inference: true,
         steps: [
-          `1. Dò 4 góc viền bằng YOLO11s-Pose Keypoints: P1(${corners[0].x}%, ${corners[0].y}%), P2(${corners[1].x}%, ${corners[1].y}%), P3(${corners[2].x}%, ${corners[2].y}%), P4(${corners[3].x}%, ${corners[3].y}%)`,
+          `1. Dò 4 góc viền mép giấy: P1(${corners[0].x}%, ${corners[0].y}%), P2(${corners[1].x}%, ${corners[1].y}%), P3(${corners[2].x}%, ${corners[2].y}%), P4(${corners[3].x}%, ${corners[3].y}%)`,
           `2. Bẻ phẳng phối cảnh 4 góc (Perspective Homography Warp): Khử góc xiên ${skew}° ➔ 0.0°`,
           "3. Cân bằng tương phản thích ứng cục bộ CLAHE trên không gian màu LAB"
         ]
@@ -140,10 +140,10 @@ export async function POST(req: NextRequest) {
         skew_angle: skew,
         corners: dynamicCorners,
         latency_ms: 22.4,
-        method: "YOLO11s-Pose (Keypoint Corner Detection & Perspective Dewarp)",
+        method: "Căn chỉnh viền & Phối cảnh",
         is_live_inference: true,
         steps: [
-          `1. YOLO11s-Pose phát hiện 4 góc tài liệu: P1(${x1}%, ${y1}%), P2(${x2}%, ${y2}%), P3(${x3}%, ${y3}%), P4(${x4}%, ${y4}%)`,
+          `1. Phát hiện 4 góc tài liệu: P1(${x1}%, ${y1}%), P2(${x2}%, ${y2}%), P3(${x3}%, ${y3}%), P4(${x4}%, ${y4}%)`,
           `2. Bẻ phẳng phối cảnh 4 góc (Perspective Transform): Khử góc xiên ${skew}° ➔ 0.0°`,
           "3. Cân bằng tương phản thích ứng cục bộ CLAHE trên không gian màu LAB"
         ]
@@ -152,6 +152,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: false, error: "Thiếu dữ liệu tệp hoặc mẫu" }, { status: 400 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || "Lỗi xử lý YOLO11s-Pose" }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || "Lỗi xử lý ảnh" }, { status: 500 });
   }
 }
