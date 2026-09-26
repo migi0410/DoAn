@@ -35,13 +35,22 @@
 │   ├── LayoutLMv3_Kaggle_v2.ipynb# Jupyter Notebook huấn luyện LayoutLMv3 trên Kaggle GPU T4
 │   └── PhoBERT_Kaggle_v2.ipynb   # Jupyter Notebook huấn luyện PhoBERT trên Kaggle
 │
-└── 05_API_AND_BACKEND/           # Tầng Web API phục vụ Demo thực tế
-    ├── app.py                    # Khởi tạo FastAPI Server, CORS, Lifespan management
-    ├── api.py                    # Các Router chính: /api/predict, /api/health, /api/gpu_status, history
-    ├── ml_backend.py             # Bộ điều phối trung gian kết nối tiền xử lý và suy luận
-    ├── database.py               # Quản lý lưu trữ lịch sử hóa đơn và kết quả KIE
-    └── supabase_client.py        # Tích hợp Supabase Cloud Storage
+├── 05_API_AND_BACKEND/           # Tầng Web API phục vụ Demo thực tế
+│   ├── app.py                    # Khởi tạo FastAPI Server, CORS, Lifespan management
+│   ├── api.py                    # Các Router chính: /api/predict, /api/health, /api/gpu_status, history, failover
+│   ├── auth_routes.py            # Xác thực người dùng, JWT token, phân quyền kế toán / kiểm toán viên
+│   ├── ml_backend.py             # Bộ điều phối trung gian kết nối tiền xử lý và suy luận
+│   ├── database.py               # Quản lý lưu trữ lịch sử hóa đơn và kết quả KIE trên PostgreSQL
+│   └── supabase_client.py        # Tích hợp Supabase Cloud Storage (Bucket lưu ảnh hóa đơn)
+│
+└── 06_FRONTEND_NEXTJS/           # Giao diện Web Người Dùng (Next.js 16 App Router)
+    ├── page.tsx                  # Dashboard tương tác thời gian thực, bảng kiểm toán đối soát số học
+    ├── next.config.ts            # Cấu hình Turbopack, dynamic rewrite proxy chuyển tiếp tới Gateway
+    ├── preprocess_route.ts       # Serverless API tiền xử lý ảnh và nắn góc
+    ├── mobile_capture_page.tsx   # Giao diện Mobile Web quét camera QR chụp hóa đơn trực tiếp
+    └── supabaseClient.ts         # Khởi tạo Supabase client thời gian thực
 ```
+
 
 ---
 
@@ -67,3 +76,13 @@
   2. **Line Item Recall:** Tỉ lệ phát hiện trúng các mặt hàng trong bảng kê chi tiết.
   3. **Exact Match (EM):** Tỉ lệ khớp 100% không sai một ký tự.
   4. **Normalized Edit Distance (NED):** Khoảng cách Levenshtein chuẩn hóa trên độ dài chuỗi ký tự.
+
+### 5. Thư mục `05_API_AND_BACKEND/api.py` (API Gateway & Điều phối Đa GPU)
+* **Kiến trúc Decoupled:** Tách rời Web Control Plane và Compute Worker.
+* **Cơ chế Hybrid Multi-GPU Failover:** Tự động điều hướng ưu tiên RunPod Cloud RTX 3090 Ti; khi RunPod ngắt kết nối, tự động chuyển luồng qua Tailscale tới Pop!_OS RTX 5060 Ti với độ trễ 0ms gián đoạn.
+* **Tích hợp Supabase PostgreSQL:** Lưu trữ đối soát số học, phân quyền kế toán (`auth_routes.py`) và xuất file CSV hóa đơn có mã hóa UTF-8 BOM chuẩn cho Excel.
+
+### 6. Thư mục `06_FRONTEND_NEXTJS/page.tsx` (Giao diện Người dùng Thời gian thực)
+* **Next.js 16 App Router:** Xây dựng với Turbopack, Tailwind CSS và Lucide Icons.
+* **Giao diện Kế toán Trực quan:** Hiển thị song song ảnh gốc, ảnh vẽ Bounding Box, bảng bóc tách chi tiết mặt hàng và huy hiệu kiểm toán số học (Xanh: Khớp 100% / Đỏ: Lệch số học).
+

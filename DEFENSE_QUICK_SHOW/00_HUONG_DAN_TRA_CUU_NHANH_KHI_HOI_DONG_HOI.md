@@ -20,6 +20,8 @@
 | **10. "Số liệu giữa báo cáo Word, Slide và Code có đồng nhất không?"** | `02_BENCHMARK_RESULTS_CSV/OFFICIAL_VERIFIED_NUMBERS_AUDIT.md` | Bảng kiểm kê chính thức: Khớp 100% từng con số giữa Report LaTeX/Word, Slide và kết quả chạy thực nghiệm. |
 | **11. "So sánh mô hình đề xuất với PhoBERT, LayoutLMv3, DeepSeek, Regex?"** | `03_MODEL_COMPARISON_EVIDENCE/BIEU_DO_SO_SANH_CAC_MO_HINH.md` | Bảng đối đầu 6 mô hình: Qwen3 LoRA v2 (93.35%) áp đảo PhoBERT (74.2%), LayoutLMv3 (84.1%), DeepSeek (66.9%), Regex (52.4%). |
 | **12. "Hệ thống chạy trên GPU gì? Tốn bao nhiêu VRAM? Độ trễ (latency) bao lâu?"** | `06_SYSTEM_AND_HARDWARE_SPECS/GPU_AND_LATENCY_AUDIT.md` | GPU: RTX 5060 Ti 16GB GDDR7 (Pop!_OS) & RTX 3090 Ti (RunPod). VRAM chỉ tốn **6.2 GB**. Độ trễ: **8.25s** (VLM), **7.5s** (Two-Stage). |
+| **13. "Cho xem code API Gateway, Backend và Điều phối Failover GPU?"** | `07_CORE_SOURCE_CODE/05_API_AND_BACKEND/api.py` | FastAPI, PostgreSQL Supabase, tự động chuyển luồng RunPod 3090 $\rightarrow$ Pop!_OS 5060 Ti. |
+| **14. "Cho xem code Giao diện Người dùng Web Frontend (Next.js)?"** | `07_CORE_SOURCE_CODE/06_FRONTEND_NEXTJS/page.tsx` | Next.js 16 App Router, Turbopack, Tailwind CSS, hiển thị Bounding Box & đối soát số học. |
 
 ---
 
