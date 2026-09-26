@@ -578,6 +578,45 @@ def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "
         })
         i += 1
 
+    # CHIẾN LƯỢC TOÀN CỤC BỔ SUNG: GLOBAL ARITHMETIC CONSTRAINT SOLVER
+    # Triệt tiêu dứt điểm hiện tượng rớt dòng đẻ item mới và kéo giá (cascading price shift)
+    # Ràng buộc: sum(ITEM_AMOUNT) - TOTAL_COST == 0
+    if declared_total > 0 and len(merged) > 1:
+        delta = calculate_items_sum(merged) - declared_total
+        max_solver_loops = 5
+        loop = 0
+        while delta > 0.5 and len(merged) > 1 and loop < max_solver_loops:
+            loop += 1
+            best_candidate_idx = None
+
+            # Tìm ứng viên rớt dòng có số tiền đúng bằng delta (số tiền bị nhân đôi/kéo giá)
+            for cand_i in range(1, len(merged)):
+                amt_cand = clean_currency(merged[cand_i].get("amount", ""), allow_negative=True)
+                if abs(amt_cand - delta) <= 1.0:
+                    # Ưu tiên 1: Dòng cand_i có giá trùng với dòng kế tiếp cand_i + 1 (dấu hiệu kéo giá kinh điển)
+                    if cand_i + 1 < len(merged):
+                        amt_next = clean_currency(merged[cand_i + 1].get("amount", ""), allow_negative=True)
+                        if abs(amt_next - amt_cand) <= 1.0:
+                            best_candidate_idx = cand_i
+                            break
+                    # Ưu tiên 2: Hoặc trùng với dòng trước đó cand_i - 1
+                    amt_prev = clean_currency(merged[cand_i - 1].get("amount", ""), allow_negative=True)
+                    if abs(amt_prev - amt_cand) <= 1.0:
+                        best_candidate_idx = cand_i
+                        break
+                    # Ưu tiên 3: Chọn ứng viên đầu tiên làm delta -> 0
+                    if best_candidate_idx is None:
+                        best_candidate_idx = cand_i
+
+            if best_candidate_idx is not None:
+                prev_it = merged[best_candidate_idx - 1]
+                cand_it = merged[best_candidate_idx]
+                prev_it["name"] = f"{prev_it['name']} {cand_it['name']}".strip()
+                merged.pop(best_candidate_idx)
+                delta = calculate_items_sum(merged) - declared_total
+            else:
+                break
+
     return merged
 
 # Alias for backward compatibility
