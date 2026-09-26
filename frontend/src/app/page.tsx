@@ -1941,6 +1941,42 @@ export default function Home() {
   const declaredTotal = declaredTotalNum();
   const isMatch = itemsSum > 0 && declaredTotal > 0 && Math.abs(itemsSum - declaredTotal) < 2;
 
+  const itemDiscrepancies = useMemo(() => {
+    return items
+      .map((it, idx) => {
+        const priceStr = String(it.price || "").trim();
+        const amountStr = String(it.amount || "").trim();
+        if (!priceStr || !amountStr) return null;
+
+        const priceNum = parseFloat(priceStr.replace(/[^0-9]/g, ""));
+        const amountNum = parseFloat(amountStr.replace(/[^0-9]/g, ""));
+        if (isNaN(priceNum) || priceNum <= 0 || isNaN(amountNum) || amountNum <= 0) return null;
+
+        const qtyClean = String(it.qty || "1").trim().replace(",", ".");
+        const qtyMatch = qtyClean.match(/\d+(?:\.\d+)?/);
+        const qtyNum = qtyMatch ? parseFloat(qtyMatch[0]) : 1.0;
+        const effectiveQty = isNaN(qtyNum) || qtyNum <= 0 ? 1.0 : qtyNum;
+
+        const expectedAmount = Math.round(effectiveQty * priceNum);
+        const diff = Math.abs(expectedAmount - amountNum);
+        const threshold = Math.max(5, expectedAmount * 0.02);
+
+        if (diff > threshold) {
+          return {
+            index: idx,
+            name: it.name || "Mặt hàng",
+            qty: it.qty || "1",
+            price: it.price || "",
+            amount: it.amount || "",
+            expectedAmount,
+            diff
+          };
+        }
+        return null;
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+  }, [items]);
+
   const exportCSV = () => {
     let csv = "\uFEFF"; // UTF-8 BOM for Excel support in Vietnamese
     csv += "THÔNG TIN HÓA ĐƠN\n";
@@ -2570,14 +2606,6 @@ export default function Home() {
                                       </div>
                                     </div>
                                   ))}
-
-                                  {/* AI Detection Info Badge */}
-                                  {hasCustomCorners && (
-                                    <div className="absolute top-2 left-2 bg-slate-950/90 text-white px-2.5 py-1 rounded-lg border border-amber-400/40 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-[10px] pointer-events-none select-none">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                                      <span className="text-amber-300 font-medium">Đã chỉnh tay</span>
-                                    </div>
-                                  )}
                                 </div>
                               )}
 
@@ -2593,19 +2621,6 @@ export default function Home() {
                                 </div>
                               )}
                             </div>
-                          </div>
-
-                          {/* Top-left Indicator Badge */}
-                          <div className="absolute top-3 left-3 pointer-events-none">
-                            {preprocessViewTab === "cropped" ? (
-                              <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-emerald-600 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> Đã Cắt & Nắn Thẳng
-                              </span>
-                            ) : (
-                              <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-700/95 text-white backdrop-blur-xs flex items-center gap-1.5 shadow-sm">
-                                <Layers className="w-3.5 h-3.5 text-indigo-200" /> Căn Chỉnh 4 Góc Viền
-                              </span>
-                            )}
                           </div>
 
                           {/* Top-right Zoom / Rotate / Fullscreen Controls */}
@@ -2970,70 +2985,91 @@ export default function Home() {
                                 </td>
                               </tr>
                             ) : (
-                              items.map((it, idx) => (
-                                <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
-                                  <td className="py-2.5 px-3 text-center text-slate-500 font-mono">{idx + 1}</td>
-                                  <td className="py-2.5 px-3">
-                                    {isEditing ? (
-                                      <input
-                                        type="text"
-                                        value={it.name}
-                                        onChange={(e) => handleItemChange(idx, "name", e.target.value)}
-                                        className="w-full bg-white border border-indigo-300 rounded px-2 py-1 text-xs text-slate-900"
-                                      />
-                                    ) : (
-                                      <span className="font-medium text-slate-900">{it.name || "—"}</span>
-                                    )}
-                                  </td>
-                                  <td className="py-2.5 px-3 text-center">
-                                    {isEditing ? (
-                                      <input
-                                        type="text"
-                                        value={it.qty}
-                                        onChange={(e) => handleItemChange(idx, "qty", e.target.value)}
-                                        className="w-full bg-white border border-indigo-300 rounded px-1.5 py-1 text-xs text-center text-slate-900"
-                                      />
-                                    ) : (
-                                      it.qty || "1"
-                                    )}
-                                  </td>
-                                  <td className="py-2.5 px-3 text-right text-slate-500 font-mono">
-                                    {isEditing ? (
-                                      <input
-                                        type="text"
-                                        value={it.price}
-                                        onChange={(e) => handleItemChange(idx, "price", e.target.value)}
-                                        className="w-full bg-white border border-indigo-300 rounded px-1.5 py-1 text-xs text-right text-slate-900"
-                                      />
-                                    ) : (
-                                      it.price || <span className="text-slate-600 italic">khuyết</span>
-                                    )}
-                                  </td>
-                                  <td className="py-2.5 px-3 text-right font-semibold text-indigo-600 font-mono">
-                                    {isEditing ? (
-                                      <input
-                                        type="text"
-                                        value={it.amount}
-                                        onChange={(e) => handleItemChange(idx, "amount", e.target.value)}
-                                        className="w-full bg-white border border-indigo-300 rounded px-1.5 py-1 text-xs text-right text-slate-900"
-                                      />
-                                    ) : (
-                                      it.amount ? `${it.amount} đ` : "—"
-                                    )}
-                                  </td>
-                                  {isEditing && (
-                                    <td className="py-2.5 px-3 text-center">
-                                      <button
-                                        onClick={() => handleDeleteItem(idx)}
-                                        className="p-1 hover:bg-rose-50 text-rose-500 rounded transition-all"
-                                        title="Xóa hàng này"
-                                      >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
+                              items.map((it, idx) => {
+                                const rowDiscrepancy = itemDiscrepancies.find((d) => d.index === idx);
+                                return (
+                                  <tr
+                                    key={idx}
+                                    className={`transition-colors ${
+                                      rowDiscrepancy ? "bg-amber-50/70 hover:bg-amber-100/60" : "hover:bg-slate-50/70"
+                                    }`}
+                                  >
+                                    <td className="py-2.5 px-3 text-center text-slate-500 font-mono">{idx + 1}</td>
+                                    <td className="py-2.5 px-3">
+                                      {isEditing ? (
+                                        <input
+                                          type="text"
+                                          value={it.name}
+                                          onChange={(e) => handleItemChange(idx, "name", e.target.value)}
+                                          className="w-full bg-white border border-indigo-300 rounded px-2 py-1 text-xs text-slate-900"
+                                        />
+                                      ) : (
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                          <span className="font-medium text-slate-900">{it.name || "—"}</span>
+                                          {rowDiscrepancy && (
+                                            <span
+                                              title={`Lệch số học: ${rowDiscrepancy.qty} × ${rowDiscrepancy.price} đ = ${rowDiscrepancy.expectedAmount.toLocaleString()} đ (khác ${rowDiscrepancy.amount} đ)`}
+                                              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-200/80 text-amber-900 border border-amber-300 rounded text-[10px] font-semibold shrink-0 cursor-help"
+                                            >
+                                              <AlertTriangle className="w-3 h-3 text-amber-700" />
+                                              Lệch SL×Đơn giá
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
                                     </td>
-                                  )}
-                                </tr>
-                              ))
+                                    <td className="py-2.5 px-3 text-center">
+                                      {isEditing ? (
+                                        <input
+                                          type="text"
+                                          value={it.qty}
+                                          onChange={(e) => handleItemChange(idx, "qty", e.target.value)}
+                                          className="w-full bg-white border border-indigo-300 rounded px-1.5 py-1 text-xs text-center text-slate-900"
+                                        />
+                                      ) : (
+                                        it.qty || "1"
+                                      )}
+                                    </td>
+                                    <td className="py-2.5 px-3 text-right text-slate-500 font-mono">
+                                      {isEditing ? (
+                                        <input
+                                          type="text"
+                                          value={it.price}
+                                          onChange={(e) => handleItemChange(idx, "price", e.target.value)}
+                                          className="w-full bg-white border border-indigo-300 rounded px-1.5 py-1 text-xs text-right text-slate-900"
+                                        />
+                                      ) : (
+                                        it.price || <span className="text-slate-600 italic">khuyết</span>
+                                      )}
+                                    </td>
+                                    <td className="py-2.5 px-3 text-right font-semibold text-indigo-600 font-mono">
+                                      {isEditing ? (
+                                        <input
+                                          type="text"
+                                          value={it.amount}
+                                          onChange={(e) => handleItemChange(idx, "amount", e.target.value)}
+                                          className="w-full bg-white border border-indigo-300 rounded px-1.5 py-1 text-xs text-right text-slate-900"
+                                        />
+                                      ) : (
+                                        <span className={rowDiscrepancy ? "text-amber-800 font-bold" : "text-indigo-600"}>
+                                          {it.amount ? `${it.amount} đ` : "—"}
+                                        </span>
+                                      )}
+                                    </td>
+                                    {isEditing && (
+                                      <td className="py-2.5 px-3 text-center">
+                                        <button
+                                          onClick={() => handleDeleteItem(idx)}
+                                          className="p-1 hover:bg-rose-50 text-rose-500 rounded transition-all"
+                                          title="Xóa hàng này"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </td>
+                                    )}
+                                  </tr>
+                                );
+                              })
                             )}
                           </tbody>
                         </table>
@@ -3061,11 +3097,11 @@ export default function Home() {
                     </div>
 
                     <div className={`p-2.5 rounded-lg text-xs flex items-center gap-2 border ${
-                      isMatch
+                      isMatch && itemDiscrepancies.length === 0
                         ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
                         : "bg-amber-50 border border-amber-200 text-amber-800"
                     }`}>
-                      {isMatch ? (
+                      {isMatch && itemDiscrepancies.length === 0 ? (
                         <>
                           <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                           <span>✓ Khớp số học 100%: Tổng các món ({itemsSum.toLocaleString()} đ) khớp chính xác với Tổng thanh toán ({declaredTotal.toLocaleString()} đ)</span>
@@ -3074,11 +3110,30 @@ export default function Home() {
                         <>
                           <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
                           <span>
-                            Cảnh báo sai lệch số học: Tổng các món ({itemsSum.toLocaleString()} đ) lệch {(itemsSum - declaredTotal > 0 ? "+" : "") + (itemsSum - declaredTotal).toLocaleString()} đ so với Tổng thanh toán ({declaredTotal.toLocaleString()} đ)
+                            Cảnh báo sai lệch số học: Tổng các món ({itemsSum.toLocaleString()} đ) {isMatch ? "đã khớp Tổng thanh toán" : `lệch ${(itemsSum - declaredTotal > 0 ? "+" : "") + (itemsSum - declaredTotal).toLocaleString()} đ so với Tổng thanh toán (${declaredTotal.toLocaleString()} đ)`}
+                            {itemDiscrepancies.length > 0 ? ` • Có ${itemDiscrepancies.length} món lệch Đơn giá × SL ≠ Thành tiền` : ""}
                           </span>
                         </>
                       )}
                     </div>
+
+                    {itemDiscrepancies.length > 0 && (
+                      <div className="p-3 rounded-lg text-xs bg-amber-50/90 border border-amber-300 text-amber-900 space-y-1.5 shadow-xs">
+                        <div className="flex items-center gap-2 font-bold text-amber-900">
+                          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                          <span>Cảnh báo sai lệch số học dòng hàng ({itemDiscrepancies.length} món có Đơn giá × SL ≠ Thành tiền):</span>
+                        </div>
+                        <div className="space-y-1 pl-6 text-[11px] text-amber-800">
+                          {itemDiscrepancies.map((err, i) => (
+                            <div key={i} className="flex flex-wrap items-center gap-1.5">
+                              <span className="font-semibold text-slate-900">Món #{err.index + 1} ({err.name}):</span>
+                              <span>{err.qty} × {err.price} đ = <span className="font-mono font-bold text-emerald-800">{err.expectedAmount.toLocaleString()} đ</span></span>
+                              <span className="text-rose-600 font-semibold font-mono">(hóa đơn ghi: {err.amount} đ, lệch {err.diff.toLocaleString()} đ)</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

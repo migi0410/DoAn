@@ -77,6 +77,8 @@ class ValidationReport(BaseModel):
     total_calculated: float
     discrepancy: float
     message: str
+    has_item_discrepancy: bool = False
+    item_discrepancies: List[Dict[str, Any]] = []
 
 class SaveReceiptRequest(BaseModel):
     user_id: Optional[str] = None
@@ -650,13 +652,46 @@ def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> Val
             msg = f"⚠️ Cảnh báo sai lệch số học: Tổng các món ({calculated:,.0f} đ) lệch +{diff_str} so với Tổng thanh toán ({declared:,.0f} đ)"
         else:
             msg = f"⚠️ Cảnh báo sai lệch số học: Tổng các món ({calculated:,.0f} đ) lệch -{diff_str} so với Tổng thanh toán ({declared:,.0f} đ)"
-        
+
+    # Kiểm tra sai lệch số học từng món: Đơn giá x Số lượng vs Thành tiền
+    item_errors = []
+    for idx, it in enumerate(items):
+        price_val = abs(clean_currency(it.get("price", ""), allow_negative=False))
+        amount_val = abs(clean_currency(it.get("amount", ""), allow_negative=False))
+        if price_val > 0 and amount_val > 0:
+            qty_str = str(it.get("qty", "1")).strip().replace(",", ".")
+            qty_match = re.search(r'\d+(?:\.\d+)?', qty_str)
+            qty_val = float(qty_match.group(0)) if qty_match else 1.0
+            if qty_val <= 0:
+                qty_val = 1.0
+            expected = round(qty_val * price_val)
+            diff = abs(expected - amount_val)
+            threshold = max(5.0, expected * 0.02)
+            if diff > threshold:
+                item_errors.append({
+                    "index": idx + 1,
+                    "name": it.get("name", "Mặt hàng"),
+                    "qty": it.get("qty", "1"),
+                    "price": it.get("price", ""),
+                    "amount": it.get("amount", ""),
+                    "expected_amount": expected,
+                    "actual_amount": amount_val,
+                    "discrepancy": diff
+                })
+
+    has_item_err = len(item_errors) > 0
+    if has_item_err:
+        err_names = ", ".join([f"'{e['name']}'" for e in item_errors[:2]])
+        msg += f" | ⚠️ Có {len(item_errors)} món lệch Đơn giá × SL ≠ Thành tiền ({err_names})"
+
     return ValidationReport(
-        is_arithmetic_valid=is_valid,
+        is_arithmetic_valid=is_valid and not has_item_err,
         total_declared=declared,
         total_calculated=calculated,
         discrepancy=discrepancy,
-        message=msg
+        message=msg,
+        has_item_discrepancy=has_item_err,
+        item_discrepancies=item_errors
     )
 
 def draw_receipt_boxes(img_path: str, bboxes: List[Any], out_path: str):
