@@ -395,7 +395,48 @@ async def extract(
             print(f"⚠️ Lỗi khi chạy MiniCPM-V qua Ollama: {e}")
 
     # =========================================================================
-    # BRANCH 2: DEEPSEEK-OCR + HEURISTIC REGEX / QWEN2.5 - THỰC THI TRÊN GPU
+    # BRANCH 2: TWO-STAGE HYBRID (PADDLEOCR + SPATIAL GROUPING + QWEN2.5)
+    # =========================================================================
+    if "two_stage" in mid or "spatial" in mid:
+        print(f"🚀 [Two-Stage Hybrid] Đang chạy PaddleOCR Bounding Box + Spatial Grouping + Qwen2.5...")
+        try:
+            tmp_img_path = f"/tmp/two_stage_{int(time.time() * 1000)}.jpg"
+            with open(tmp_img_path, "wb") as f_tmp:
+                f_tmp.write(contents)
+            
+            run_two_stage_pipeline = None
+            try:
+                from backend.two_stage_spatial import run_two_stage_pipeline
+            except ImportError:
+                try:
+                    from two_stage_spatial import run_two_stage_pipeline
+                except ImportError:
+                    for search_dir in [os.getcwd(), os.path.dirname(os.path.abspath(__file__)), os.path.join(os.getcwd(), "backend")]:
+                        candidate = os.path.join(search_dir, "two_stage_spatial.py")
+                        if os.path.exists(candidate):
+                            import importlib.util
+                            spec = importlib.util.spec_from_file_location("two_stage_spatial", candidate)
+                            mod = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(mod)
+                            run_two_stage_pipeline = mod.run_two_stage_pipeline
+                            break
+
+            if run_two_stage_pipeline is not None:
+                res_two_stage = run_two_stage_pipeline(tmp_img_path)
+                if os.path.exists(tmp_img_path):
+                    try: os.remove(tmp_img_path)
+                    except: pass
+                if res_two_stage.get("success"):
+                    res_two_stage["vram"] = get_vram_usage()
+                    return res_two_stage
+            if os.path.exists(tmp_img_path):
+                try: os.remove(tmp_img_path)
+                except: pass
+        except Exception as e_ts:
+            print(f"⚠️ Lỗi khi chạy Two-Stage pipeline: {e_ts}")
+
+    # =========================================================================
+    # BRANCH 3: DEEPSEEK-OCR + HEURISTIC REGEX / QWEN2.5 - THỰC THI TRÊN GPU
     # =========================================================================
     if "deepseek" in mid or "regex" in mid:
         print(f"🚀 [DeepSeek Pipeline] Đang chạy DeepSeek-OCR trên GPU...")

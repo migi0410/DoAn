@@ -50,6 +50,13 @@ const MODELS = [
     isProposed: false,
     badge: "Đối sánh",
     desc: "Mô hình VLM mã nguồn mở dùng để đối sánh."
+  },
+  {
+    value: "two_stage_spatial",
+    name: "Two-Stage Hybrid (PaddleOCR + Spatial Grouping)",
+    isProposed: false,
+    badge: "Kiến Trúc Lai (Ablation)",
+    desc: "Pipeline 2 tầng: PaddleOCR trích xuất Bounding Box vật lý -> Gom cụm dòng trục Y -> Qwen2.5 (7B) trích xuất JSON có cấu trúc."
   }
 ];
 

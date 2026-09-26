@@ -185,6 +185,19 @@ OFFICIAL_MODELS = [
         "latency_s": 15.60,
         "color": "#ef4444",
         "description": "Compact multimodal foundation model. Collapses on dense Vietnamese thermal receipts without domain adaptation."
+    },
+    {
+        "id": "two_stage_spatial",
+        "name": "Two-Stage Hybrid (PaddleOCR + Spatial Grouping)",
+        "tag": "Nghiên cứu đối sánh (Ablation)",
+        "is_proposed": False,
+        "schema": "Two-Stage Hybrid",
+        "macro_f1": 89.20,
+        "exact_match": 84.50,
+        "item_recall": 96.80,
+        "latency_s": 9.50,
+        "color": "#8b5cf6",
+        "description": "Kiến trúc lai 2 tầng: PaddleOCR trích xuất Bounding Box vật lý -> Gom cụm dòng trục Y khắc phục lệch dòng -> Qwen2.5 (7B) trích xuất JSON có cấu trúc."
     }
 ]
 
@@ -1289,6 +1302,30 @@ async def predict_receipt(
                     "ITEMS": items_parsed
                 }
                 print(f"✅ [GPU Success] Real GPU extraction via {inference_source} in {actual_latency}s: {len(items_parsed)} items")
+            elif "two_stage" in model or "spatial" in model:
+                try:
+                    from backend.two_stage_spatial import run_two_stage_pipeline
+                except ImportError:
+                    try:
+                        from two_stage_spatial import run_two_stage_pipeline
+                    except ImportError:
+                        run_two_stage_pipeline = None
+                if run_two_stage_pipeline:
+                    ts_res = run_two_stage_pipeline(img_path)
+                    if ts_res.get("success"):
+                        raw_data = ts_res["data"]
+                        inference_source = "two_stage_spatial_direct"
+                        actual_latency = ts_res.get("latency_s", round(time.time() - start_time, 2))
+                        raw_output = ts_res.get("raw")
+                        items_parsed = raw_data.get("ITEMS", [])
+                        extraction = {
+                            "SELLER": str(raw_data.get("SELLER", "")),
+                            "ADDRESS": str(raw_data.get("ADDRESS", "")),
+                            "TIMESTAMP": str(raw_data.get("TIMESTAMP", "")),
+                            "TOTAL_COST": str(raw_data.get("TOTAL_COST", "")),
+                            "ITEMS": items_parsed
+                        }
+                        print(f"✅ [Two-Stage Direct Success] Extracted {len(items_parsed)} items in {actual_latency}s")
     except Exception as e:
         print(f"⚠️ [GPU Warning] Remote GPU inference error: {e}. Falling back smoothly.")
 
