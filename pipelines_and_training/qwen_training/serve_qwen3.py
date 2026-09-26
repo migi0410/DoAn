@@ -467,10 +467,24 @@ async def extract(
     
     image = Image.open(io.BytesIO(contents)).convert("RGB")
     w, h = image.size
-    max_dim = 1536
-    if max(w, h) > max_dim:
-        scale = max_dim / max(w, h)
-        image = image.resize((int(w * scale), int(h * scale)), Image.Resampling.LANCZOS)
+    # Smart Aspect-Ratio Aware Resizing:
+    # Tránh bóp nghẹt chiều ngang (W) với hóa đơn dọc dài, giữ W >= 768px nếu có thể.
+    # Khống chế tổng pixel <= 2.3M pixels để tối ưu chất lượng và bảo vệ VRAM.
+    max_pixels = 2304 * 1024
+    if w * h > max_pixels:
+        scale = (max_pixels / (w * h)) ** 0.5
+        new_w = max(int(w * scale), min(w, 768))
+        new_h = int(h * (new_w / w))
+        if new_h > 2688:
+            new_h = 2688
+            new_w = max(int(w * (new_h / h)), 640)
+        image = image.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    elif w < 640 and h >= 1000:
+        new_w = 768
+        new_h = int(h * (new_w / w))
+        if new_h > 2688:
+            new_h = 2688
+        image = image.resize((new_w, new_h), Image.Resampling.LANCZOS)
         
     messages = [
         {"role": "user", "content": [{"type": "image", "image": image}, {"type": "text", "text": custom_prompt if custom_prompt else PROMPT_SCHEMA_V2}]}
@@ -485,11 +499,11 @@ async def extract(
         if isinstance(model, PeftModel):
             if is_base or active_adapter == "base":
                 with model.disable_adapter():
-                    outputs = model.generate(**inputs, max_new_tokens=1024, do_sample=False)
+                    outputs = model.generate(**inputs, max_new_tokens=2048, do_sample=False)
                     current_active = "base"
             elif is_v1 and "v1" in available_adapters:
                 model.set_adapter("v1")
-                outputs = model.generate(**inputs, max_new_tokens=1024, do_sample=False)
+                outputs = model.generate(**inputs, max_new_tokens=2048, do_sample=False)
                 current_active = "v1"
                 active_adapter = "v1"
             else:
@@ -499,9 +513,9 @@ async def extract(
                     active_adapter = "v2"
                 else:
                     current_active = active_adapter
-                outputs = model.generate(**inputs, max_new_tokens=1024, do_sample=False)
+                outputs = model.generate(**inputs, max_new_tokens=2048, do_sample=False)
         else:
-            outputs = model.generate(**inputs, max_new_tokens=1024, do_sample=False)
+            outputs = model.generate(**inputs, max_new_tokens=2048, do_sample=False)
             current_active = "base"
         
     out_text = processor.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)

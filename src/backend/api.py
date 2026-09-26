@@ -928,6 +928,87 @@ async def api_preprocess_image(
         ]
     }
 
+def are_items_same(it1: Dict[str, Any], it2: Dict[str, Any]) -> bool:
+    amt1 = clean_currency(it1.get("amount", ""), allow_negative=True)
+    amt2 = clean_currency(it2.get("amount", ""), allow_negative=True)
+    n1 = re.sub(r'[^\w\s]', '', str(it1.get("name", "")).lower()).strip()
+    n2 = re.sub(r'[^\w\s]', '', str(it2.get("name", "")).lower()).strip()
+    
+    if amt1 > 0 and amt2 > 0 and abs(amt1 - amt2) <= 1.0:
+        words1 = set(n1.split())
+        words2 = set(n2.split())
+        if words1 and words2:
+            jaccard = len(words1 & words2) / len(words1 | words2)
+            if jaccard >= 0.35 or (n1 in n2 or n2 in n1):
+                return True
+    if n1 and n2 and (n1 == n2 or (len(n1) > 4 and (n1 in n2 or n2 in n1))):
+        if abs(amt1 - amt2) <= 1.0:
+            return True
+    return False
+
+def merge_twopass_items(top_items: List[Dict[str, Any]], bottom_items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    if not top_items:
+        return bottom_items
+    if not bottom_items:
+        return top_items
+
+    # Tìm điểm giao nhau (Overlap Alignment)
+    # So khớp các phần tử ở đuôi top_items với đầu bottom_items
+    max_search_tail = min(len(top_items), 8)
+    tail_candidates = list(range(len(top_items) - max_search_tail, len(top_items)))
+
+    best_match_top_idx = None
+    best_match_bottom_idx = None
+
+    for t_idx in tail_candidates:
+        for b_idx in range(min(len(bottom_items), 5)):
+            if are_items_same(top_items[t_idx], bottom_items[b_idx]):
+                best_match_top_idx = t_idx
+                best_match_bottom_idx = b_idx
+                break
+        if best_match_top_idx is not None:
+            break
+
+    if best_match_top_idx is not None and best_match_bottom_idx is not None:
+        print(f"🔄 [2-Pass Overlap Match] top[{best_match_top_idx}] '{top_items[best_match_top_idx].get('name')}' == bottom[{best_match_bottom_idx}] '{bottom_items[best_match_bottom_idx].get('name')}'")
+        merged = top_items[:best_match_top_idx] + bottom_items[best_match_bottom_idx:]
+    else:
+        print("ℹ️ [2-Pass Notice] Không tìm thấy món trùng ở vùng gối đầu, nối danh sách tuần tự.")
+        merged = top_items + bottom_items
+
+    return merged
+
+def query_gpu_backend(target_img_path: str, model_id: str) -> Optional[Dict[str, Any]]:
+    endpoints_to_try = [
+        (RUNPOD_GPU_URL, "runpod_gpu_rtx3090ti", "RunPod Cloud RTX 3090 Ti (Chính)"),
+        (POPOS_BACKUP_URL, "popos_gpu_rtx5060ti", "PopOS Backup RTX 5060 Ti (Dự phòng)")
+    ]
+    for gpu_url, src_label, host_label in endpoints_to_try:
+        if not gpu_url:
+            continue
+        try:
+            print(f"🚀 [GPU Forward] Sending {target_img_path} to {host_label} ({gpu_url}/extract) ...")
+            with open(target_img_path, "rb") as f_img:
+                resp = requests.post(
+                    f"{gpu_url}/extract",
+                    files={"file": (os.path.basename(target_img_path), f_img, "image/jpeg")},
+                    data={"model_id": model_id},
+                    timeout=(5.0, 90)
+                )
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("success") and "data" in data:
+                    return {
+                        "data": data["data"],
+                        "source": src_label,
+                        "raw": data.get("raw"),
+                        "latency": data.get("latency_s")
+                    }
+        except Exception as e_forward:
+            print(f"⚠️ [GPU Forward Warning] {host_label} failed: {e_forward}. Trying next fallback endpoint...")
+            continue
+    return None
+
 @app.post("/api/predict")
 async def predict_receipt(
     file: Optional[UploadFile] = File(None),
@@ -982,57 +1063,115 @@ async def predict_receipt(
     actual_latency = None
     raw_output = None
     inference_source = "local_profile"
+    is_long_receipt = False
+    aspect_ratio = 1.0
 
     try:
-        endpoints_to_try = [
-            (RUNPOD_GPU_URL, "runpod_gpu_rtx3090ti", "RunPod Cloud RTX 3090 Ti (Chính)"),
-            (POPOS_BACKUP_URL, "popos_gpu_rtx5060ti", "PopOS Backup RTX 5060 Ti (Dự phòng)")
-        ]
-        active_gpu_data = None
-        for gpu_url, src_label, host_label in endpoints_to_try:
-            if not gpu_url:
-                continue
-            try:
-                print(f"🚀 [GPU Forward] Sending {img_path} to {host_label} ({gpu_url}/extract) ...")
-                with open(img_path, "rb") as f_img:
-                    resp = requests.post(
-                        f"{gpu_url}/extract",
-                        files={"file": (os.path.basename(img_path), f_img, "image/jpeg")},
-                        data={"model_id": model},
-                        timeout=(5.0, 90)
-                    )
-                if resp.status_code == 200:
-                    data = resp.json()
-                    if data.get("success") and "data" in data:
-                        active_gpu_data = data
-                        inference_source = src_label
-                        break
-            except Exception as e_forward:
-                print(f"⚠️ [GPU Forward Warning] {host_label} failed: {e_forward}. Trying next fallback endpoint...")
-                continue
+        from PIL import Image
+        img_w, img_h = 1000, 1000
+        if os.path.exists(img_path):
+            with Image.open(img_path) as p_img:
+                img_w, img_h = p_img.size
+        aspect_ratio = img_h / float(max(img_w, 1))
+        is_long_receipt = (aspect_ratio >= 2.8)
 
-        if active_gpu_data is not None:
-            raw_data = active_gpu_data["data"]
-            actual_latency = float(active_gpu_data.get("latency_s", round(time.time() - start_time, 2)))
-            raw_output = active_gpu_data.get("raw")
-            
-            items_parsed = []
-            if "ITEMS" in raw_data and isinstance(raw_data["ITEMS"], list):
-                for it in raw_data["ITEMS"]:
+        if is_long_receipt and os.path.exists(img_path):
+            print(f"📏 [Long Receipt Detected] Aspect Ratio = {aspect_ratio:.2f} >= 2.8. Kích hoạt 2-Pass Overlap Slicing...")
+            top_h = int(img_h * 0.60)
+            bottom_y0 = int(img_h * 0.40)
+
+            top_crop_path = os.path.join(UPLOAD_DIR, f"crop_top_{file_id}.jpg")
+            bottom_crop_path = os.path.join(UPLOAD_DIR, f"crop_bottom_{file_id}.jpg")
+
+            with Image.open(img_path) as full_img:
+                crop_top = full_img.crop((0, 0, img_w, top_h))
+                crop_top.save(top_crop_path, quality=95)
+                crop_bottom = full_img.crop((0, bottom_y0, img_w, img_h))
+                crop_bottom.save(bottom_crop_path, quality=95)
+
+            res_top = query_gpu_backend(top_crop_path, model)
+            res_bottom = query_gpu_backend(bottom_crop_path, model)
+
+            if res_top and res_bottom:
+                raw_top = res_top["data"]
+                raw_bottom = res_bottom["data"]
+                inference_source = f"{res_top['source']}_twopass"
+                lat_top = float(res_top.get("latency", 1.0) or 1.0)
+                lat_bottom = float(res_bottom.get("latency", 1.0) or 1.0)
+                actual_latency = round(lat_top + lat_bottom, 2)
+                raw_output = f"[PHẦN 1 - NỬA TRÊN]\n{res_top.get('raw', '')}\n\n[PHẦN 2 - NỬA DƯỚI]\n{res_bottom.get('raw', '')}"
+
+                top_items = raw_top.get("ITEMS", []) if isinstance(raw_top.get("ITEMS"), list) else []
+                bottom_items = raw_bottom.get("ITEMS", []) if isinstance(raw_bottom.get("ITEMS"), list) else []
+
+                merged_raw_items = merge_twopass_items(top_items, bottom_items)
+
+                items_parsed = []
+                for it in merged_raw_items:
                     items_parsed.append({
                         "name": str(it.get("name", "")),
                         "qty": str(it.get("qty", "")),
                         "price": str(it.get("price", "")),
                         "amount": str(it.get("amount", ""))
                     })
-            extraction = {
-                "SELLER": str(raw_data.get("SELLER", "")),
-                "ADDRESS": str(raw_data.get("ADDRESS", "")),
-                "TIMESTAMP": str(raw_data.get("TIMESTAMP", "")),
-                "TOTAL_COST": str(raw_data.get("TOTAL_COST", "")),
-                "ITEMS": items_parsed
-            }
-            print(f"✅ [GPU Success] Real GPU extraction via {inference_source} in {actual_latency}s: {len(items_parsed)} items")
+
+                extraction = {
+                    "SELLER": str(raw_top.get("SELLER") or raw_bottom.get("SELLER", "")),
+                    "ADDRESS": str(raw_top.get("ADDRESS") or raw_bottom.get("ADDRESS", "")),
+                    "TIMESTAMP": str(raw_top.get("TIMESTAMP") or raw_bottom.get("TIMESTAMP", "")),
+                    "TOTAL_COST": str(raw_bottom.get("TOTAL_COST") or raw_top.get("TOTAL_COST", "")),
+                    "ITEMS": items_parsed
+                }
+                print(f"✅ [2-Pass Success] Merged {len(items_parsed)} items (Top: {len(top_items)}, Bottom: {len(bottom_items)}) in {actual_latency}s")
+            elif res_top or res_bottom:
+                active_gpu_data = res_top or res_bottom
+                raw_data = active_gpu_data["data"]
+                inference_source = active_gpu_data["source"]
+                actual_latency = float(active_gpu_data.get("latency", round(time.time() - start_time, 2)))
+                raw_output = active_gpu_data.get("raw")
+
+                items_parsed = []
+                if "ITEMS" in raw_data and isinstance(raw_data["ITEMS"], list):
+                    for it in raw_data["ITEMS"]:
+                        items_parsed.append({
+                            "name": str(it.get("name", "")),
+                            "qty": str(it.get("qty", "")),
+                            "price": str(it.get("price", "")),
+                            "amount": str(it.get("amount", ""))
+                        })
+                extraction = {
+                    "SELLER": str(raw_data.get("SELLER", "")),
+                    "ADDRESS": str(raw_data.get("ADDRESS", "")),
+                    "TIMESTAMP": str(raw_data.get("TIMESTAMP", "")),
+                    "TOTAL_COST": str(raw_data.get("TOTAL_COST", "")),
+                    "ITEMS": items_parsed
+                }
+        else:
+            # 1-Pass Tiêu chuẩn
+            active_gpu_data = query_gpu_backend(img_path, model)
+            if active_gpu_data is not None:
+                raw_data = active_gpu_data["data"]
+                inference_source = active_gpu_data["source"]
+                actual_latency = float(active_gpu_data.get("latency", round(time.time() - start_time, 2)))
+                raw_output = active_gpu_data.get("raw")
+
+                items_parsed = []
+                if "ITEMS" in raw_data and isinstance(raw_data["ITEMS"], list):
+                    for it in raw_data["ITEMS"]:
+                        items_parsed.append({
+                            "name": str(it.get("name", "")),
+                            "qty": str(it.get("qty", "")),
+                            "price": str(it.get("price", "")),
+                            "amount": str(it.get("amount", ""))
+                        })
+                extraction = {
+                    "SELLER": str(raw_data.get("SELLER", "")),
+                    "ADDRESS": str(raw_data.get("ADDRESS", "")),
+                    "TIMESTAMP": str(raw_data.get("TIMESTAMP", "")),
+                    "TOTAL_COST": str(raw_data.get("TOTAL_COST", "")),
+                    "ITEMS": items_parsed
+                }
+                print(f"✅ [GPU Success] Real GPU extraction via {inference_source} in {actual_latency}s: {len(items_parsed)} items")
     except Exception as e:
         print(f"⚠️ [GPU Warning] Remote GPU inference error: {e}. Falling back smoothly.")
 
@@ -1089,9 +1228,15 @@ async def predict_receipt(
         "is_proposed": selected_meta["is_proposed"],
         "schema_version": schema_version,
         "latency_seconds": actual_latency if actual_latency is not None else simulated_latency,
+        "is_two_pass": is_long_receipt,
+        "aspect_ratio": round(aspect_ratio, 2),
         "inference_source": inference_source,
-        "inference_source_name": "RunPod Cloud (NVIDIA RTX 3090 Ti)" if inference_source == "runpod_gpu_rtx3090ti" else ("PopOS Local (NVIDIA RTX 5060 Ti - Fallback)" if inference_source == "popos_gpu_rtx5060ti" else "Bộ dữ liệu chuẩn Ground Truth"),
-        "is_fallback": (inference_source == "popos_gpu_rtx5060ti"),
+        "inference_source_name": (
+            ("RunPod Cloud (NVIDIA RTX 3090 Ti)" if "runpod" in inference_source else 
+             ("PopOS Local (NVIDIA RTX 5060 Ti - Fallback)" if "popos" in inference_source else "Bộ dữ liệu chuẩn Ground Truth"))
+            + (" • 2-Pass Overlap Slicing" if "twopass" in inference_source else "")
+        ),
+        "is_fallback": ("popos" in inference_source),
         "raw_output": raw_output,
         "raw_items": raw_items_unmodified,
         "reconciled": len(reconciled_items) != len(raw_items_unmodified),
