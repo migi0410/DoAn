@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
     const backendUrl = (
       process.env.BACKEND_URL ||
       process.env.NEXT_PUBLIC_BACKEND_URL ||
-      "http://127.0.0.1:8000"
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://migi.tail007aa8.ts.net"
     ).replace(/\/$/, "");
 
     try {

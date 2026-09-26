@@ -105,3 +105,4 @@ dataset_yolo_real_mcocr/
 mcocr_full_gemini_labels.json
 test.txt
 .agents/
+logs/

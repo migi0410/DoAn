@@ -864,10 +864,11 @@ def get_samples():
 
 
 # Primary GPU Endpoint: RunPod Cloud RTX 3090 Ti (Mô hình chính 24GB Cloud)
-RUNPOD_GPU_URL = os.getenv("RUNPOD_GPU_URL", "https://omlfvzmqlnr5zg-8000.proxy.runpod.net")
+RUNPOD_GPU_URL = os.getenv("RUNPOD_GPU_URL") or os.getenv("POPOS_API_URL") or "https://omlfvzmqlnr5zg-8000.proxy.runpod.net"
 
 # Fallback GPU Endpoint: Pop!_OS RTX 5060 Ti 16GB (Chỉ kích hoạt dự phòng khi 3090 lỗi/mất mạng)
-POPOS_BACKUP_URL = os.getenv("POPOS_BACKUP_URL", "http://127.0.0.1:8000")
+POPOS_BACKUP_URL = os.getenv("POPOS_BACKUP_URL") or os.getenv("BACKUP_GPU_URL") or "http://100.80.138.26:8000"
+
 
 def get_active_gpu_url() -> tuple:
     """Finds currently available GPU endpoint. Prioritizes RunPod 3090 Ti -> PopOS backup."""
