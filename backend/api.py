@@ -316,21 +316,63 @@ def is_discount_item(it: Dict[str, Any]) -> bool:
     return any(kw in name for kw in discount_keywords)
 
 def is_continuation_line(name: str, prev_name: str = "") -> bool:
+    """
+    Xác định xem một dòng có phải là dòng rớt chữ (continuation line) của dòng trước đó hay không.
+    Áp dụng các đặc trưng ngôn ngữ và cấu trúc in ấn hóa đơn bán lẻ tại Việt Nam:
+    1. Chỉ chứa thông tin quy cách đóng gói, khối lượng, thể tích (ví dụ: '20g', '300g', '900ml', '1.5L', 'H 900ml').
+    2. Bắt đầu bằng chữ cái viết thường (do ngắt từ tự động: 'lolo xanh L+ 300g', 'trộn salad 250g').
+    3. Bắt đầu bằng tiền tố quy cách/tùy chọn ('k+đường', 'k đường', 'ko đường', 'size L', 'ít đường', 'ít đá', 'vị...', 'nguyên hạt...').
+    4. Bắt đầu bằng ký tự đặc biệt ('+', '(', '-', '*', '/', '&', '~', '.').
+    5. Cụm từ ngắn (<= 3 từ) kết thúc bằng đơn vị đóng gói và dòng trước chưa có đơn vị đóng gói.
+    """
     s = name.strip()
     if not s:
         return False
-    if re.match(r'^\s*\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|lon|chai|hộp|hop|gói|goi|cái|cai|c|vi|vien|qua|quả)\s*$', s, re.I):
+
+    # 1. Chỉ chứa đơn vị / quy cách đóng gói thuần túy (e.g. '20g', '(300g)', 'H 900ml', 'L+ 300g')
+    if re.match(r'^\s*\(?\s*(?:[A-Za-z]\s*[\+\-]?\s*)?\d+[\.,]?\d*\s*(?:g|kg|gr|ml|l|lit|lít|lon|chai|hộp|hop|gói|goi|cái|cai|c|vi|vien|viên|qua|quả|bao|túi|tui|miếng|mieng|thùng|thung|lốc|loc|cuộn|cuon|bịch|bich|p|ly|cốc)\)?\s*$', s, re.I):
         return True
-    if re.match(r'^\s*\(?\s*(?:size\s*)?[smlxl]+\s*\)?\s*$', s, re.I):
-        return True
+
+    # 2. Bắt đầu bằng chữ cái viết thường (tiêu biểu cho dòng rớt chữ trong tiếng Việt)
     if s[0].islower():
         return True
-    if re.match(r'^(?:vị|vi|hương|huong|loại|loai|dành cho|danh cho)\b', s, re.I):
+
+    # 3. Bắt đầu bằng các tiền tố đặc tả / tùy chọn sản phẩm
+    spec_prefixes = [
+        "k+đường", "k/đường", "k đường", "ko đường", "không đường", "k.đường",
+        "có đường", "ít đường", "nhiều đường", "ít đá", "không đá", "nhiều đá", "nóng", "lạnh",
+        "size ", "(size", "(l)", "(m)", "(s)", "(xl)", "size:",
+        "vị ", "vi ", "hương ", "huong ", "loại ", "loai ", "dành cho ", "danh cho ",
+        "nguyên chất", "nhập khẩu", "nguyên hạt", "nguyên khai", "sấy ", "ướp ",
+        "thanh trùng", "tiệt trùng", "lên men", "tự nhiên", "đóng chai", "đóng hộp"
+    ]
+    s_lower = s.lower()
+    if any(s_lower.startswith(p) for p in spec_prefixes):
         return True
+
+    # 4. Bắt đầu bằng ký tự đặc biệt biểu thị tùy chọn / định lượng kèm theo
+    if s.startswith(('(', '+', '-', '*', '/', '&', '~', '.')):
+        return True
+
+    # 5. Dòng trước bị ngắt ngang lửng lơ (dangling word ở cuối dòng trước)
+    dangling_words = [
+        "sữa", "thanh", "tiệt", "bánh", "nước", "trà", "cà phê", "ca phe", "gà",
+        "bò", "heo", "cá", "tôm", "rau", "xà", "dầu", "sốt", "táo", "cam", "xoài",
+        "và", "cùng", "với", "cho", "của", "trộn", "khoai", "chả", "thịt", "hạt",
+        "gói", "hộp", "chai", "lon", "bịch", "túi", "combo"
+    ]
+    if prev_name:
+        prev_words = prev_name.strip().lower().split()
+        if prev_words and prev_words[-1] in dangling_words:
+            if len(s.split()) <= 4:
+                return True
+
+    # 6. Cụm từ ngắn (<= 3 từ) chứa số định lượng mà dòng trước CHƯA có định lượng
     words = s.split()
-    if len(words) <= 3 and re.search(r'\b\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|c|bao|vi|quả|qua)\b', s, re.I):
+    if len(words) <= 3 and re.search(r'\b\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|c|bao|vi|quả|qua|p)\b', s, re.I):
         if prev_name and not re.search(r'\b\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr)\b', prev_name, re.I):
             return True
+
     return False
 
 def is_summary_line(name: str) -> bool:
@@ -364,52 +406,126 @@ def is_explicit_zero(val_str: str) -> bool:
     s = str(val_str).strip()
     return s in ["0", "0.0", "0,0", "0 đ", "0đ", "0.000", "0,000"]
 
-def reconcile_priceless_lines(items: List[Dict[str, Any]], total_cost_str: str = "") -> List[Dict[str, Any]]:
+def calculate_items_sum(items: List[Dict[str, Any]]) -> float:
+    """Tính tổng tiền của danh sách món hàng, trừ đi các khoản giảm giá."""
+    total = 0.0
+    for it in items:
+        raw_amt = it.get("amount", "")
+        parsed = clean_currency(raw_amt, allow_negative=True)
+        if parsed == 0.0 and it.get("price"):
+            parsed = clean_currency(it.get("price"), allow_negative=True)
+        if is_discount_item(it) or parsed < 0:
+            total -= abs(parsed)
+        else:
+            total += parsed
+    return total
+
+def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "") -> List[Dict[str, Any]]:
     """
-    1. Phân biệt rõ giữa món 0 đồng (như Khoai Mon S có giá '0' và SL '1' -> TÁCH RIÊNG) 
-       với dòng rớt hàng/dòng phụ thực sự (hoàn toàn KHÔNG có SL và KHÔNG có giá tiền -> GỘP VÀO MÓN TRÊN).
-    2. Đối soát số học nếu model bị trượt mắt bốc nhầm số tiền của dòng kế tiếp.
+    Thuật toán hậu xử lý gộp dòng rớt chữ thông minh và đối soát số học hoàn toàn tại Backend:
+    1. Loại bỏ các dòng tổng cộng / thanh toán bị model bốc nhầm vào bảng items.
+    2. Gộp các dòng rớt không có giá tiền vào món chính phía trên.
+    3. Xử lý trường hợp in 2 dòng: dòng 1 là tên món (khuyết giá), dòng 2 là thông số kèm giá tiền -> Gộp tên, giữ giá dòng 2.
+    4. Xử lý ảo giác nhân đôi giá tiền: khi model trích xuất dòng rớt thành 1 item riêng và tự copy lại giá tiền của dòng trên
+       hoặc bốc nhầm giá của dòng dưới, sử dụng ràng buộc bảo toàn số học (TOTAL_COST) để tự động triệt tiêu giá trùng lặp.
     """
     if not items:
         return items
+
+    valid_lines = [it for it in items if not is_summary_line(str(it.get("name", "")))]
+    if not valid_lines:
+        return items
+
+    declared_total = abs(clean_currency(total_cost_str, allow_negative=False))
+
     merged: List[Dict[str, Any]] = []
-    for it in items:
+    i = 0
+    while i < len(valid_lines):
+        it = valid_lines[i]
         name = str(it.get("name", "")).strip()
         qty = str(it.get("qty", "")).strip()
         price = str(it.get("price", "")).strip()
         amount = str(it.get("amount", "")).strip()
 
-        if is_summary_line(name):
-            continue
+        amt_val = clean_currency(amount, allow_negative=True)
+        is_amt_empty = is_empty_value(amount) and is_empty_value(price)
+        is_zero = is_explicit_zero(amount) or is_explicit_zero(price)
 
-        # Dòng rớt hàng: hoàn toàn KHÔNG CÓ thành tiền và đơn giá (kể cả số 0 cũng không có)
-        # Bất kể số lượng trống hay model tự điền '1', nếu không có giá tiền thì 100% là phần nối tiếp của món phía trên
-        is_price_empty = is_empty_value(price) and is_empty_value(amount)
-        if is_explicit_zero(amount) or is_explicit_zero(price):
-            is_price_empty = False
-
-        if is_price_empty and merged:
-            if name and not name.lower().startswith("tổng"):
-                merged[-1]["name"] = f"{merged[-1]['name']} {name}".strip()
-        else:
+        if not merged:
             merged.append({
                 "name": name,
                 "qty": qty if qty else "1",
-                "price": price if price else ("0" if is_explicit_zero(amount) else ""),
+                "price": price if price else ("0" if is_zero else ""),
                 "amount": amount
             })
-    # Case B: Dòng phụ bị model bốc nhầm số tiền của dòng chính kế tiếp, khiến dòng chính bị khuyết tiền
-    for i in range(len(merged) - 1):
-        amt_i = clean_currency(merged[i].get("amount", ""))
-        amt_next = clean_currency(merged[i + 1].get("amount", ""))
-        if amt_i > 0 and amt_next == 0 and is_empty_value(merged[i + 1].get("amount")) and i > 0:
-            merged[i - 1]["name"] = f"{merged[i - 1]['name']} {merged[i]['name']}".strip()
-            merged[i + 1]["price"] = merged[i]["price"]
-            merged[i + 1]["amount"] = merged[i]["amount"]
-            merged.pop(i)
-            break
+            i += 1
+            continue
+
+        prev = merged[-1]
+        prev_name = prev["name"]
+        prev_amt_val = clean_currency(prev.get("amount", ""), allow_negative=True)
+        is_continuation = is_continuation_line(name, prev_name)
+
+        # TRƯỜNG HỢP A: Dòng 1 chỉ có tên (khuyết giá), dòng 2 là dòng phụ/tiếp diễn mang giá tiền thực tế
+        if prev_amt_val == 0 and is_empty_value(prev.get("amount")) and amt_val > 0:
+            if is_continuation or len(name.split()) <= 4:
+                prev["name"] = f"{prev['name']} {name}".strip()
+                prev["qty"] = qty if qty else prev.get("qty", "1")
+                prev["price"] = price if price else prev.get("price", "")
+                prev["amount"] = amount
+                i += 1
+                continue
+
+        # TRƯỜNG HỢP B: Dòng hiện tại hoàn toàn không có giá tiền (và không phải 0đ rõ ràng)
+        if is_amt_empty and not is_zero:
+            prev["name"] = f"{prev['name']} {name}".strip()
+            i += 1
+            continue
+
+        # TRƯỜNG HỢP C: Dòng hiện tại có dấu hiệu rớt dòng, nhưng model gán giá tiền (do ảo giác copy hoặc lệch hàng)
+        if is_continuation:
+            should_merge_dup = False
+
+            # C1: Nếu giá trùng hoàn toàn với dòng trên và tổng số tiền hiện tại đang vượt quá declared_total
+            if amt_val > 0 and amt_val == prev_amt_val:
+                current_sum = calculate_items_sum(merged + valid_lines[i:])
+                if declared_total > 0 and current_sum > declared_total:
+                    if abs((current_sum - amt_val) - declared_total) < abs(current_sum - declared_total):
+                        should_merge_dup = True
+                elif declared_total == 0:
+                    if re.match(r'^\s*\(?\s*(?:[A-Za-z]\s*[\+\-]?\s*)?\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr)\)?\s*$', name, re.I):
+                        should_merge_dup = True
+
+            # C2: Nếu có declared_total, và việc gộp dòng này giúp tổng số tiền khớp chính xác hơn với declared_total
+            elif declared_total > 0 and amt_val > 0:
+                current_sum = calculate_items_sum(merged + valid_lines[i:])
+                sum_without_line = current_sum - amt_val
+                if current_sum > declared_total and abs(sum_without_line - declared_total) < abs(current_sum - declared_total):
+                    should_merge_dup = True
+
+            # C3: Dòng chỉ thuần là định lượng cực ngắn (e.g. '20g', '300g')
+            words = name.split()
+            if len(words) <= 2 and re.match(r'^\s*\(?\s*\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr|p)\)?\s*$', name, re.I):
+                should_merge_dup = True
+
+            if should_merge_dup:
+                prev["name"] = f"{prev['name']} {name}".strip()
+                i += 1
+                continue
+
+        # Món hàng hợp lệ độc lập
+        merged.append({
+            "name": name,
+            "qty": qty if qty else "1",
+            "price": price if price else ("0" if is_zero else ""),
+            "amount": amount
+        })
+        i += 1
 
     return merged
+
+# Alias for backward compatibility
+reconcile_priceless_lines = reconcile_receipt_lines
 
 def validate_arithmetic(total_cost_str: str, items: List[Dict[str, Any]]) -> ValidationReport:
     """Computes |TOTAL_COST - sum(ITEM_AMOUNT)| to detect hallucinations, subtracting discounts properly."""
@@ -847,7 +963,7 @@ async def predict_receipt(
     raw_items_unmodified = [dict(it) for it in extraction.get("ITEMS", [])]
     # Hướng 2: Chỉ gộp dòng khi các dòng phụ kế tiếp hoàn toàn KHÔNG có giá tiền / thành tiền thực tế trên ảnh
     # và tự động đối soát số học nếu model bị ảo giác nhân đôi số tiền của dòng dưới
-    reconciled_items = reconcile_priceless_lines(extraction.get("ITEMS", []), extraction.get("TOTAL_COST", ""))
+    reconciled_items = reconcile_receipt_lines(extraction.get("ITEMS", []), extraction.get("TOTAL_COST", ""))
     extraction["ITEMS"] = reconciled_items
 
     validation = validate_arithmetic(extraction.get("TOTAL_COST", ""), reconciled_items)
