@@ -38,11 +38,11 @@ active_adapter = "v2"
 available_adapters = []
 is_loading = False
 
-PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn. Hãy đọc kỹ hình ảnh và trích xuất thông tin vào định dạng JSON sau:
+PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn tiếng Việt. Hãy đọc kỹ hình ảnh và trích xuất thông tin vào định dạng JSON sau:
 {
-  "SELLER": "Tên cửa hàng",
+  "SELLER": "Tên cửa hàng hoặc công ty",
   "ADDRESS": "Địa chỉ",
-  "TIMESTAMP": "Thời gian",
+  "TIMESTAMP": "Thời gian lập hóa đơn",
   "ITEMS": [
     {
       "name": "Tên món hàng",
@@ -51,25 +51,15 @@ PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn.
       "amount": "Thành tiền"
     }
   ],
-  "TOTAL_COST": "Tổng tiền thanh toán"
+  "TOTAL_COST": "Tổng tiền thanh toán cuối cùng"
 }
 Quy tắc bắt buộc:
-1. QUY TẮC NGUYÊN VĂN (VERBATIM): Nếu chữ trên hóa đơn là KHÔNG DẤU (ví dụ: 'Tra Sen Vang', 'Khoai Mon', 'Cookies va Cream', 'Tran Chau', 'SUA TUOI') thì BẮT BUỘC giữ nguyên 100% KHÔNG DẤU. TUYỆT ĐỐI KHÔNG tự thêm dấu tiếng Việt. Nếu chữ in có dấu tiếng Việt thì giữ nguyên có dấu.
-2. NGUYÊN TẮC MỎ NEO THÀNH TIỀN (ANCHOR BY AMOUNT - TẤT CẢ HÓA ĐƠN ĐỀU LÀ TOP-ALIGNED):
-   - Mọi máy in POS đều in dòng đầu tiên của món cùng với Số lượng và Thành tiền.
-   - Mỗi một dòng in có số tiền (kể cả số 0) ở cột Thành tiền là mốc bắt đầu của MỘT món duy nhất.
-   - Bất kỳ dòng chữ nào nằm ngay bên dưới mà cột Thành tiền bị BỎ TRỐNG (do tên món dài rớt dòng, tên tiếng Anh, khối lượng, quy cách, topping không giá):
-     * Ví dụ 'K-food Rong biển cuộn cơm' xuống 'roasted laver 23g' (giá 29.000) -> BẮT BUỘC ghép thành một tên duy nhất 'K-food Rong biển cuộn cơm roasted laver 23g' với giá 29.000. Tuyệt đối không tách 'roasted laver 23g' thành món riêng!
-     * Ví dụ 'Tảo cuộn cơm Sushi Nori Yaki' xuống '20g' (giá 37.000) -> BẮT BUỘC ghép thành một tên duy nhất 'Tảo cuộn cơm Sushi Nori Yaki 20g' với giá 37.000.
-     * Ví dụ 'Thanh ngũ cốc Granola' xuống 'Nguyên Khôi 300g' (giá 150.000) -> BẮT BUỘC ghép thành một tên duy nhất 'Thanh ngũ cốc Granola Nguyên Khôi 300g' với giá 150.000.
-     * Ví dụ 'NAM DƯƠNG Sốt' xuống 'Dầu Dấm Trộn' xuống 'Salad 250g' (giá 20,200) -> BẮT BUỘC ghép cả 3 dòng thành 'NAM DƯƠNG Sốt Dầu Dấm Trộn Salad 250g' (giá 20,200).
-     * Ví dụ 'MỘC CHÂU Sữa' xuống 'thanh trùng' xuống 'k.đường H 900ml' (giá 40,700) -> BẮT BUỘC ghép cả 3 dòng thành 'MỘC CHÂU Sữa thanh trùng k.đường H 900ml' (giá 40,700). Tuyệt đối không tách 'k.đường H 900ml' thành món riêng và không nhìn chéo xuống dưới bốc số 15,500!
-     * Ví dụ 'WINECO Xà lách' xuống 'lolo xanh L1 300g' (giá 15,500) -> BẮT BUỘC ghép thành 'WINECO Xà lách lolo xanh L1 300g' (giá 15,500). Dòng 'KM: -3,100' là giảm giá, không tạo món mới!
-     * Ví dụ 'Tra Sen Vang Tran Chau' xuống topping 'Com va Kem La Dua L' (giá 69.000) -> BẮT BUỘC ghép thành một tên duy nhất 'Tra Sen Vang Tran Chau Com va Kem La Dua L'.
-   - TUYỆT ĐỐI KHÔNG tách dòng không có tiền thành món riêng, và TUYỆT ĐỐI KHÔNG nhìn chéo xuống dòng dưới để bốc tiền gán cho dòng rớt phía trên.
-   - Dòng có ghi rõ số lượng và số tiền là 0 (ví dụ '1 Khoai Mon S 0') thì vẫn là một món độc lập với amount là '0'.
-3. NGUYÊN TẮC GIÓNG HÀNG THEO CỘT THÀNH TIỀN: Mỗi phần tử trong mảng ITEMS bắt buộc phải tương ứng với đúng MỘT dòng in thành tiền ở cột Thành tiền. Tuyệt đối không lặp lại cùng một số tiền cho nhiều món khác nhau nếu trên hóa đơn chỉ có 1 số tiền đó.
-4. Dòng khuyến mãi / giảm giá (như 'KM: -3,100') nằm dưới món hàng phải gộp vào món hàng đó, không tạo thêm món mới."""
+1. Chỉ trích xuất CHÍNH XÁC những gì nhìn thấy trên ảnh. Giữ nguyên dấu tiếng Việt và chính tả gốc trên hóa đơn. Tuyệt đối KHÔNG tự ý thêm/bớt dấu và KHÔNG bịa đặt thông tin.
+2. Với mỗi mặt hàng, nhóm đủ 4 trường: name, qty, price, amount vào cùng một đối tượng.
+3. Nếu tên một món hàng dài bị in rớt xuống nhiều dòng, hãy ghép lại thành một tên món hoàn chỉnh duy nhất.
+4. Mỗi phần tử trong mảng ITEMS tương ứng với đúng một số tiền ở cột Thành tiền. Dòng khuyến mãi hoặc ghi chú đi kèm bên dưới phải được gộp vào món đó, KHÔNG tách thành món riêng.
+5. Nếu hóa đơn không in đơn giá riêng, hãy để price là "".
+6. Nếu trường thông tin nào không xuất hiện trên hóa đơn, hãy để giá trị là ""."""
 
 def get_vram_usage():
     if torch.cuda.is_available():
