@@ -375,6 +375,19 @@ def is_continuation_line(name: str, prev_name: str = "") -> bool:
         if prev_name and not re.search(r'\b\d+[\.,]?\d*\s*(?:g|kg|ml|l|gr)\b', prev_name, re.I):
             return True
 
+    # 7. Dòng hương vị, topping, hoặc quy cách kích cỡ (size) bổ sung cho món đồ uống/thực phẩm phía trên
+    if prev_name:
+        prev_lower = prev_name.lower()
+        is_beverage_or_food = any(w in prev_lower for w in ["trà", "tra", "cà phê", "ca phe", "freeze", "phin", "tea", "coffee", "bánh", "banh", "sữa", "sua", "chè", "che", "mì", "cơm", "mon"])
+        topping_keywords = ["kem", "lá dứa", "la dua", "trân châu", "tran chau", "thạch", "thach", "pudding", "sương sáo", "hạt sen", "đậu đỏ", "phô mai", "pho mai", "cơm", "com", "kem cheese"]
+        if is_beverage_or_food and any(kw in s_lower for kw in topping_keywords):
+            if len(s.split()) <= 6:
+                return True
+        # Dòng kết thúc bằng kích cỡ (S, M, L, XL) mà dòng trước chưa có kích cỡ
+        if re.search(r'\b[sml]\b$', s_lower) and not re.search(r'\b[sml]\b', prev_lower):
+            if len(s.split()) <= 6:
+                return True
+
     return False
 
 def is_summary_line(name: str) -> bool:
@@ -422,6 +435,70 @@ def calculate_items_sum(items: List[Dict[str, Any]]) -> float:
             total += parsed
     return total
 
+def resolve_cascading_empty_amounts(items: List[Dict[str, Any]], declared_total: float) -> List[Dict[str, Any]]:
+    """
+    Khi VLM trích xuất một dòng phụ/topping thành món riêng và bốc nhầm số tiền của món bên dưới gán cho dòng phụ,
+    món cuối cùng sẽ bị rớt lại với amount: "" (Price Cascading).
+    Hàm này tự động giải bài toán giật lùi (Backtracking Shift):
+    1. Xác định dòng bị khuyết tiền emp_idx.
+    2. Thử gộp dòng trước đó (emp_idx - shift_back) vào dòng cha, và trả lại số tiền bị chiếm dụng cho emp_idx.
+    3. Nếu tổng số tiền sau khi dịch chuyển khớp chính xác với declared_total (hoặc giảm thiểu delta sai số), chấp nhận cấu hình này!
+    """
+    if declared_total <= 0 or not items:
+        return items
+
+    result = [dict(x) for x in items]
+    empty_indices = [i for i, it in enumerate(result) if is_empty_value(it.get("amount", "")) and is_empty_value(it.get("price", "")) and it.get("name")]
+    
+    for emp_idx in reversed(empty_indices):
+        if emp_idx >= len(result):
+            continue
+        emp_it = result[emp_idx]
+        emp_name = emp_it.get("name", "").strip()
+        
+        # Thử tìm dòng rớt phía trên đã chiếm nhầm tiền
+        best_trial = None
+        min_delta = float('inf')
+        
+        for shift_back in range(1, min(emp_idx, 4) + 1):
+            cand_sub_idx = emp_idx - shift_back
+            parent_idx = cand_sub_idx - 1
+            if parent_idx < 0:
+                continue
+                
+            sub_it = result[cand_sub_idx]
+            parent_it = result[parent_idx]
+            sub_amt = clean_currency(sub_it.get("amount", ""), allow_negative=True)
+            if sub_amt <= 0:
+                continue
+
+            # Thử tạo danh sách giả định
+            trial_items = [dict(x) for x in result]
+            trial_items[parent_idx]["name"] = f"{parent_it['name']} {sub_it['name']}".strip()
+            # Dịch chuyển số tiền bị chiếm dụng về cho emp_it
+            trial_items[emp_idx]["amount"] = sub_it.get("amount", "")
+            trial_items[emp_idx]["price"] = sub_it.get("price", "")
+            if not trial_items[emp_idx].get("qty") or trial_items[emp_idx].get("qty") == "":
+                trial_items[emp_idx]["qty"] = sub_it.get("qty", "1") or "1"
+            trial_items.pop(cand_sub_idx)
+            
+            # Tính tổng
+            trial_sum = calculate_items_sum(trial_items)
+            delta = abs(trial_sum - declared_total)
+            if delta <= 1.0:
+                print(f"✅ [Price Cascade Resolved] Merged '{sub_it['name']}' into '{parent_it['name']}', passed amount '{sub_it.get('amount')}' to '{emp_name}'. Sum: {trial_sum:,.0f} == Total: {declared_total:,.0f}")
+                best_trial = trial_items
+                min_delta = delta
+                break
+            elif delta < min_delta:
+                min_delta = delta
+                best_trial = trial_items
+                
+        if best_trial is not None and min_delta <= 1.0:
+            result = best_trial
+
+    return result
+
 def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "") -> List[Dict[str, Any]]:
     """
     Thuật toán hậu xử lý gộp dòng rớt chữ thông minh và đối soát số học hoàn toàn tại Backend:
@@ -439,6 +516,10 @@ def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "
         return items
 
     declared_total = abs(clean_currency(total_cost_str, allow_negative=False))
+    
+    # 0. Giải bài toán dời số tiền (Price Cascading Resolution) nếu có dòng phụ chiếm tiền dòng dưới
+    valid_lines = resolve_cascading_empty_amounts(valid_lines, declared_total)
+    
     current_raw_sum = calculate_items_sum(valid_lines)
 
     # CHIẾN LƯỢC TOÀN CỤC: Phát hiện lệch gióng hàng dạng cột (Columnar Decoupling)
@@ -619,6 +700,7 @@ def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "
             else:
                 break
 
+    merged = resolve_cascading_empty_amounts(merged, declared_total)
     return merged
 
 # Alias for backward compatibility

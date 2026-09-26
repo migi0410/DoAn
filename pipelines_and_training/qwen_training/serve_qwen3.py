@@ -56,8 +56,8 @@ PROMPT_SCHEMA_V2 = """Bạn là chuyên gia trích xuất thông tin hóa đơn 
 Quy tắc bắt buộc:
 1. Chỉ trích xuất CHÍNH XÁC những gì nhìn thấy trên ảnh. Giữ nguyên dấu tiếng Việt và chính tả gốc trên hóa đơn. Tuyệt đối KHÔNG tự ý thêm/bớt dấu và KHÔNG bịa đặt thông tin.
 2. Với mỗi mặt hàng, nhóm đủ 4 trường: name, qty, price, amount vào cùng một đối tượng.
-3. Nếu tên một món hàng dài bị in rớt xuống nhiều dòng, hãy ghép lại thành một tên món hoàn chỉnh duy nhất.
-4. Mỗi phần tử trong mảng ITEMS tương ứng với đúng một số tiền ở cột Thành tiền. Dòng khuyến mãi hoặc ghi chú đi kèm bên dưới phải được gộp vào món đó, KHÔNG tách thành món riêng.
+3. QUY TẮC CỘT SỐ LƯỢNG (SL): Mỗi món hàng trên hóa đơn bắt buộc phải có Số lượng (SL) ở đầu dòng. Nếu một dòng chữ không có số lượng in ở đầu dòng (do tên món dài rớt xuống, hoặc là dòng hương vị/topping/kích cỡ/mô tả rớt dòng bên dưới) thì BẮT BUỘC gộp toàn bộ dòng đó vào tên món hàng ngay phía trên nó. TUYỆT ĐỐI KHÔNG tách dòng không có số lượng thành một món riêng.
+4. Mỗi phần tử trong mảng ITEMS tương ứng với đúng một số tiền ở cột Thành tiền. Tuyệt đối không lấy số tiền của món bên dưới gán cho dòng rớt phía trên. Dòng khuyến mãi hoặc ghi chú đi kèm bên dưới phải được gộp vào món đó, KHÔNG tách thành món riêng.
 5. Nếu hóa đơn không in đơn giá riêng, hãy để price là "".
 6. Nếu trường thông tin nào không xuất hiện trên hóa đơn, hãy để giá trị là ""."""
 
