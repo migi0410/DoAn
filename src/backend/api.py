@@ -424,10 +424,10 @@ def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "
     """
     Thuật toán hậu xử lý gộp dòng rớt chữ thông minh và đối soát số học hoàn toàn tại Backend:
     1. Loại bỏ các dòng tổng cộng / thanh toán bị model bốc nhầm vào bảng items.
-    2. Gộp các dòng rớt không có giá tiền vào món chính phía trên.
-    3. Xử lý trường hợp in 2 dòng: dòng 1 là tên món (khuyết giá), dòng 2 là thông số kèm giá tiền -> Gộp tên, giữ giá dòng 2.
-    4. Xử lý ảo giác nhân đôi giá tiền: khi model trích xuất dòng rớt thành 1 item riêng và tự copy lại giá tiền của dòng trên
-       hoặc bốc nhầm giá của dòng dưới, sử dụng ràng buộc bảo toàn số học (TOTAL_COST) để tự động triệt tiêu giá trùng lặp.
+    2. CHIẾN LƯỢC TOÀN CỤC: Phát hiện lệch gióng hàng dạng cột (Columnar Decoupling) khi model bốc tuần tự các số tiền ở cột bên phải.
+    3. Gộp các dòng rớt không có giá tiền vào món chính phía trên.
+    4. Xử lý trường hợp in 2 dòng: dòng 1 là tên món (khuyết giá), dòng 2 là thông số kèm giá tiền -> Gộp tên, giữ giá dòng 2.
+    5. Xử lý ảo giác nhân đôi giá tiền: triệt tiêu giá trùng lặp bằng ràng buộc bảo toàn số học.
     """
     if not items:
         return items
@@ -437,7 +437,63 @@ def reconcile_receipt_lines(items: List[Dict[str, Any]], total_cost_str: str = "
         return items
 
     declared_total = abs(clean_currency(total_cost_str, allow_negative=False))
+    current_raw_sum = calculate_items_sum(valid_lines)
 
+    # CHIẾN LƯỢC TOÀN CỤC: Phát hiện lệch gióng hàng dạng cột (Columnar Decoupling)
+    # Xảy ra khi VLM đọc các dòng tên sản phẩm rớt dòng nhưng lại bốc tuần tự các số tiền ở cột bên phải
+    # Chỉ kích hoạt khi tổng tiền thô bị lệch so với declared_total
+    if declared_total > 0 and abs(current_raw_sum - declared_total) > 1.0 and len(valid_lines) > 1:
+        product_clusters: List[List[Dict[str, Any]]] = []
+        curr_cluster: List[Dict[str, Any]] = []
+        for it in valid_lines:
+            n_it = str(it.get("name", "")).strip()
+            if not curr_cluster:
+                curr_cluster.append(it)
+            else:
+                p_it = curr_cluster[-1].get("name", "")
+                if is_continuation_line(n_it, p_it):
+                    curr_cluster.append(it)
+                else:
+                    product_clusters.append(curr_cluster)
+                    curr_cluster = [it]
+        if curr_cluster:
+            product_clusters.append(curr_cluster)
+
+        # Trích xuất chuỗi các số tiền độc lập xuất hiện tuần tự
+        leading_prices: List[str] = []
+        for it in valid_lines:
+            amt = str(it.get("amount", "")).strip()
+            if not amt or is_empty_value(amt):
+                amt = str(it.get("price", "")).strip()
+            amt_num = clean_currency(amt)
+            if amt_num > 0:
+                if not leading_prices or amt != leading_prices[-1]:
+                    leading_prices.append(amt)
+
+        # Nếu số cụm sản phẩm khớp với số lượng giá độc lập
+        has_priceless_cluster = any(all(is_empty_value(x.get("amount", "")) and is_empty_value(x.get("price", "")) for x in cl) for cl in product_clusters)
+        if len(product_clusters) > 1 and len(product_clusters) == len(leading_prices):
+            lead_sum = sum(clean_currency(p) for p in leading_prices)
+            should_realign = False
+            if has_priceless_cluster:
+                should_realign = True
+            elif abs(lead_sum - declared_total) <= 1.0 or abs(lead_sum - declared_total) < abs(current_raw_sum - declared_total) / 2:
+                should_realign = True
+
+            if should_realign:
+                realigned: List[Dict[str, Any]] = []
+                for idx, cl in enumerate(product_clusters):
+                    full_name = " ".join(str(x.get("name", "")).strip() for x in cl).strip()
+                    assigned_amt = leading_prices[idx]
+                    realigned.append({
+                        "name": full_name,
+                        "qty": cl[0].get("qty", "1") or "1",
+                        "price": assigned_amt,
+                        "amount": assigned_amt
+                    })
+                return realigned
+
+    # Thuật toán gộp tuần tự (Fallback / Standard)
     merged: List[Dict[str, Any]] = []
     i = 0
     while i < len(valid_lines):
