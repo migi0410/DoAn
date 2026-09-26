@@ -522,33 +522,35 @@ def get_samples():
     return {"samples": res}
 
 
-POPOS_API_URL = os.getenv("POPOS_API_URL", "https://omlfvzmqlnr5zg-8000.proxy.runpod.net")
-BACKUP_GPU_URL = os.getenv("BACKUP_GPU_URL", "http://100.80.138.26:8000")
+# Primary GPU Endpoint: RunPod Cloud RTX 3090 Ti (Mô hình chính 24GB Cloud)
+RUNPOD_GPU_URL = os.getenv("RUNPOD_GPU_URL", "https://omlfvzmqlnr5zg-8000.proxy.runpod.net")
+
+# Fallback GPU Endpoint: Pop!_OS RTX 5060 Ti 16GB (Chỉ kích hoạt dự phòng khi 3090 lỗi/mất mạng)
+POPOS_BACKUP_URL = os.getenv("POPOS_BACKUP_URL", "http://127.0.0.1:8000")
 
 def get_active_gpu_url() -> tuple:
-    """Finds the currently available GPU endpoint (RunPod RTX 3090 Ti primary -> PopOS backup)."""
+    """Finds currently available GPU endpoint. Prioritizes RunPod 3090 Ti -> PopOS backup."""
     endpoints = [
-        (POPOS_API_URL, "RunPod Cloud (RTX 3090 Ti)", "NVIDIA GeForce RTX 3090 Ti (24GB Cloud)"),
-        (BACKUP_GPU_URL, "PopOS Tailscale (Backup)", "NVIDIA GeForce RTX 5060 Ti (16GB)")
+        (RUNPOD_GPU_URL, "RunPod Cloud (RTX 3090 Ti)", "NVIDIA GeForce RTX 3090 Ti (24GB Cloud)", False),
+        (POPOS_BACKUP_URL, "PopOS Local (RTX 5060 Ti - Fallback)", "NVIDIA GeForce RTX 5060 Ti (16GB)", True)
     ]
-    for url, host_lbl, gpu_lbl in endpoints:
+    for url, host_lbl, gpu_lbl, is_fb in endpoints:
         if not url:
             continue
         try:
-            r = requests.get(f"{url}/health", timeout=2.5)
+            r = requests.get(f"{url}/health", timeout=3.0)
             if r.status_code == 200:
-                return url, host_lbl, gpu_lbl, r.json()
+                return url, host_lbl, gpu_lbl, r.json(), is_fb
         except Exception:
             continue
-    return None, None, None, None
+    return None, None, None, None, False
 
 @app.get("/api/gpu_status")
 def get_gpu_status():
     """Checks connection to RunPod RTX 3090 Ti (or PopOS backup) and retrieves VRAM stats."""
     t0 = time.time()
-    url, host_lbl, gpu_lbl, data = get_active_gpu_url()
+    url, host_lbl, gpu_lbl, data, is_fb = get_active_gpu_url()
     if data is not None:
-        is_fb = (url == BACKUP_GPU_URL)
         return {
             "online": True,
             "host": host_lbl,
@@ -576,8 +578,8 @@ def get_gpu_status():
 @app.post("/api/gpu/unload")
 def api_unload_gpu_vram():
     """Sends command to kick model from active GPU VRAM."""
-    active_url, _, _, _ = get_active_gpu_url()
-    target_url = active_url or POPOS_API_URL
+    active_url, _, _, _, _ = get_active_gpu_url()
+    target_url = active_url or RUNPOD_GPU_URL
     try:
         r = requests.post(f"{target_url}/unload", timeout=15)
         return r.json()
@@ -587,8 +589,8 @@ def api_unload_gpu_vram():
 @app.post("/api/gpu/switch_adapter")
 def api_switch_adapter(target: str = Form(...)):
     """Sends command to switch active adapter on active GPU."""
-    active_url, _, _, _ = get_active_gpu_url()
-    target_url = active_url or POPOS_API_URL
+    active_url, _, _, _, _ = get_active_gpu_url()
+    target_url = active_url or RUNPOD_GPU_URL
     try:
         r = requests.post(f"{target_url}/switch_adapter", data={"target": target}, timeout=15)
         return r.json()
@@ -772,10 +774,10 @@ async def predict_receipt(
 
     try:
         endpoints_to_try = [
-            (POPOS_API_URL, "runpod_gpu_rtx3090ti", "RunPod Cloud RTX 3090 Ti (Chính)"),
-            (BACKUP_GPU_URL, "popos_gpu_rtx5060ti", "PopOS Backup RTX 5060 Ti (Dự phòng)")
+            (RUNPOD_GPU_URL, "runpod_gpu_rtx3090ti", "RunPod Cloud RTX 3090 Ti (Chính)"),
+            (POPOS_BACKUP_URL, "popos_gpu_rtx5060ti", "PopOS Backup RTX 5060 Ti (Dự phòng)")
         ]
-        popos_data = None
+        active_gpu_data = None
         for gpu_url, src_label, host_label in endpoints_to_try:
             if not gpu_url:
                 continue
@@ -786,22 +788,22 @@ async def predict_receipt(
                         f"{gpu_url}/extract",
                         files={"file": (os.path.basename(img_path), f_img, "image/jpeg")},
                         data={"model_id": model},
-                        timeout=(3.0, 90)
+                        timeout=(5.0, 90)
                     )
                 if resp.status_code == 200:
                     data = resp.json()
                     if data.get("success") and "data" in data:
-                        popos_data = data
+                        active_gpu_data = data
                         inference_source = src_label
                         break
             except Exception as e_forward:
-                print(f"⚠️ [GPU Forward Warning] {host_label} failed: {e_forward}. Trying next endpoint...")
+                print(f"⚠️ [GPU Forward Warning] {host_label} failed: {e_forward}. Trying next fallback endpoint...")
                 continue
 
-        if popos_data is not None:
-            raw_data = popos_data["data"]
-            actual_latency = float(popos_data.get("latency_s", round(time.time() - start_time, 2)))
-            raw_output = popos_data.get("raw")
+        if active_gpu_data is not None:
+            raw_data = active_gpu_data["data"]
+            actual_latency = float(active_gpu_data.get("latency_s", round(time.time() - start_time, 2)))
+            raw_output = active_gpu_data.get("raw")
             
             items_parsed = []
             if "ITEMS" in raw_data and isinstance(raw_data["ITEMS"], list):
@@ -877,7 +879,7 @@ async def predict_receipt(
         "schema_version": schema_version,
         "latency_seconds": actual_latency if actual_latency is not None else simulated_latency,
         "inference_source": inference_source,
-        "inference_source_name": "RunPod Cloud (NVIDIA RTX 3090 Ti)" if inference_source == "runpod_gpu_rtx3090ti" else ("PopOS Tailscale (NVIDIA RTX 5060 Ti - Backup)" if inference_source == "popos_gpu_rtx5060ti" else "Bộ dữ liệu chuẩn Ground Truth"),
+        "inference_source_name": "RunPod Cloud (NVIDIA RTX 3090 Ti)" if inference_source == "runpod_gpu_rtx3090ti" else ("PopOS Local (NVIDIA RTX 5060 Ti - Fallback)" if inference_source == "popos_gpu_rtx5060ti" else "Bộ dữ liệu chuẩn Ground Truth"),
         "is_fallback": (inference_source == "popos_gpu_rtx5060ti"),
         "raw_output": raw_output,
         "raw_items": raw_items_unmodified,

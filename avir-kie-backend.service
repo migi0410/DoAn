@@ -1,0 +1,16 @@
+[Unit]
+Description=AVIR-KIE FastAPI Backend Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=haderax
+WorkingDirectory=/home/haderax/DoAn
+Environment=RUNPOD_GPU_URL=https://omlfvzmqlnr5zg-8000.proxy.runpod.net
+Environment=POPOS_BACKUP_URL=http://127.0.0.1:8000
+ExecStart=/home/haderax/qwen_train_env/bin/python -m uvicorn backend.api:app --host 0.0.0.0 --port 8080
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
