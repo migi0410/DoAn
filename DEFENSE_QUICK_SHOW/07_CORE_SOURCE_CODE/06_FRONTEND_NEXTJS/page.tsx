@@ -13,7 +13,11 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE = "";
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "https://migi.tail007aa8.ts.net"
+).replace(/\/$/, "");
 
 const MODELS = [
   {
